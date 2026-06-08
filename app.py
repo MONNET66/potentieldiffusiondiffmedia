@@ -1,3 +1,4 @@
+from werkzeug.security import generate_password_hash
 from flask import Flask, render_template, request, jsonify, Response, redirect, url_for, session, flash
 import sqlite3
 import csv
@@ -803,6 +804,27 @@ def ensure_databases_exist():
         """)
         conn.commit()
         conn.close()
+
+conn = sqlite3.connect(AUTH_DB_FILE)
+cur = conn.cursor()
+
+admin_exists = cur.execute(
+    "SELECT * FROM users WHERE username = ?",
+    ("admin",)
+).fetchone()
+
+if not admin_exists:
+    cur.execute("""
+        INSERT INTO users (username, password_hash, role)
+        VALUES (?, ?, ?)
+    """, (
+        "admin",
+        generate_password_hash("admin123"),
+        "admin"
+    ))
+    conn.commit()
+
+conn.close()
 
     conn = sqlite3.connect(CAMPAIGN_DB_FILE)
     cur = conn.cursor()
