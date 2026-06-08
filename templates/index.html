@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Etude de potentiel</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #eceff3;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            background: #f4f4f4;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .logout-btn {
+            background: #f97316;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .logout-btn:hover {
+            background: #ea580c;
+        }
+
+        .header img {
+            height: 60px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .page {
+            padding: 16px;
+        }
+
+        .flash-message {
+            background: #d9edf7;
+            border: 1px solid #bce8f1;
+            color: #31708f;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .search-bar {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr auto;
+            background: white;
+            border-radius: 12px;
+            overflow: visible;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 18px;
+        }
+
+        .search-bar select,
+        .search-bar input {
+            width: 100%;
+            border: none;
+            outline: none;
+            padding: 16px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background: white;
+        }
+
+        .search-cell {
+            position: relative;
+            border-right: 1px solid #e6e6e6;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-cell:last-child {
+            border-right: none;
+        }
+
+        .search-button {
+            background: orange;
+            border: none;
+            color: white;
+            padding: 0 24px;
+            font-size: 22px;
+            cursor: pointer;
+            min-height: 56px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .cards {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .card {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            min-width: 180px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            font-size: 16px;
+        }
+
+        .stats-box {
+            background: white;
+            padding: 16px;
+            margin-bottom: 14px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            max-width: 420px;
+        }
+
+        .stats-box ul {
+            margin: 10px 0 0 18px;
+            padding-left: 18px;
+        }
+
+        .stats-box li {
+            margin-bottom: 6px;
+        }
+
+        .export-btn {
+            background: #f0ad2c;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 14px;
+            margin-right: 8px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .export-btn:hover {
+            opacity: 0.95;
+        }
+
+        #map {
+            height: 520px;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 0;
+        }
+
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-top: none;
+            display: none;
+            z-index: 2000;
+            max-height: 220px;
+            overflow-y: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background: #eee;
+        }
+
+        .types-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .types-button {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: white;
+            padding: 16px;
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .types-panel {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+            z-index: 3000;
+            padding: 10px 12px;
+            display: none;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .types-panel.open {
+            display: block;
+        }
+
+        .type-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 4px;
+            font-size: 15px;
+        }
+
+        .type-option input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        .type-option label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .results-box {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-top: 6px;
+        }
+
+        .results-title {
+            margin: 0 0 14px 0;
+            font-size: 20px;
+        }
+
+        .results-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .result-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 10px;
+            padding: 14px;
+            background: #fcfcfc;
+        }
+
+        .result-name {
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .result-type {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .result-line {
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .result-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .view-map-btn {
+            background: orange;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .view-map-btn.delete-btn {
+            background: #dc2626;
+        }
+
+        .view-map-btn.delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .empty-results {
+            color: #666;
+            font-style: italic;
+        }
+
+        .cumul-tools {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .chips-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: nowrap;
+            align-items: center;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            margin-bottom: 14px;
+            padding-bottom: 4px;
+        }
+
+        .chips-row::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .chips-row::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.18);
+            border-radius: 10px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #f97316;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            flex: 0 0 auto;
+        }
+
+        .chip-label {
+            white-space: nowrap;
+        }
+
+        .chip-remove {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            flex: 0 0 auto;
+        }
+
+        .chip:hover {
+            background: #ea580c;
+        }
+
+        .chip-remove:hover {
+            background: rgba(255,255,255,0.28);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 16px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 560px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.22);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 18px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .modal-close {
+            border: none;
+            background: transparent;
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 18px;
+        }
+
+        .modal-body label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .modal-body input,
+        .modal-body select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            font-size: 15px;
+            background: white;
+        }
+
+        .modal-help {
+            font-size: 13px;
+            color: #666;
+            margin-top: -4px;
+            margin-bottom: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .modal-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .modal-btn-primary {
+            background: #f97316;
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            background: #ea580c;
+        }
+
+        .modal-btn-secondary {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .modal-btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .modal-message {
+            display: none;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            font-size: 14px;
+        }
+
+        .modal-message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .modal-message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        @media (max-width: 1100px) {
+            .search-bar {
+                grid-template-columns: 1fr;
+            }
+
+            .search-cell {
+                border-right: none;
+                border-bottom: 1px solid #e6e6e6;
+            }
+
+            .search-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        <h2>Etude de potentiel</h2>
+    </div>
+
+    <div class="header-right">
+        <span>👤 {{ current_user }}</span>
+
+        {% if current_user == "maryl" %}
+            <button type="button" class="logout-btn" onclick="openAddCommerceModal()">Ajouter un commerce</button>
+        {% endif %}
+
+        <a href="/campaigns" class="logout-btn">Mes campagnes</a>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Déconnexion</a>
+    </div>
+</div>
+
+<div class="page">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" id="searchForm">
+        <div class="search-bar">
+
+            <div class="search-cell">
+                <div class="types-dropdown">
+                    <button type="button" class="types-button" id="typesButton">
+                        Types de commerces
+                    </button>
+
+                    <div class="types-panel" id="typesPanel">
+                        <div class="type-option">
+                            <input
+                                type="checkbox"
+                                id="type_all"
+                                value="all"
+                                {% if 'all' in selected_types %}checked{% endif %}
+                            >
+                            <label for="type_all"><b>Tous</b></label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="checkbox" name="types" id="type_pharmacy" value="pharmacy" {% if 'pharmacy' in selected_types %}checked{% endif %}>
+                            <label for="type_pharmacy">Pharmacies</label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="checkbox" name="types" id="type_restaurant" value="restaurant" {% if 'restaurant' in selected_types %}checked{% endif %}>
+                            <label for="type_restaurant">Restaurants</label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="checkbox" name="types" id="type_bar" value="bar" {% if 'bar' in selected_types %}checked{% endif %}>
+                            <label for="type_bar">Bars</label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="checkbox" name="types" id="type_bakery" value="bakery" {% if 'bakery' in selected_types %}checked{% endif %}>
+                            <label for="type_bakery">Boulangeries</label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="checkbox" name="types" id="type_fast_food" value="fast_food" {% if 'fast_food' in selected_types %}checked{% endif %}>
+                            <label for="type_fast_food">Snacks</label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="checkbox" name="types" id="type_camping" value="camping" {% if 'camping' in selected_types %}checked{% endif %}>
+                            <label for="type_camping">Campings</label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="checkbox" name="types" id="type_tourism_office" value="tourism_office" {% if 'tourism_office' in selected_types %}checked{% endif %}>
+                            <label for="type_tourism_office">Offices de tourisme</label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="checkbox" name="types" id="type_hotel" value="hotel" {% if 'hotel' in selected_types %}checked{% endif %}>
+                            <label for="type_hotel">Hôtels</label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="checkbox" name="types" id="type_tobacco" value="tobacco" {% if 'tobacco' in selected_types %}checked{% endif %}>
+                            <label for="type_tobacco">Tabacs / Presse</label>
+                        </div>
+
+                        <div class="type-option">
+                            <input type="checkbox" name="types" id="type_hair_salon" value="hair_salon" {% if 'hair_salon' in selected_types %}checked{% endif %}>
+                            <label for="type_hair_salon">Salon de coiffure</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-cell">
+                <select name="support" id="support">
+                    {% for support_key in available_supports %}
+                        <option value="{{ support_key }}" {% if selected_support == support_key %}selected{% endif %}>
+                            {{ support_labels[support_key] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="search-cell">
+                <select name="mode" id="mode" onchange="updateMode()">
+                    <option value="ville" {% if mode == "ville" %}selected{% endif %}>Ville / CP</option>
+                    <option value="departement" {% if mode == "departement" %}selected{% endif %}>Département</option>
+                    <option value="rayon" {% if mode == "rayon" %}selected{% endif %}>Rayon</option>
+                </select>
+            </div>
+
+            <div class="search-cell" id="villeBox">
+                <input type="text" name="ville" id="villeInput" placeholder="Ville ou code postal" value="{{ search_value }}" autocomplete="off">
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+
+            <div class="search-cell hidden" id="departementBox">
+                <select name="departement" id="departementInput">
+                    <option value="">Choisir un département</option>
+                    {% for code, nom in departements %}
+                        <option value="{{ code }}" {% if departement_value == code %}selected{% endif %}>
+                            {{ code }} - {{ nom }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="search-cell hidden" id="rayonBox">
+                <input type="number" name="rayon" id="rayonInput" placeholder="Rayon km" value="{{ rayon_value }}" min="1">
+            </div>
+
+            <button class="search-button" type="submit">🔍</button>
+        </div>
+    </form>
+
+    <div class="cumul-tools">
+        <button class="export-btn" type="submit" form="searchForm" name="action" value="add_search">
+            Ajouter au cumul
+        </button>
+
+        {% if temp_searches %}
+            <a href="{{ url_for('clear_temp_searches') }}">
+                <button class="export-btn" type="button">Vider le cumul</button>
+            </a>
+        {% endif %}
+    </div>
+
+    {% if temp_searches %}
+    <div class="chips-row">
+        {% for item in temp_searches %}
+            <div class="chip">
+                <span class="chip-label">{{ item.label }}</span>
+                <a class="chip-remove" href="{{ url_for('remove_temp_search', index=loop.index0) }}">✕</a>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="cards">
+        <div class="card">Commerces : <span id="nb-commerces">{{ nb }}</span></div>
+        <div class="card">Potentiel : <span id="potentiel-total">{{ potentiel }}</span></div>
+    </div>
+
+    <div class="stats-box">
+        <b>Potentiel distribution :</b>
+        <ul>
+            {% if stats %}
+                {% for label, total in stats %}
+                    <li>{{ label }} : {{ total }}</li>
+                {% endfor %}
+            {% else %}
+                <li>Aucune statistique</li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <a href="/create_campaign"><button class="export-btn" type="button">Créer une campagne ciblée</button></a>
+    <button class="export-btn" type="button" onclick="exportRouteCSV()">Créer une campagne massive</button>
+
+    <div style="display:flex; gap:16px; align-items:flex-start;">
+
+        <div style="flex:3;">
+            <div id="map"></div>
+        </div>
+
+        <div class="results-box" style="flex:1; height:520px; overflow-y:auto; margin-top:0;">
+            <h3 class="results-title">📍 Résultats ({{ nb }})</h3>
+
+            {% if data %}
+                <div class="results-list">
+                    {% for item in data %}
+                        <div class="result-card" id="result-{{ loop.index0 }}">
+                            <div class="result-name">{{ item.name }}</div>
+
+                            <div class="result-type">
+                                {{ type_labels.get(item.type, item.type) }}
+                            </div>
+
+                            {% if item.adresse %}
+                                <div class="result-line">📍 {{ item.adresse }}</div>
+                            {% endif %}
+
+                            {% if item.code_postal or item.ville %}
+                                <div class="result-line">🏙️ {{ item.code_postal }} {{ item.ville }}</div>
+                            {% endif %}
+
+                            <div class="result-line">
+                                📏 <span id="distance-text-{{ loop.index0 }}"></span>
+                            </div>
+
+                             {% if item.telephone %}
+                                 <div class="result-line">📞 {{ item.telephone }}</div>
+                             {% endif %}
+
+                             {% if item.accepte_support %}
+                                 <div class="result-line">
+                                     {% if item.accepte_support == "jamais" %}
+                                         ❌ Jamais
+                                     {% elif item.accepte_support == "oui" %}
+                                         ✅ Accepte
+                                     {% elif item.accepte_support == "non" %}
+                                         ⚠️ N’accepte pas pour le moment
+                                     {% endif %}
+                                 </div>
+                             {% endif %}
+
+                             {% if item.commentaire_support %}
+                                 <div class="result-line">
+                                     📝 {{ item.commentaire_support }}
+                                 </div>
+                             {% endif %}
+
+                             {% if item.quantite_support and item.quantite_support > 0 %}
+                                 <div class="result-line">
+                                    📦 Quantité : {{ item.quantite_support }}
+                                 </div>
+                             {% endif %}
+
+                             <div class="result-actions">
+                                <button
+                                    type="button"
+                                    class="view-map-btn"
+                                    onclick="focusMarker({{ loop.index0 }})"
+                                >
+                                    Voir sur la carte
+                                </button>
+
+                                {% if current_user == "maryl" and item.id %}
+                                    <a
+                                        href="{{ url_for('edit_commerce', commerce_id=item.id) }}"
+                                        class="view-map-btn"
+                                        style="background:#2563eb; text-decoration:none;"
+                                    >
+                                        Modifier
+                                    </a>
+
+                                    <button
+                                        type="button"
+                                        class="view-map-btn delete-btn"
+                                        onclick="deleteCommerce({{ item.id }})"
+                                    >
+                                        Supprimer
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-results">Aucun résultat à afficher.</div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+{% if current_user == "maryl" %}
+<div class="modal-overlay" id="addCommerceModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 class="modal-title">Ajouter un commerce</h3>
+            <button type="button" class="modal-close" onclick="closeAddCommerceModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div id="addCommerceMessage" class="modal-message"></div>
+
+            <label for="gmapsLinkInput">Lien Google Maps</label>
+            <input type="text" id="gmapsLinkInput" placeholder="Collez ici votre lien Google Maps">
+
+            <label>Nom du commerce</label>
+            <input type="text" id="gmapsNomInput" placeholder="Nom du commerce">
+
+            <button type="button" onclick="previewGoogleMapsLink()">
+                Lire le nom depuis le lien
+            </button>
+
+            <div class="modal-help">
+                Exemple : https://maps.app.goo.gl/...
+            </div>
+
+            <label for="gmapsTypeInput">Type de commerce</label>
+            <select id="gmapsTypeInput">
+                <option value="">Choisir un type</option>
+                <option value="pharmacy">Pharmacies</option>
+                <option value="restaurant">Restaurants</option>
+                <option value="bar">Bars</option>
+                <option value="bakery">Boulangeries</option>
+                <option value="fast_food">Snacks</option>
+                <option value="camping">Campings</option>
+                <option value="tourism_office">Offices de tourisme</option>
+                <option value="hotel">Hôtels</option>
+                <option value="tobacco">Tabacs / Presse</option>
+                <option value="hair_salon">Salon de coiffure</option>
+            </select>
+
+            <label for="gmapsVilleInput">Ville</label>
+            <input type="text" id="gmapsVilleInput" placeholder="Ville du commerce">
+
+            <label for="gmapsAdresseInput">Adresse</label>
+            <input type="text" id="gmapsAdresseInput" placeholder="Adresse du commerce">
+
+            <label for="gmapsTelephoneInput">Téléphone</label>
+            <input type="text" id="gmapsTelephoneInput" placeholder="Téléphone du commerce">
+
+            <div class="modal-actions">
+                <button type="button" class="modal-btn modal-btn-secondary" onclick="closeAddCommerceModal()">
+                    Annuler
+                </button>
+                <button type="button" class="modal-btn modal-btn-primary" onclick="submitAddCommerceFromLink()">
+                    Ajouter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="editAddressModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 class="modal-title">Modifier l’adresse</h3>
+            <button type="button" class="modal-close" onclick="closeEditAddressModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div id="editAddressMessage" class="modal-message"></div>
+
+            <label for="editCommerceName">Commerce</label>
+            <input type="text" id="editCommerceName" readonly>
+
+            <label for="editAdresseInput">Adresse</label>
+            <input type="text" id="editAdresseInput" placeholder="Nouvelle adresse">
+
+            <input type="hidden" id="editCommerceId">
+
+            <div class="modal-actions">
+                <button type="button" class="modal-btn modal-btn-secondary" onclick="closeEditAddressModal()">
+                    Annuler
+                </button>
+                <button type="button" class="modal-btn modal-btn-primary" onclick="submitEditAddress()">
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+<script>
+function updateMode() {
+    const mode = document.getElementById("mode").value;
+
+    document.getElementById("villeBox").classList.add("hidden");
+    document.getElementById("departementBox").classList.add("hidden");
+    document.getElementById("rayonBox").classList.add("hidden");
+
+    if (mode === "ville") {
+        document.getElementById("villeBox").classList.remove("hidden");
+    } else if (mode === "departement") {
+        document.getElementById("departementBox").classList.remove("hidden");
+    } else if (mode === "rayon") {
+        document.getElementById("villeBox").classList.remove("hidden");
+        document.getElementById("rayonBox").classList.remove("hidden");
+    }
+}
+
+function getCheckedTypes() {
+    const allBox = document.getElementById("type_all");
+    if (allBox.checked) {
+        return ["all"];
+    }
+
+    const boxes = document.querySelectorAll('input[name="types"]:checked');
+    return Array.from(boxes).map(function(box) {
+        return box.value;
+    });
+}
+
+function updateTypesButtonLabel() {
+    const checkedTypes = getCheckedTypes();
+    const button = document.getElementById("typesButton");
+
+    if (checkedTypes.includes("all") || checkedTypes.length === 0) {
+        button.textContent = "Tous les commerces";
+        return;
+    }
+
+    const labels = checkedTypes.map(function(typeValue) {
+        const label = document.querySelector('label[for="type_' + typeValue + '"]');
+        return label ? label.textContent.trim() : typeValue;
+    });
+
+    if (labels.length <= 2) {
+        button.textContent = labels.join(" + ");
+    } else {
+        button.textContent = labels.length + " types sélectionnés";
+    }
+}
+
+function updateSupports() {
+    const supportSelect = document.getElementById("support");
+    const currentValue = supportSelect.value;
+    const selectedTypes = getCheckedTypes();
+
+    let url = "/supports";
+    if (selectedTypes.includes("all")) {
+        url += "?type=all";
+    } else {
+        url += "?" + selectedTypes.map(function(t) {
+            return "types=" + encodeURIComponent(t);
+        }).join("&");
+    }
+
+    fetch(url)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            supportSelect.innerHTML = "";
+
+            let matched = false;
+
+            data.forEach(function(item) {
+                const option = document.createElement("option");
+                option.value = item.value;
+                option.textContent = item.label;
+
+                if (item.value === currentValue) {
+                    option.selected = true;
+                    matched = true;
+                }
+
+                supportSelect.appendChild(option);
+            });
+
+            if (!matched && supportSelect.options.length > 0) {
+                supportSelect.value = "all";
+            }
+        })
+        .catch(function(error) {
+            console.error("Erreur updateSupports:", error);
+        });
+
+    updateTypesButtonLabel();
+}
+
+function setupTypeSelector() {
+    const panel = document.getElementById("typesPanel");
+    const button = document.getElementById("typesButton");
+    const allBox = document.getElementById("type_all");
+    const typeBoxes = document.querySelectorAll('input[name="types"]');
+
+    button.addEventListener("click", function(e) {
+        e.stopPropagation();
+        panel.classList.toggle("open");
+    });
+
+    document.addEventListener("click", function(e) {
+        if (!panel.contains(e.target) && e.target !== button) {
+            panel.classList.remove("open");
+        }
+    });
+
+    allBox.addEventListener("change", function() {
+        if (allBox.checked) {
+            typeBoxes.forEach(function(box) {
+                box.checked = false;
+            });
+        }
+        updateSupports();
+    });
+
+    typeBoxes.forEach(function(box) {
+        box.addEventListener("change", function() {
+            if (box.checked) {
+                allBox.checked = false;
+            }
+
+            const anyChecked = Array.from(typeBoxes).some(function(item) {
+                return item.checked;
+            });
+
+            if (!anyChecked) {
+                allBox.checked = true;
+            }
+
+            updateSupports();
+        });
+    });
+
+    const anyCheckedOnLoad = Array.from(typeBoxes).some(function(item) {
+        return item.checked;
+    });
+
+    if (!anyCheckedOnLoad) {
+        allBox.checked = true;
+    }
+
+    updateTypesButtonLabel();
+}
+
+updateMode();
+setupTypeSelector();
+updateSupports();
+
+var centerLat = Number({{ lat }});
+var centerLon = Number({{ lon }});
+
+var map = L.map('map').setView([centerLat, centerLon], 12);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+var markers = L.markerClusterGroup();
+var data = {{ data|tojson|safe }};
+var markerRefs = [];
+
+var globalStats = {
+    commerces: Number(document.getElementById("nb-commerces") ? document.getElementById("nb-commerces").textContent : 0),
+    potentiel: Number(document.getElementById("potentiel-total") ? document.getElementById("potentiel-total").textContent : 0)
+};
+
+function updateTopStats(nb, potentiel) {
+    var nbEl = document.getElementById("nb-commerces");
+    var potEl = document.getElementById("potentiel-total");
+
+    if (nbEl) nbEl.textContent = nb;
+    if (potEl) potEl.textContent = potentiel;
+}
+
+function resetTopStats() {
+    updateTopStats(globalStats.commerces, globalStats.potentiel);
+}
+
+function calculerPotentielEtSupports(type, count) {
+    let potentiel = 0;
+    let supports = 0;
+
+    if (type === "restaurant") {
+        potentiel = Math.ceil(count * 3 / 10);
+        supports = (potentiel * 1000) + (potentiel * 250);
+    } else if (type === "pharmacy") {
+        potentiel = Math.ceil(count * 3 / 10);
+        supports = potentiel * 1000;
+    } else if (type === "bar") {
+        potentiel = Math.ceil(count * 3 / 10);
+        supports = potentiel * 250;
+    } else if (type === "bakery") {
+        potentiel = Math.ceil(count * 5 / 10);
+        supports = (potentiel * 1000) + (potentiel * 1000);
+    } else if (type === "fast_food") {
+        potentiel = Math.ceil(count * 3 / 10);
+        supports = (potentiel * 1000) + (potentiel * 250);
+    } else if (type === "camping") {
+        potentiel = Math.ceil(count * 3 / 10);
+        supports = (potentiel * 50) + count;
+    } else if (type === "tourism_office") {
+        potentiel = Math.ceil(count * 5 / 10);
+        supports = potentiel * 50;
+    } else if (type === "hotel") {
+        potentiel = Math.ceil(count * 3 / 10);
+        supports = potentiel * 50;
+    } else if (type === "tobacco") {
+        potentiel = Math.ceil(count * 3 / 10);
+        supports = (potentiel * 50) + count;
+    } else if (type === "hair_salon") {
+        potentiel = Math.floor(count * 3 / 10);
+        supports = (potentiel * 50) + count;
+    }
+
+    return {
+        potentiel: potentiel,
+        supports: supports
+    };
+}
+
+function degreesToRadians(degrees) {
+    return degrees * Math.PI / 180;
+}
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = degreesToRadians(lat2 - lat1);
+    const dLon = degreesToRadians(lon2 - lon1);
+
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(degreesToRadians(lat1)) *
+        Math.cos(degreesToRadians(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+function getDistanceValue(item) {
+    if (item.distance_km !== undefined && item.distance_km !== null && item.distance_km !== "") {
+        const num = parseFloat(String(item.distance_km).replace(",", "."));
+        if (!isNaN(num)) return num;
+    }
+
+    if (item.distance !== undefined && item.distance !== null && item.distance !== "") {
+        const num = parseFloat(String(item.distance).replace(",", "."));
+        if (!isNaN(num)) return num;
+    }
+
+    if (item.lat !== undefined && item.lon !== undefined && item.lat !== null && item.lon !== null && item.lat !== "" && item.lon !== "") {
+        const lat = Number(item.lat);
+        const lon = Number(item.lon);
+        if (!isNaN(lat) && !isNaN(lon)) {
+            return haversineKm(centerLat, centerLon, lat, lon);
+        }
+    }
+
+    return null;
+}
+
+function formatDistance(value) {
+    if (value === null || value === undefined || value === "") {
+        return "";
+    }
+
+    const num = parseFloat(String(value).replace(",", "."));
+    if (isNaN(num)) {
+        return "";
+    }
+
+    return num.toFixed(1).replace(".", ",") + " km";
+}
+
+data.forEach(function(p, index) {
+    if (p.lat && p.lon) {
+        var popup = "<b>" + (p.name || "Commerce") + "</b>";
+
+        if (p.adresse) {
+            popup += "<br>" + p.adresse;
+        }
+
+        if (p.ville || p.code_postal) {
+            popup += "<br>" + (p.code_postal || "") + " " + (p.ville || "");
+        }
+
+        if (p.telephone) {
+            popup += "<br>Tél. : " + p.telephone;
+        }
+
+        const marker = L.marker([Number(p.lat), Number(p.lon)], {
+            itemData: p
+        });
+
+        marker.bindPopup(popup);
+        markers.addLayer(marker);
+        markerRefs[index] = marker;
+    }
+
+    const distanceEl = document.getElementById("distance-text-" + index);
+    if (distanceEl) {
+        distanceEl.textContent = formatDistance(getDistanceValue(p));
+    }
+});
+
+map.addLayer(markers);
+
+setTimeout(function() {
+    map.invalidateSize();
+}, 300);
+
+function focusMarker(index) {
+    const marker = markerRefs[index];
+    if (!marker) return;
+
+    const mapElement = document.getElementById("map");
+    if (mapElement) {
+        mapElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    setTimeout(function () {
+        map.invalidateSize();
+
+        markers.zoomToShowLayer(marker, function () {
+            map.setView(marker.getLatLng(), 18);
+            marker.openPopup();
+            marker.setZIndexOffset(1000);
+        });
+    }, 500);
+}
+
+markers.on('clusterclick', function(a) {
+    const childMarkers = a.layer.getAllChildMarkers();
+
+    let nbCommerces = childMarkers.length;
+    let potentielTotal = 0;
+
+    const countsByType = {};
+
+    childMarkers.forEach(function(marker) {
+        const item = marker.options.itemData || {};
+        let type = item.type || "";
+
+        if (!type) {
+            return;
+        }
+
+        if (!countsByType[type]) {
+            countsByType[type] = 0;
+        }
+
+        countsByType[type] += 1;
+    });
+
+    Object.keys(countsByType).forEach(function(type) {
+        const count = countsByType[type];
+        const res = calculerPotentielEtSupports(type, count);
+        potentielTotal += res.potentiel;
+    });
+
+    updateTopStats(nbCommerces, potentielTotal);
+});
+
+map.on('click', function() {
+    resetTopStats();
+});
+
+if (data.length > 0) {
+    const bounds = markers.getBounds();
+    if (bounds.isValid()) {
+        map.fitBounds(bounds);
+    }
+}
+
+{% if show_circle %}
+var circle = L.circle([{{ lat }}, {{ lon }}], {
+    radius: {{ rayon_value }} * 1000,
+    color: 'orange',
+    fillOpacity: 0.08
+}).addTo(map);
+{% endif %}
+
+const input = document.getElementById("villeInput");
+const suggestions = document.getElementById("suggestions");
+
+if (input) {
+    input.addEventListener("input", function() {
+        const val = input.value.trim();
+        const mode = document.getElementById("mode").value;
+
+        if (mode === "departement") {
+            suggestions.style.display = "none";
+            return;
+        }
+
+        if (val.length < 2) {
+            suggestions.style.display = "none";
+            suggestions.innerHTML = "";
+            return;
+        }
+
+        fetch("/autocomplete?q=" + encodeURIComponent(val))
+            .then(function(r) { return r.json(); })
+            .then(function(items) {
+                suggestions.innerHTML = "";
+
+                if (!items.length) {
+                    suggestions.style.display = "none";
+                    return;
+                }
+
+                items.forEach(function(item) {
+                    const div = document.createElement("div");
+                    div.className = "suggestion-item";
+                    div.innerText = item.label;
+
+                    div.onclick = function() {
+                        if (item.code_postal) {
+                            input.value = item.nom + " (" + item.code_postal + ")";
+                        } else {
+                            input.value = item.nom;
+                        }
+                     };
+
+                    suggestions.appendChild(div);
+                });
+
+                suggestions.style.display = "block";
+            })
+            .catch(function() {
+                suggestions.style.display = "none";
+            });
+    });
+
+    document.addEventListener("click", function(e) {
+        if (!suggestions.contains(e.target) && e.target !== input) {
+            suggestions.style.display = "none";
+        }
+    });
+}
+
+function csvCell(value) {
+    if (value === undefined || value === null) {
+        value = "";
+    }
+    return '"' + String(value).replace(/"/g, '""') + '"';
+}
+
+function exportRouteCSV() {
+    if (!data || data.length === 0) {
+        alert("Aucune tournée à exporter");
+        return;
+    }
+
+    const headers = [
+        "ordre",
+        "nom",
+        "adresse",
+        "code_postal",
+        "ville",
+        "telephone",
+        "latitude",
+        "longitude",
+        "distance",
+        "type"
+    ];
+
+    const rows = data.map(function(item, index) {
+        return [
+            csvCell(index + 1),
+            csvCell(item.name),
+            csvCell(item.adresse),
+            csvCell(item.code_postal),
+            csvCell(item.ville),
+            csvCell(item.telephone),
+            csvCell(item.lat),
+            csvCell(item.lon),
+            csvCell(formatDistance(getDistanceValue(item))),
+            csvCell(item.type)
+        ];
+    });
+
+    const csvContent = [
+        headers.join(";"),
+        ...rows.map(function(row) { return row.join(";"); })
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], {
+        type: "text/csv;charset=utf-8;"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "tournee.csv";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+}
+
+function openAddCommerceModal() {
+    const modal = document.getElementById("addCommerceModal");
+    const message = document.getElementById("addCommerceMessage");
+
+    if (message) {
+        message.className = "modal-message";
+        message.style.display = "none";
+        message.textContent = "";
+    }
+
+    if (modal) {
+        modal.classList.add("open");
+    }
+}
+
+function closeAddCommerceModal() {
+    const modal = document.getElementById("addCommerceModal");
+    if (modal) {
+        modal.classList.remove("open");
+    }
+}
+
+function showAddCommerceMessage(text, isSuccess) {
+    const box = document.getElementById("addCommerceMessage");
+    if (!box) return;
+
+    box.textContent = text;
+    box.className = "modal-message " + (isSuccess ? "success" : "error");
+    box.style.display = "block";
+}
+
+function submitAddCommerceFromLink() {
+    const linkInput = document.getElementById("gmapsLinkInput");
+    const typeInput = document.getElementById("gmapsTypeInput");
+    const villeInput = document.getElementById("gmapsVilleInput");
+    const adresseInput = document.getElementById("gmapsAdresseInput");
+
+    const lien = linkInput ? linkInput.value.trim() : "";
+    const type = typeInput ? typeInput.value : "";
+    const ville = villeInput ? villeInput.value.trim() : "";
+    const adresse = adresseInput ? adresseInput.value.trim() : "";
+    const telephoneInput = document.getElementById("gmapsTelephoneInput");
+    const telephone = telephoneInput ? telephoneInput.value.trim() : "";
+
+    if (!lien) {
+        showAddCommerceMessage("Merci de coller un lien Google Maps.", false);
+        return;
+    }
+
+    if (!type) {
+        showAddCommerceMessage("Merci de choisir un type de commerce.", false);
+        return;
+    }
+
+    if (!ville) {
+        showAddCommerceMessage("Merci de renseigner la ville.", false);
+        return;
+    }
+
+    fetch("/add_commerce_from_link", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            lien: lien,
+            type: type,
+            ville: ville,
+            adresse: adresse,
+            telephone: telephone
+        })
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(result) {
+        if (result.status === "ok") {
+            showAddCommerceMessage("Commerce ajouté avec succès : " + (result.nom || ""), true);
+
+            if (linkInput) linkInput.value = "";
+            if (typeInput) typeInput.value = "";
+            if (villeInput) villeInput.value = "";
+            if (adresseInput) adresseInput.value = "";
+            if (telephoneInput) telephoneInput.value = "";
+
+            setTimeout(function() {
+                window.location.reload();
+            }, 900);
+        } else {
+            showAddCommerceMessage(result.message || "Erreur lors de l'ajout du commerce.", false);
+        }
+    })
+    .catch(function() {
+        showAddCommerceMessage("Erreur serveur lors de l'ajout du commerce.", false);
+    });
+}
+
+function deleteCommerce(id) {
+    if (!confirm("Voulez-vous vraiment supprimer ce commerce ?")) {
+        return;
+    }
+
+    fetch("/delete_commerce", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ id: id })
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(result) {
+        if (result.status === "ok") {
+            alert("Commerce supprimé avec succès.");
+            window.location.reload();
+        } else {
+            alert(result.message || "Erreur lors de la suppression.");
+        }
+    })
+    .catch(function() {
+        alert("Erreur serveur lors de la suppression.");
+    });
+}
+
+function openEditAddressModal(id, nom, adresse) {
+    const modal = document.getElementById("editAddressModal");
+    const message = document.getElementById("editAddressMessage");
+    const idInput = document.getElementById("editCommerceId");
+    const nameInput = document.getElementById("editCommerceName");
+    const adresseInput = document.getElementById("editAdresseInput");
+
+    if (message) {
+        message.className = "modal-message";
+        message.style.display = "none";
+        message.textContent = "";
+    }
+
+    if (idInput) idInput.value = id || "";
+    if (nameInput) nameInput.value = nom || "";
+    if (adresseInput) adresseInput.value = adresse || "";
+
+    if (modal) {
+        modal.classList.add("open");
+    }
+}
+
+function closeEditAddressModal() {
+    const modal = document.getElementById("editAddressModal");
+    if (modal) {
+        modal.classList.remove("open");
+    }
+}
+
+function showEditAddressMessage(text, isSuccess) {
+    const box = document.getElementById("editAddressMessage");
+    if (!box) return;
+
+    box.textContent = text;
+    box.className = "modal-message " + (isSuccess ? "success" : "error");
+    box.style.display = "block";
+}
+
+function submitEditAddress() {
+    const idInput = document.getElementById("editCommerceId");
+    const adresseInput = document.getElementById("editAdresseInput");
+
+    const id = idInput ? idInput.value : "";
+    const adresse = adresseInput ? adresseInput.value.trim() : "";
+
+    if (!id) {
+        showEditAddressMessage("ID commerce introuvable.", false);
+        return;
+    }
+
+    if (!adresse) {
+        showEditAddressMessage("Merci de saisir une adresse.", false);
+        return;
+    }
+
+    fetch("/update_commerce_address", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id: id,
+            adresse: adresse
+        })
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(result) {
+        if (result.status === "ok") {
+            showEditAddressMessage("Adresse mise à jour avec succès.", true);
+
+            setTimeout(function() {
+                window.location.reload();
+            }, 900);
+        } else {
+            showEditAddressMessage(result.message || "Erreur lors de la mise à jour.", false);
+        }
+    })
+    .catch(function() {
+        showEditAddressMessage("Erreur serveur lors de la mise à jour.", false);
+    });
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        closeAddCommerceModal();
+        closeEditAddressModal();
+    }
+});
+
+document.addEventListener("click", function(e) {
+    const addModal = document.getElementById("addCommerceModal");
+    const editModal = document.getElementById("editAddressModal");
+
+    if (addModal && e.target === addModal) {
+        closeAddCommerceModal();
+    }
+
+    if (editModal && e.target === editModal) {
+        closeEditAddressModal();
+    }
+});
+
+function editCommerceAddress(id, currentAdresse) {
+    const nouvelleAdresse = prompt("Nouvelle adresse :", currentAdresse || "");
+
+    if (nouvelleAdresse === null) {
+        return;
+    }
+
+    const adresse = nouvelleAdresse.trim();
+
+    if (!adresse) {
+        alert("Merci de saisir une adresse.");
+        return;
+    }
+
+    fetch("/update_commerce_address", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id: id,
+            adresse: adresse
+        })
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(result) {
+        if (result.status === "ok") {
+            alert("Adresse mise à jour avec succès.");
+            window.location.reload();
+        } else {
+            alert(result.message || "Erreur lors de la mise à jour.");
+        }
+    })
+    .catch(function() {
+        alert("Erreur serveur lors de la mise à jour.");
+    });
+}
+
+</script>
+</body>
+</html>
