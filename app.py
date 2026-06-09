@@ -21,10 +21,13 @@ session_http = requests.Session()
 app = Flask(__name__)
 app.secret_key = "CHANGE_MOI_PAR_UNE_CLE_SECRETE_LONGUE_ET_UNIQUE"
 
-DB_FILE = "commerces_new.db"
-AUTH_DB_FILE = "auth.db"
-CAMPAIGN_DB_FILE = "campaigns.db"
-LAST_RESULTS = []
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+
+DB_FILE = BASE_DIR / "commerces_render.db"
+AUTH_DB_FILE = BASE_DIR / "auth.db"
+CAMPAIGN_DB_FILE = BASE_DIR / "campaigns.db"
 
 DEFAULT_LAT = 46.6
 DEFAULT_LON = 2.4
