@@ -25,7 +25,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 
-DB_FILE = BASE_DIR / "commerces_render.db"
+DB_FILE = "/data/commerces_render.db"
 AUTH_DB_FILE = BASE_DIR / "auth.db"
 CAMPAIGN_DB_FILE = BASE_DIR / "campaigns.db"
 
