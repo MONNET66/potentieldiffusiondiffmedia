@@ -566,7 +566,7 @@
     <div class="header-right">
         <span>👤 {{ current_user }}</span>
 
-        {% if current_user == "maryl" %}
+        {% if session.role == "admin" %}
             <button type="button" class="logout-btn" onclick="openAddCommerceModal()">Ajouter un commerce</button>
         {% endif %}
 
@@ -814,19 +814,41 @@
                                     Voir sur la carte
                                 </button>
 
-                                {% if current_user == "maryl" and item.id %}
+                                {% if session.role == "admin" %}
                                     <a
-                                        href="{{ url_for('edit_commerce', commerce_id=item.id) }}"
+                                        href="/edit_commerce/{{ item['id'] }}"
                                         class="view-map-btn"
                                         style="background:#2563eb; text-decoration:none;"
                                     >
                                         Modifier
                                     </a>
 
+ 				    {% if item.is_hidden %}
+                                        <a
+                                            href="#"
+                                            class="view-map-btn"
+                                            style="background:#10b981; text-decoration:none;"
+                                            onclick="unhideCommerce({{ item['id'] }}, this); return false;"
+
+                                        >
+                                            Démasquer
+                                        </a>
+                                    {% else %}
+                                        <a
+                                             href="#"
+                                             class="view-map-btn"
+                                             style="background:#f59e0b; text-decoration:none;"
+                                             onclick="hideCommerce({{ item['id'] }}, this); return false;"
+                                        >
+                                            Masquer
+                                        </a>
+                                    {% endif %}
+				
+
                                     <button
                                         type="button"
                                         class="view-map-btn delete-btn"
-                                        onclick="deleteCommerce({{ item.id }})"
+                                        onclick="deleteCommerce({{ item['id'] }}, this)"
                                     >
                                         Supprimer
                                     </button>
@@ -843,7 +865,7 @@
     </div>
 </div>
 
-{% if current_user == "maryl" %}
+{% if session.role == "admin" %}
 <div class="modal-overlay" id="addCommerceModal">
     <div class="modal-box">
         <div class="modal-header">
@@ -1093,15 +1115,26 @@ updateMode();
 setupTypeSelector();
 updateSupports();
 
-var centerLat = Number({{ lat }});
-var centerLon = Number({{ lon }});
+var centerLat = Number({{ lat or 46.2276 }});
+var centerLon = Number({{ lon or 2.2137 }});
+
+if (isNaN(centerLat) || isNaN(centerLon)) {
+    centerLat = 46.2276;
+    centerLon = 2.2137;
+}
 
 var map = L.map('map').setView([centerLat, centerLon], 12);
+console.log("MAP DIV =", document.getElementById("map"));
+console.log("MAP SIZE =", document.getElementById("map").offsetHeight);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
+setTimeout(function () {
+    map.invalidateSize();
+}, 300);
 var markers = L.markerClusterGroup();
 var data = {{ data|tojson|safe }};
 var markerRefs = [];
@@ -1220,6 +1253,10 @@ function formatDistance(value) {
 }
 
 data.forEach(function(p, index) {
+    if (p.is_hidden) {
+        return;
+    }
+
     if (p.lat && p.lon) {
         var popup = "<b>" + (p.name || "Commerce") + "</b>";
 
@@ -1240,6 +1277,26 @@ data.forEach(function(p, index) {
         });
 
         marker.bindPopup(popup);
+
+	marker.on("click", function () {
+    	    const resultBox = document.getElementById("result-" + index);
+
+            if (resultBox) {
+                resultBox.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+                resultBox.style.outline = "3px solid #f97316";
+                resultBox.style.background = "#fff7ed";
+
+                setTimeout(function () {
+                    resultBox.style.outline = "";
+                    resultBox.style.background = "";
+                }, 2500);
+            }
+	});
+
         markers.addLayer(marker);
         markerRefs[index] = marker;
     }
@@ -1252,9 +1309,6 @@ data.forEach(function(p, index) {
 
 map.addLayer(markers);
 
-setTimeout(function() {
-    map.invalidateSize();
-}, 300);
 
 function focusMarker(index) {
     const marker = markerRefs[index];
@@ -1546,7 +1600,7 @@ function submitAddCommerceFromLink() {
     });
 }
 
-function deleteCommerce(id) {
+function deleteCommerce(id, button) {
     if (!confirm("Voulez-vous vraiment supprimer ce commerce ?")) {
         return;
     }
@@ -1563,8 +1617,10 @@ function deleteCommerce(id) {
     })
     .then(function(result) {
         if (result.status === "ok") {
-            alert("Commerce supprimé avec succès.");
-            window.location.reload();
+            const commerceCard = button.closest(".commerce-card");
+            if (commerceCard) {
+                commerceCard.remove();
+            }
         } else {
             alert(result.message || "Erreur lors de la suppression.");
         }
@@ -1718,6 +1774,45 @@ function editCommerceAddress(id, currentAdresse) {
     });
 }
 
+<script>
+
+function tonAutreScript() {
+   ...
+}
+
+function hideCommerce(commerceId, button) {
+    fetch(`/hide_result/${commerceId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const commerceCard = button.closest(".commerce-card");
+                if (commerceCard) {
+                    commerceCard.remove();
+                }
+            }
+        })
+        .catch(error => {
+            console.error("Erreur:", error);
+        });
+}
+
+function unhideCommerce(commerceId, button) {
+    fetch(`/unhide_result/${commerceId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const commerceCard = button.closest(".commerce-card");
+                if (commerceCard) {
+                    commerceCard.remove();
+                }
+            }
+        })
+        .catch(error => {
+            console.error("Erreur:", error);
+        });
+}
+
 </script>
 </body>
 </html>
+

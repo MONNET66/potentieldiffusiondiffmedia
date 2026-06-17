@@ -21,13 +21,11 @@ session_http = requests.Session()
 app = Flask(__name__)
 app.secret_key = "CHANGE_MOI_PAR_UNE_CLE_SECRETE_LONGUE_ET_UNIQUE"
 
-from pathlib import Path
-
 BASE_DIR = Path(__file__).resolve().parent
-
 DB_FILE = "/data/commerces_render.db"
 AUTH_DB_FILE = BASE_DIR / "auth.db"
 CAMPAIGN_DB_FILE = BASE_DIR / "campaigns.db"
+LAST_RESULTS = []
 
 DEFAULT_LAT = 46.6
 DEFAULT_LON = 2.4
@@ -77,26 +75,26 @@ SUPPORT_LABELS = {
 SUPPORTS_BY_TYPE = {
     "all": ["all"],
     "pharmacy": ["all", "sac_pharmacie"],
-    "bakery": ["all", "sac_pain", "sac_galette"],
-    "bar": ["all", "sous_bock"],
-    "restaurant": ["all", "set_table", "sous_bock"],
-    "fast_food": ["all", "set_table", "sous_bock"],
-    "camping": ["all", "flyer", "affiche"],
-    "tourism_office": ["all", "flyer"],
-    "hotel": ["all", "flyer"],
+    "bakery": ["all", "sac_pain", "sac_galette", "affiche"],
+    "bar": ["all", "sous_bock", "affiche"],
+    "restaurant": ["all", "set_table", "sous_bock", "affiche"],
+    "fast_food": ["all", "set_table", "sous_bock", "affiche"],
+    "camping": ["all", "flyer", "affiche", "sac_pain"],
+    "tourism_office": ["all", "flyer", "affiche"],
+    "hotel": ["all", "flyer", "affiche"],
     "tobacco": ["all", "flyer", "affiche"],
     "hair_salon": ["all", "flyer", "affiche"],
 }
 
 SUPPORTS_DISPLAY_BY_TYPE = {
     "pharmacy": ["Sacs pharmacie"],
-    "bakery": ["Sacs à pain", "Sacs galettes"],
-    "bar": ["Sous-bocks"],
-    "restaurant": ["Sets de table", "Sous-bocks"],
-    "fast_food": ["Sets de table", "Sous-bocks"],
-    "camping": ["Flyers", "Affiches"],
-    "tourism_office": ["Flyers"],
-    "hotel": ["Flyers"],
+    "bakery": ["Sacs à pain", "Sacs galettes", "Affiches"],
+    "bar": ["Sous-bocks", "Affiches"],
+    "restaurant": ["Sets de table", "Sous-bocks", "Affiches"],
+    "fast_food": ["Sets de table", "Sous-bocks", "Affiches"],
+    "camping": ["Flyers", "Affiches", "Sacs à pain"],
+    "tourism_office": ["Flyers", "Affiches"],
+    "hotel": ["Flyers", "Affiches"],
     "tobacco": ["Flyers", "Affiches"],
     "hair_salon": ["Flyers", "Affiches"],
 }
@@ -172,23 +170,19 @@ def init_campaign_items_table():
             updated_at TEXT
         )
     """)
-    try:
-        cur.execute("ALTER TABLE campaign_items ADD COLUMN updated_at TEXT")
-    except Exception:
-        pass
+    for column_sql in [
+        "ALTER TABLE campaign_items ADD COLUMN updated_at TEXT",
+        "ALTER TABLE campaign_items ADD COLUMN accepte TEXT DEFAULT ''",
+        "ALTER TABLE campaign_items ADD COLUMN commentaire TEXT DEFAULT ''",
+        "ALTER TABLE campaign_items ADD COLUMN quantite INTEGER DEFAULT 0"
+    ]:
+        try:
+            cur.execute(column_sql)
+        except Exception:
+            pass
+
     conn.commit()
     conn.close()
-
-for column_sql in [
-    "ALTER TABLE campaign_items ADD COLUMN accepte TEXT DEFAULT ''",
-    "ALTER TABLE campaign_items ADD COLUMN commentaire TEXT DEFAULT ''",
-    "ALTER TABLE campaign_items ADD COLUMN quantite INTEGER DEFAULT 0"
-]:
-    try:
-        cur.execute(column_sql)
-    except Exception:
-        pass
-
 
 def init_campaigns_extra_columns():
     conn = get_campaign_connection()
@@ -469,7 +463,7 @@ def get_results_for_city(city_value, selected_types):
     cursor = conn.cursor()
 
     cursor.execute(f"""
-        SELECT id, nom, latitude, longitude, type, ville, code_postal, adresse, telephone,
+        SELECT rowid AS id, nom, latitude, longitude, type, ville, code_postal, adresse, telephone,
        accepte_support, commentaire_support, quantite_support
         FROM commerces
         WHERE is_active = 1
@@ -513,13 +507,13 @@ def get_results_for_city(city_value, selected_types):
     return build_results_from_rows(filtered_rows)
 
 
-def get_results_for_department(departement_code, selected_types):
+def get_results_for_departement(departement_code, selected_types):
     type_filter = get_type_filter(selected_types)
     placeholders = ",".join("?" for _ in type_filter)
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(f"""
-        SELECT id, nom, latitude, longitude, type, ville, code_postal, adresse, telephone,
+        SELECT rowid AS id, nom, latitude, longitude, type, ville, code_postal, adresse, telephone,
        accepte_support, commentaire_support, quantite_support
         FROM commerces
         WHERE is_active = 1
@@ -535,7 +529,7 @@ def get_results_for_department(departement_code, selected_types):
     return build_results_from_rows(rows)
 
 
-def enrich_and_sort_department_results(data):
+def enrich_and_sort_departement_results(data):
     if not data:
         return data, None, None
     valid_points = []
@@ -575,7 +569,7 @@ def get_results_in_radius(city_value, radius_km, selected_types):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(f"""
-        SELECT id, nom, latitude, longitude, type, ville, code_postal, adresse, telephone,
+        SELECT rowid AS id, nom, latitude, longitude, type, ville, code_postal, adresse, telephone,
        accepte_support, commentaire_support, quantite_support
         FROM commerces
         WHERE is_active = 1
@@ -610,11 +604,23 @@ def get_results_in_radius(city_value, radius_km, selected_types):
         seen_keys.add(key)
         supports_list = get_supports_for_type(commerce_type)
         formatted.append({
-            "id": row["id"], "name": nom, "lat": lat, "lon": lon, "type": commerce_type,
-            "ville": row["ville"] or "", "code_postal": row["code_postal"] or "", "adresse": row["adresse"] or "",
-            "telephone": row["telephone"] or "", "source": "sqlite", "supports": supports_list,
-            "nb_supports": len(supports_list), "distance_km": round(dist, 2),
-        })
+            "id": row["id"],
+            "name": nom,
+            "lat": lat,
+            "lon": lon,
+            "type": commerce_type,
+            "ville": row["ville"] or "",
+            "code_postal": row["code_postal"] or "",
+            "adresse": row["adresse"] or "",
+            "telephone": row["telephone"] or "",
+            "accepte_support": row["accepte_support"] if "accepte_support" in row.keys() else "",
+            "commentaire_support": row["commentaire_support"] if "commentaire_support" in row.keys() else "",
+            "quantite_support": row["quantite_support"] if "quantite_support" in row.keys() else 0,
+            "source": "sqlite",
+            "supports": supports_list,
+            "nb_supports": len(supports_list),
+            "distance_km": round(dist, 2),
+    })
     formatted.sort(key=lambda x: x.get("distance_km", 999999))
     return formatted, center_lat, center_lon
 
@@ -687,7 +693,7 @@ def execute_search_criteria(criteria):
 
         match = re.search(r"^(.*?)\s*\((\d{5})\)\s*$", search_value)
         if match:
-            search_for_coords = match.group(2)
+            search_for_coords = search_value
             has_forced_cp = True
 
         found_lat, found_lon = get_coords_commune(search_for_coords)
@@ -695,6 +701,14 @@ def execute_search_criteria(criteria):
             lat, lon = found_lat, found_lon
 
         data = get_results_for_city(search_value, selected_types)
+
+        if data:
+            latitudes = [float(x["lat"]) for x in data if x.get("lat") is not None]
+            longitudes = [float(x["lon"]) for x in data if x.get("lon") is not None]
+
+            if latitudes and longitudes:
+                lat = sum(latitudes) / len(latitudes)
+                lon = sum(longitudes) / len(longitudes)
 
         if lat is not None and lon is not None:
             requested_cp = (
@@ -708,8 +722,8 @@ def execute_search_criteria(criteria):
             data = sorted(data, key=lambda x: x.get("distance_km", 999999))
 
     elif mode == "departement" and departement_value:
-        data = get_results_for_department(departement_value, selected_types)
-        data, dept_lat, dept_lon = enrich_and_sort_department_results(data)
+        data = get_results_for_departement(departement_value, selected_types)
+        data, dept_lat, dept_lon = enrich_and_sort_departement_results(data)
         if dept_lat is not None and dept_lon is not None:
             lat = dept_lat
             lon = dept_lon
@@ -744,21 +758,21 @@ def compute_potentiel_and_supports(data):
 
     for t, count in counts.items():
         if t == "restaurant":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Sets de table", p * 1000); add_support("Sous-bocks", p * 250)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Sets de table", p * 1000); add_support("Sous-bocks", p * 250); add_support("Affiches", p)
         elif t == "pharmacy":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Sacs pharmacie", p * 1000)
+            p = math.floor(count * 0.4); potentiel += p; add_support("Sacs pharmacie", p * 1000)
         elif t == "bar":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Sous-bocks", p * 250)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Sous-bocks", p * 250); add_support("Affiches", p)
         elif t == "bakery":
-            p = max(1, math.floor(count * 0.5)); potentiel += p; add_support("Sacs à pain", p * 1000); add_support("Sacs galettes", p * 1000)
+            p = max(1, math.floor(count * 0.5)); potentiel += p; add_support("Sacs à pain", p * 1000); add_support("Sacs galettes", p * 1000); add_support("Affiches", p)
         elif t == "fast_food":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Sets de table", p * 1000); add_support("Sous-bocks", p * 250)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Sets de table", p * 1000); add_support("Sous-bocks", p * 250); add_support("Affiches", p)
         elif t == "camping":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", p)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", p); add_support("Sacs à pain", p * 1000);
         elif t == "tourism_office":
-            p = math.floor(count * 0.5); potentiel += p; add_support("Flyers", p * 50)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", p)
         elif t == "hotel":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", p)
         elif t == "tobacco":
             p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", p)
         elif t == "hair_salon":
@@ -779,6 +793,9 @@ def init_commerces_extra_columns():
     cur = conn.cursor()
 
     for column_sql in [
+        "ALTER TABLE commerces ADD COLUMN departement TEXT",
+        "ALTER TABLE commerces ADD COLUMN is_active INTEGER DEFAULT 1",
+        "ALTER TABLE commerces ADD COLUMN exclude_from_results INTEGER DEFAULT 0",
         "ALTER TABLE commerces ADD COLUMN accepte_support TEXT DEFAULT ''",
         "ALTER TABLE commerces ADD COLUMN commentaire_support TEXT DEFAULT ''",
         "ALTER TABLE commerces ADD COLUMN quantite_support INTEGER DEFAULT 0"
@@ -787,6 +804,17 @@ def init_commerces_extra_columns():
             cur.execute(column_sql)
         except Exception:
             pass
+
+    try:
+        cur.execute("""
+            UPDATE commerces
+            SET departement = substr(code_postal, 1, 2)
+            WHERE code_postal IS NOT NULL
+              AND code_postal != ''
+              AND (departement IS NULL OR departement = '')
+        """)
+    except Exception:
+        pass
 
     conn.commit()
     conn.close()
@@ -829,9 +857,9 @@ def ensure_databases_exist():
 
     conn.close()
 
-    conn = sqlite3.connect(CAMPAIGN_DB_FILE)
-    cur = conn.cursor()
-    cur.execute("""
+conn = sqlite3.connect(CAMPAIGN_DB_FILE)
+cur = conn.cursor()
+cur.execute("""
     CREATE TABLE IF NOT EXISTS campaigns (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -841,8 +869,8 @@ def ensure_databases_exist():
         token TEXT UNIQUE
     )
     """)
-    conn.commit()
-    conn.close()
+conn.commit()
+conn.close()
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -959,6 +987,9 @@ def index():
 
     if request.method == "POST":
         action = request.form.get("action", "search")
+        if action == "search":
+            session["hidden_result_ids"] = []
+            session.modified = True
         selected_types = get_selected_types_from_form(request.form)
         selected_type = selected_types[0] if len(selected_types) == 1 and selected_types[0] != "all" else "all"
         selected_support = request.form.get("support", "all")
@@ -1007,9 +1038,20 @@ def index():
                 rayon_value = last_search_criteria.get("rayon_value", "")
                 data, lat, lon, show_circle = execute_search_criteria(last_search_criteria)
 
-    LAST_RESULTS = data
-    nb_commerces = len(data)
-    potentiel, totals_by_label = compute_potentiel_and_supports(data)
+
+    hidden_ids = session.get("hidden_result_ids", [])
+
+    for item in data:
+        item["is_hidden"] = str(item.get("id")) in hidden_ids
+
+    visible_data = [
+        item for item in data
+        if not item.get("is_hidden")
+    ]
+
+    LAST_RESULTS = visible_data
+    nb_commerces = len(visible_data)
+    potentiel, totals_by_label = compute_potentiel_and_supports(visible_data)
     if selected_support == "all":
         supports = sum(totals_by_label.values())
         stats = sorted(totals_by_label.items(), key=lambda x: x[0])
@@ -1028,6 +1070,35 @@ def index():
         departements=DEPARTEMENTS, current_user=session.get("username", ""), temp_searches=temp_searches,
     )
 
+
+@app.route("/hide_result/<int:commerce_id>")
+@login_required
+def hide_result(commerce_id):
+    hidden_ids = session.get("hidden_result_ids", [])
+    commerce_id_str = str(commerce_id)
+
+    if commerce_id_str not in hidden_ids:
+        hidden_ids.append(commerce_id_str)
+
+    session["hidden_result_ids"] = hidden_ids
+    session.modified = True
+
+    return {"success": True}
+
+
+@app.route("/unhide_result/<int:commerce_id>")
+@login_required
+def unhide_result(commerce_id):
+    hidden_ids = session.get("hidden_result_ids", [])
+    commerce_id_str = str(commerce_id)
+
+    if commerce_id_str in hidden_ids:
+        hidden_ids.remove(commerce_id_str)
+
+    session["hidden_result_ids"] = hidden_ids
+    session.modified = True
+
+    return {"success": True}
 
 @app.route("/create_campaign", methods=["GET", "POST"])
 @login_required
@@ -1264,28 +1335,45 @@ def export_campaign(token):
 @app.route("/campaigns")
 @login_required
 def list_campaigns():
-    if session.get("role") != "admin":
-        return "Accès interdit", 403
     conn = get_campaign_connection()
     cur = conn.cursor()
-    campaigns_rows = cur.execute("""
-        SELECT
-            campaigns.*,
-            MAX(campaign_items.updated_at) AS last_update,
-            SUM(CASE WHEN campaign_items.priority = 1 THEN 1 ELSE 0 END) AS count_p1,
-            SUM(CASE WHEN campaign_items.priority = 2 THEN 1 ELSE 0 END) AS count_p2,
-            SUM(CASE WHEN campaign_items.priority = 3 THEN 1 ELSE 0 END) AS count_p3
-        FROM campaigns
-        LEFT JOIN campaign_items ON campaign_items.campaign_id = campaigns.id
-        GROUP BY campaigns.id
-        ORDER BY campaigns.created_at DESC
-    """).fetchall()
+
+    if session.get("role") == "admin":
+        campaigns_rows = cur.execute("""
+            SELECT
+                campaigns.*,
+                MAX(campaign_items.updated_at) AS last_update,
+                SUM(CASE WHEN campaign_items.priority = 1 THEN 1 ELSE 0 END) AS count_p1,
+                SUM(CASE WHEN campaign_items.priority = 2 THEN 1 ELSE 0 END) AS count_p2,
+                SUM(CASE WHEN campaign_items.priority = 3 THEN 1 ELSE 0 END) AS count_p3
+            FROM campaigns
+            LEFT JOIN campaign_items ON campaign_items.campaign_id = campaigns.id
+            GROUP BY campaigns.id
+            ORDER BY campaigns.created_at DESC
+        """).fetchall()
+    else:
+        campaigns_rows = cur.execute("""
+            SELECT
+                campaigns.*,
+                MAX(campaign_items.updated_at) AS last_update,
+                SUM(CASE WHEN campaign_items.priority = 1 THEN 1 ELSE 0 END) AS count_p1,
+                SUM(CASE WHEN campaign_items.priority = 2 THEN 1 ELSE 0 END) AS count_p2,
+                SUM(CASE WHEN campaign_items.priority = 3 THEN 1 ELSE 0 END) AS count_p3
+            FROM campaigns
+            LEFT JOIN campaign_items ON campaign_items.campaign_id = campaigns.id
+            WHERE campaigns.created_by = ?
+            GROUP BY campaigns.id
+            ORDER BY campaigns.created_at DESC
+        """, (session.get("username"),)).fetchall()
+
     conn.close()
+
     campaigns = []
     for row in campaigns_rows:
         campaign_dict = dict(row)
         raw_zones = campaign_dict.get("search_zones")
         zones = []
+
         if raw_zones:
             try:
                 decoded = json.loads(raw_zones)
@@ -1293,8 +1381,10 @@ def list_campaigns():
                     zones = [str(item).strip() for item in decoded if str(item).strip()]
             except Exception:
                 zones = []
+
         campaign_dict["search_zones_list"] = zones
         campaigns.append(campaign_dict)
+
     return render_template("campaigns.html", campaigns=campaigns)
 
 
@@ -1338,7 +1428,7 @@ def clear_temp_searches():
 @app.route("/add_commerce", methods=["POST"])
 @login_required
 def add_commerce():
-    if session.get("username") != "maryl":
+    if session.get("role") != "admin":
         return jsonify({"status": "error", "message": "Accès refusé"})
 
     data = request.get_json() or {}
@@ -1379,7 +1469,7 @@ def add_commerce():
         conn = get_db_connection()
         cur = conn.cursor()
         existing = cur.execute("""
-            SELECT id, exclude_from_results
+            SELECT rowid AS rid, exclude_from_results
             FROM commerces
             WHERE LOWER(TRIM(nom)) = LOWER(TRIM(?))
               AND COALESCE(code_postal, '') = ?
@@ -1393,8 +1483,8 @@ def add_commerce():
                     SET ville = ?, code_postal = ?, departement = ?, adresse = ?, telephone = ?,
                         latitude = COALESCE(?, latitude), longitude = COALESCE(?, longitude),
                         is_active = 1, exclude_from_results = 0
-                    WHERE id = ?
-                """, (ville, code_postal, departement, adresse, telephone, lat_value, lon_value, existing["id"]))
+                    WHERE rowid = ?
+                """, (ville, code_postal, departement, adresse, telephone, lat_value, lon_value, existing["rid"]))
                 conn.commit()
                 conn.close()
                 return jsonify({"status": "ok", "message": "Commerce réactivé"})
@@ -1416,7 +1506,7 @@ def add_commerce():
 @app.route("/delete_commerce", methods=["POST"])
 @login_required
 def delete_commerce():
-    if session.get("username") != "maryl":
+    if session.get("role") != "admin":
         return jsonify({"status": "error", "message": "Accès refusé"})
     data = request.get_json() or {}
     commerce_id = data.get("id")
@@ -1432,11 +1522,7 @@ def delete_commerce():
         cur.execute("""
             UPDATE commerces
             SET exclude_from_results = 1
-            WHERE LOWER(TRIM(nom)) = (
-                SELECT LOWER(TRIM(nom))
-                FROM commerces
-                WHERE id = ?
-            )
+            WHERE rowid = ?
         """, (commerce_id,))
 
         conn.commit()
@@ -1447,11 +1533,22 @@ def delete_commerce():
 
 
 def extract_google_maps_data(url):
+    """
+    Lit un lien Google Maps et récupère le nom + les coordonnées du vrai lieu.
+    Important : on privilégie les coordonnées !3d / !4d du lieu, car les coordonnées
+    après @ correspondent parfois au centre de la carte et non au commerce.
+    """
     try:
-        r = requests.get(url, allow_redirects=True, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+        r = requests.get(
+            url,
+            allow_redirects=True,
+            timeout=10,
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
         final_url = r.url
+
         name = ""
-        m_name = re.search(r"/place/([^/@]+)", final_url)
+        m_name = re.search(r"/place/([^/@?]+)", final_url)
         if m_name:
             raw_name = m_name.group(1)
             name = unquote(raw_name)
@@ -1463,20 +1560,58 @@ def extract_google_maps_data(url):
             name = name.replace(" D'", " d'").replace(" L'", " l'")
             if name:
                 name = name[0].upper() + name[1:]
-        m_coords = re.search(r"@([-0-9.]+),([-0-9.]+)", final_url)
-        if not m_coords:
+
+        lat = None
+        lon = None
+
+        # Coordonnées du lieu Google Maps : priorité absolue
+        m_place = re.search(r"!3d([-0-9.]+)!4d([-0-9.]+)", final_url)
+        if m_place:
+            lat = float(m_place.group(1))
+            lon = float(m_place.group(2))
+
+        # Fallback : coordonnées dans l'URL après @
+        if lat is None or lon is None:
+            m_at = re.search(r"@([-0-9.]+),([-0-9.]+)", final_url)
+            if m_at:
+                lat = float(m_at.group(1))
+                lon = float(m_at.group(2))
+
+        # Fallback : q=lat,lon
+        if lat is None or lon is None:
+            m_q = re.search(r"[?&]q=([-0-9.]+),([-0-9.]+)", final_url)
+            if m_q:
+                lat = float(m_q.group(1))
+                lon = float(m_q.group(2))
+
+        if lat is None or lon is None:
             return None, None, None, "", final_url
-        lat = float(m_coords.group(1))
-        lon = float(m_coords.group(2))
+
         return name, lat, lon, "", final_url
+
     except Exception:
         return None, None, None, "", None
+
+
+def coords_too_far_from_commune(ville, code_postal, lat, lon, max_km=35):
+    """
+    Sécurité pour éviter d'enregistrer un commerce très loin de la ville saisie.
+    Si Google donne le centre de la carte au lieu du commerce, on le détecte ici.
+    """
+    try:
+        search_value = (code_postal or ville or "").strip()
+        center_lat, center_lon = get_coords_commune(search_value)
+        if center_lat is None or center_lon is None:
+            return False
+        return distance_km(center_lat, center_lon, lat, lon) > max_km
+    except Exception:
+        return False
 
 
 @app.route("/add_commerce_from_link", methods=["POST"])
 @login_required
 def add_commerce_from_link():
-    if session.get("username") != "maryl":
+    if session.get("role") != "admin":
         return jsonify({"status": "error", "message": "Accès refusé"})
 
     data = request.get_json() or {}
@@ -1502,11 +1637,18 @@ def add_commerce_from_link():
     if not departement:
         departement = code_postal[:2]
 
+    # Sécurité : si les coordonnées Google sont trop éloignées de la ville saisie,
+    # on replace le commerce au centre de la commune au lieu de l'envoyer loin sur la carte.
+    if coords_too_far_from_commune(ville, code_postal, lat, lon):
+        safe_lat, safe_lon = get_coords_commune(code_postal or ville)
+        if safe_lat is not None and safe_lon is not None:
+            lat, lon = safe_lat, safe_lon
+
     try:
         conn = get_db_connection()
         cur = conn.cursor()
         existing = cur.execute("""
-            SELECT id, exclude_from_results
+            SELECT rowid AS rid, exclude_from_results
             FROM commerces
             WHERE LOWER(TRIM(nom)) = LOWER(TRIM(?))
               AND COALESCE(code_postal, '') = ?
@@ -1519,8 +1661,8 @@ def add_commerce_from_link():
                     UPDATE commerces
                     SET ville = ?, code_postal = ?, departement = ?, adresse = ?, telephone = ?,
                         latitude = ?, longitude = ?, is_active = 1, exclude_from_results = 0
-                    WHERE id = ?
-                """, (ville, code_postal, departement, adresse, telephone, lat, lon, existing["id"]))
+                    WHERE rowid = ?
+                """, (ville, code_postal, departement, adresse, telephone, lat, lon, existing["rid"]))
                 conn.commit()
                 conn.close()
                 return jsonify({"status": "ok", "message": "Commerce réactivé", "nom": nom, "lat": lat, "lon": lon})
@@ -1542,7 +1684,7 @@ def add_commerce_from_link():
 @app.route("/preview_google_maps_link", methods=["POST"])
 @login_required
 def preview_google_maps_link():
-    if session.get("username") != "maryl":
+    if session.get("role") != "admin":
         return jsonify({"status": "error", "message": "Accès refusé"})
     data = request.get_json() or {}
     lien = (data.get("lien") or "").strip()
@@ -1557,19 +1699,19 @@ def preview_google_maps_link():
 @app.route("/fix_google_maps_addresses")
 @login_required
 def fix_google_maps_addresses():
-    if session.get("username") != "maryl":
+    if session.get("role") != "admin":
         return "Accès refusé"
     conn = get_db_connection()
     cur = conn.cursor()
     rows = cur.execute("""
-        SELECT id, latitude, longitude
+        SELECT rowid AS id, latitude, longitude
         FROM commerces
         WHERE is_active = 1
           AND COALESCE(exclude_from_results, 0) = 0
           AND latitude IS NOT NULL
           AND longitude IS NOT NULL
           AND (adresse IS NULL OR adresse = '')
-        ORDER BY id DESC
+        ORDER BY rowid DESC
         LIMIT 300
     """).fetchall()
     updated = 0
@@ -1585,7 +1727,7 @@ def fix_google_maps_addresses():
                 props = features[0].get("properties", {})
                 adresse = (props.get("label") or "").strip()
                 if adresse:
-                    cur.execute("UPDATE commerces SET adresse = ? WHERE id = ?", (adresse, row["id"]))
+                    cur.execute("UPDATE commerces SET adresse = ? WHERE rowid = ?", (adresse, row["id"]))
                     updated += 1
         except Exception:
             continue
@@ -1597,7 +1739,7 @@ def fix_google_maps_addresses():
 @app.route("/update_commerce_address", methods=["POST"])
 @login_required
 def update_commerce_address():
-    if session.get("username") != "maryl":
+    if session.get("role") != "admin":
         return jsonify({"status": "error", "message": "Accès refusé"})
     data = request.get_json() or {}
     commerce_id = data.get("id")
@@ -1613,7 +1755,7 @@ def update_commerce_address():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("UPDATE commerces SET adresse = ? WHERE id = ?", (nouvelle_adresse, commerce_id))
+        cur.execute("UPDATE commerces SET adresse = ? WHERE rowid = ?", (nouvelle_adresse, commerce_id))
         conn.commit()
         conn.close()
         return jsonify({"status": "ok"})
@@ -1624,11 +1766,11 @@ def update_commerce_address():
 @app.route("/edit_commerce/<int:commerce_id>", methods=["GET", "POST"])
 @login_required
 def edit_commerce(commerce_id):
-    if session.get("username") != "maryl":
+    if session.get("role") != "admin":
         return "Accès refusé", 403
     conn = get_db_connection()
     cur = conn.cursor()
-    commerce = cur.execute("SELECT id, nom, adresse, telephone FROM commerces WHERE id = ?", (commerce_id,)).fetchone()
+    commerce = cur.execute("SELECT rowid AS id, nom, adresse, telephone FROM commerces WHERE rowid = ?", (commerce_id,)).fetchone()
     if not commerce:
         conn.close()
         return "Commerce introuvable", 404
@@ -1639,7 +1781,7 @@ def edit_commerce(commerce_id):
         if not nouveau_nom:
             conn.close()
             return "<h3>Nom manquant</h3><a href='javascript:history.back()'>Retour</a>"
-        cur.execute("UPDATE commerces SET nom = ?, adresse = ?, telephone = ? WHERE id = ?", (nouveau_nom, nouvelle_adresse, nouveau_telephone, commerce_id))
+        cur.execute("UPDATE commerces SET nom = ?, adresse = ?, telephone = ? WHERE rowid = ?", (nouveau_nom, nouvelle_adresse, nouveau_telephone, commerce_id))
         conn.commit()
         conn.close()
         return redirect(url_for("index"))
