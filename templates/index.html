@@ -1779,7 +1779,7 @@ function hideCommerce(commerceId, button) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const commerceCard = button.closest(".commerce-card");
+                const commerceCard = button.closest(".commerce-card, .result-card, .result-item, tr, li");
                 if (commerceCard) {
                     commerceCard.remove();
                 }
@@ -1795,7 +1795,7 @@ function unhideCommerce(commerceId, button) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const commerceCard = button.closest(".commerce-card");
+                const commerceCard = button.closest(".commerce-card, .result-card, .result-item, tr, li");
                 if (commerceCard) {
                     commerceCard.remove();
                 }
