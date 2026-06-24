@@ -1,19 +1,351 @@
 <!DOCTYPE html>
-<html lang="fr">
-<body>
-<h1>Campagnes</h1>
-<p><a href="/">Retour</a></p>
-<p><a href="/create_campaign">Créer une campagne</a></p>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Mes campagnes</title>
 
-<ul>
-{% for c in campaigns %}
-<li>
-<a href="/campaign/{{ c['token'] }}">
-{{ c['name'] if c['name'] else 'Campagne sans nom' }}
-</a>
-</li>
-{% endfor %}
-</ul>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eceff3;
+            margin: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            background: #f4f4f4;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header img {
+            height: 54px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .top-btn {
+            background: #f97316;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .top-btn:hover {
+            background: #ea580c;
+        }
+
+        .page {
+            padding: 24px;
+        }
+
+        .box {
+            background: white;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .campaign {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 14px;
+            background: #f9fafb;
+        }
+
+        .campaign-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+        }
+
+        .campaign-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .campaign-name {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 12px;
+            word-break: break-word;
+        }
+
+        .campaign-meta {
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        .campaign-token {
+            font-size: 13px;
+            color: #666;
+            margin-top: 10px;
+            word-break: break-all;
+        }
+
+        .zones-block {
+            margin-top: 14px;
+        }
+
+        .zones-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .zones-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .zone-chip {
+            display: inline-flex;
+            align-items: center;
+            background: #f97316;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+        }
+
+        .priority-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-p1 {
+            background: #3b82f6;
+        }
+
+        .badge-p2 {
+            background: #f59e0b;
+        }
+
+        .badge-p3 {
+            background: #ef4444;
+        }
+
+        .campaign-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-shrink: 0;
+            min-width: 220px;
+        }
+
+        .btn {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            text-align: center;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .btn-open {
+            background: orange;
+            color: white;
+        }
+
+        .btn-copy {
+            background: #4b5563;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-open:hover,
+        .btn-copy:hover,
+        .btn-delete:hover {
+            opacity: 0.92;
+        }
+
+        .copy-msg {
+            font-size: 13px;
+            color: green;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .empty {
+            color: #666;
+            font-style: italic;
+            padding: 16px 0;
+        }
+
+        .delete-form {
+            margin: 0;
+        }
+
+        @media (max-width: 900px) {
+            .campaign-row {
+                flex-direction: column;
+            }
+
+            .campaign-actions {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-left">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        <h2>Mes campagnes</h2>
+    </div>
+
+    <div class="header-actions">
+        <a href="/" class="top-btn">Accueil</a>
+        <a href="/logout" class="top-btn">Déconnexion</a>
+    </div>
+</div>
+
+<div class="page">
+    <div class="box">
+        <h1>Mes campagnes</h1>
+        <div class="subtitle">Liste des campagnes créées</div>
+
+        {% if campaigns %}
+            {% for c in campaigns %}
+            <div class="campaign">
+                <div class="campaign-row">
+
+                    <div class="campaign-main">
+                        <div class="campaign-name">{{ c["name"] }}</div>
+
+                        <div class="campaign-meta">👤 Créée par : {{ c["created_by"] }}</div>
+                        <div class="campaign-meta">📅 Date : {{ c["created_at"] }}</div>
+
+                        {% if c["last_update"] %}
+                        <div class="campaign-meta">
+                            ⏱️ Dernière modification client : {{ c["last_update"] }}
+                        </div>
+                        {% endif %}
+
+                        {% if c["search_zones_list"] %}
+                        <div class="zones-block">
+                            <div class="zones-title">Zones utilisées :</div>
+                            <div class="zones-list">
+                                {% for zone in c["search_zones_list"] %}
+                                    <span class="zone-chip">{{ zone }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="campaign-token">
+                            🔑 Token : {{ c["token"] }}
+                        </div>
+
+                        <div class="priority-badges">
+                            <span class="badge badge-p1">P1 : {{ c["count_p1"] or 0 }}</span>
+                            <span class="badge badge-p2">P2 : {{ c["count_p2"] or 0 }}</span>
+                            <span class="badge badge-p3">P3 : {{ c["count_p3"] or 0 }}</span>
+                        </div>
+
+                        <div class="copy-msg" id="copy-msg-{{ loop.index }}">
+                            Lien copié.
+                        </div>
+                    </div>
+
+                    <div class="campaign-actions">
+                        <a href="/campaign/{{ c['token'] }}" class="btn btn-open">
+                            Ouvrir la campagne
+                        </a>
+
+                        <button
+                            type="button"
+                            class="btn btn-copy"
+                            onclick="copyCampaignLink('{{ request.host_url.rstrip('/') }}/campaign/{{ c['token'] }}', 'copy-msg-{{ loop.index }}')">
+                            Copier le lien client
+                        </button>
+
+                        <form method="POST" action="/campaign/{{ c['token'] }}/delete" onsubmit="return confirmDelete()" class="delete-form">
+                            <button type="submit" class="btn btn-delete">
+                                Supprimer
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">Aucune campagne enregistrée.</div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+function copyCampaignLink(link, messageId) {
+    navigator.clipboard.writeText(link);
+    document.getElementById(messageId).style.display = "block";
+}
+
+function confirmDelete() {
+    return confirm("Supprimer cette campagne ?");
+}
+</script>
 
 </body>
 </html>
