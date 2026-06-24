@@ -1601,7 +1601,7 @@ function submitAddCommerceFromLink() {
 }
 
 function deleteCommerce(id, button) {
-    if (!confirm("Voulez-vous vraiment supprimer ce commerce ?")) {
+    if (!confirm("Voulez-vous supprimer ce commerce ?")) {
         return;
     }
 
@@ -1617,10 +1617,7 @@ function deleteCommerce(id, button) {
     })
     .then(function(result) {
         if (result.status === "ok") {
-            const commerceCard = button.closest(".commerce-card");
-            if (commerceCard) {
-                commerceCard.remove();
-            }
+            window.location.reload();
         } else {
             alert(result.message || "Erreur lors de la suppression.");
         }
