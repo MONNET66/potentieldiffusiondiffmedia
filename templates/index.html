@@ -1774,8 +1774,6 @@ function editCommerceAddress(id, currentAdresse) {
     });
 }
 
-<script>
-
 function hideCommerce(commerceId, button) {
     fetch(`/hide_result/${commerceId}`)
         .then(response => response.json())
