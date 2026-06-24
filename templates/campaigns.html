@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<body>
+<h1>Campagnes</h1>
+<p><a href="/">Retour</a></p>
+<p><a href="/create_campaign">Créer une campagne</a></p>
+
+<ul>
+{% for c in campaigns %}
+<li>
+<a href="/campaign/{{ c['token'] }}">
+{{ c['name'] if c['name'] else 'Campagne sans nom' }}
+</a>
+</li>
+{% endfor %}
+</ul>
+
+</body>
+</html>
