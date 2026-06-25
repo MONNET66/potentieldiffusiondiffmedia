@@ -758,25 +758,25 @@ def compute_potentiel_and_supports(data):
 
     for t, count in counts.items():
         if t == "restaurant":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Sets de table", p * 1000); add_support("Sous-bocks", p * 250); add_support("Affiches", p)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Sets de table", p * 1000); add_support("Sous-bocks", p * 250); add_support("Affiches", math.floor(count * 0.2))
         elif t == "pharmacy":
             p = math.floor(count * 0.4); potentiel += p; add_support("Sacs pharmacie", p * 1000)
         elif t == "bar":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Sous-bocks", p * 250); add_support("Affiches", p)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Sous-bocks", p * 250); add_support("Affiches", math.floor(count * 0.2))
         elif t == "bakery":
-            p = max(1, math.floor(count * 0.5)); potentiel += p; add_support("Sacs à pain", p * 1000); add_support("Sacs galettes", p * 1000); add_support("Affiches", p)
+            p = max(1, math.floor(count * 0.5)); potentiel += p; add_support("Sacs à pain", p * 1000); add_support("Sacs galettes", p * 1000); add_support("Affiches", math.floor(count * 0.2))
         elif t == "fast_food":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Sets de table", p * 1000); add_support("Sous-bocks", p * 250); add_support("Affiches", p)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Sets de table", p * 1000); add_support("Sous-bocks", p * 250); add_support("Affiches", math.floor(count * 0.2))
         elif t == "camping":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", p); add_support("Sacs à pain", p * 1000);
+            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", math.floor(count * 0.2)); add_support("Sacs à pain", p * 1000);
         elif t == "tourism_office":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", p)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", math.floor(count * 0.2))
         elif t == "hotel":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", p)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", math.floor(count * 0.2))
         elif t == "tobacco":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", p)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", math.floor(count * 0.2))
         elif t == "hair_salon":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", p)
+            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", math.floor(count * 0.2))
     return potentiel, totals_by_label
 
 
