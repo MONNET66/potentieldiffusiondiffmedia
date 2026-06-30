@@ -1083,7 +1083,7 @@ def hide_result(commerce_id):
     session["hidden_result_ids"] = hidden_ids
     session.modified = True
 
-    return {"success": True}
+    return redirect(request.referrer or url_for("index"))
 
 
 @app.route("/unhide_result/<int:commerce_id>")
@@ -1098,7 +1098,7 @@ def unhide_result(commerce_id):
     session["hidden_result_ids"] = hidden_ids
     session.modified = True
 
-    return {"success": True}
+    return redirect(request.referrer or url_for("index"))
 
 @app.route("/create_campaign", methods=["GET", "POST"])
 @login_required
