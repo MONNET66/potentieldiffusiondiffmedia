@@ -820,23 +820,23 @@
                                         Modifier
                                     </a>
 
- 				    {% if item.is_hidden %}
-                                        <a
-    href="/unhide_result/{{ item['id'] }}"
-class="bouton afficher-carte"
-style="arrière-plan : #10b981 ; décoration de texte : aucune ;"
->
-    Démasquer
-</a>
-                                    {% else %}
-                                        <a
-    href="/hide_result/{{ item['id'] }}"
-class="bouton afficher-carte"
-style="arrière-plan : #f59e0b ; décoration de texte : aucune ;"
->
-    Masquer
-</a>
-                                    {% endif %}
+{% if item.is_hidden %}
+    <a
+        href="/unhide_result/{{ item['id'] }}"
+        class="view-map-btn"
+        style="background:#10b981; text-decoration:none;"
+    >
+        Démasquer
+    </a>
+{% else %}
+    <a
+        href="/hide_result/{{ item['id'] }}"
+        class="view-map-btn"
+        style="background:#f59e0b; text-decoration:none;"
+    >
+        Masquer
+    </a>
+{% endif %}
 				
 
                                     <button
