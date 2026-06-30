@@ -1768,7 +1768,9 @@ function editCommerceAddress(id, currentAdresse) {
 }
 
 function hideCommerce(commerceId, button) {
-    fetch(`/hide_result/${commerceId}`)
+    fetch(`/hide_result/${commerceId}`, {
+    credentials: "same-origin"
+})
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -1781,7 +1783,9 @@ function hideCommerce(commerceId, button) {
 }
 
 function unhideCommerce(commerceId, button) {
-    fetch(`/unhide_result/${commerceId}`)
+    fetch(`/unhide_result/${commerceId}`, {
+    credentials: "same-origin"
+})
         .then(response => response.json())
         .then(data => {
             if (data.success) {
