@@ -1039,7 +1039,7 @@ def index():
                 data, lat, lon, show_circle = execute_search_criteria(last_search_criteria)
 
 
-    hidden_ids = session.get(hidden_session_key(), [])
+    hidden_ids = session.get("hidden_result_ids", [])
 
     for item in data:
         item["is_hidden"] = str(item.get("id")) in hidden_ids
