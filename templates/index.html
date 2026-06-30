@@ -822,23 +822,20 @@
 
  				    {% if item.is_hidden %}
                                         <a
-                                            href="#"
-                                            class="view-map-btn"
-                                            style="background:#10b981; text-decoration:none;"
-                                            onclick="unhideCommerce({{ item['id'] }}, this); return false;"
-
-                                        >
-                                            Démasquer
-                                        </a>
+    href="/unhide_result/{{ item['id'] }}"
+    class="view-map-btn"
+    style="background:#10b981; text-decoration:none;"
+>
+    Démasquer
+</a>
                                     {% else %}
                                         <a
-                                             href="#"
-                                             class="view-map-btn"
-                                             style="background:#f59e0b; text-decoration:none;"
-                                             onclick="hideCommerce({{ item['id'] }}, this); return false;"
-                                        >
-                                            Masquer
-                                        </a>
+    href="/hide_result/{{ item['id'] }}"
+    class="view-map-btn"
+    style="background:#f59e0b; text-decoration:none;"
+>
+    Masquer
+</a>
                                     {% endif %}
 				
 
