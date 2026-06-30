@@ -1047,7 +1047,17 @@ def index():
                 data, lat, lon, show_circle = execute_search_criteria(last_search_criteria)
 
 
-    hidden_ids = session.get("hidden_result_ids", [])
+    hidden_ids = []
+
+if session.get("user_id"):
+    conn_hidden = sqlite3.connect(AUTH_DB_FILE)
+    cur_hidden = conn_hidden.cursor()
+    cur_hidden.execute(
+        "SELECT commerce_id FROM user_hidden_commerces WHERE user_id = ?",
+        (session["user_id"],)
+    )
+    hidden_ids = [str(row[0]) for row in cur_hidden.fetchall()]
+    conn_hidden.close()
 
     for item in data:
         item["is_hidden"] = str(item.get("id")) in hidden_ids
