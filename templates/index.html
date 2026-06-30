@@ -1768,10 +1768,13 @@ function editCommerceAddress(id, currentAdresse) {
 }
 
 function hideCommerce(commerceId, button) {
-    fetch(`/hide_result/${commerceId}`, {
-    credentials: "same-origin"
-})
-        .then(response => response.json())
+    fetch(`/hide_result/${commerceId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Erreur serveur");
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 window.location.reload();
@@ -1783,10 +1786,13 @@ function hideCommerce(commerceId, button) {
 }
 
 function unhideCommerce(commerceId, button) {
-    fetch(`/unhide_result/${commerceId}`, {
-    credentials: "same-origin"
-})
-        .then(response => response.json())
+    fetch(`/unhide_result/${commerceId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Erreur serveur");
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 window.location.reload();
