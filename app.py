@@ -838,7 +838,14 @@ def ensure_databases_exist():
 
     conn = sqlite3.connect(AUTH_DB_FILE)
     cur = conn.cursor()
-
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS user_hidden_commerces (
+        user_id INTEGER NOT NULL,
+        commerce_id INTEGER NOT NULL,
+        PRIMARY KEY (user_id, commerce_id)
+    )
+""")
+conn.commit()
     admin_exists = cur.execute(
         "SELECT * FROM users WHERE username = ?",
         ("admin",)
