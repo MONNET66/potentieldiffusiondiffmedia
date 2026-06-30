@@ -1092,14 +1092,15 @@ if session.get("user_id"):
 @app.route("/hide_result/<int:commerce_id>")
 @login_required
 def hide_result(commerce_id):
-    hidden_ids = session.get("hidden_result_ids", [])
-    commerce_id_str = str(commerce_id)
-
-    if commerce_id_str not in hidden_ids:
-        hidden_ids.append(commerce_id_str)
-
-    session["hidden_result_ids"] = hidden_ids
-    session.modified = True
+    if session.get("user_id"):
+        conn_hidden = sqlite3.connect(AUTH_DB_FILE)
+        cur_hidden = conn_hidden.cursor()
+        cur_hidden.execute(
+            "INSERT OR IGNORE INTO user_hidden_commerces (user_id, commerce_id) VALUES (?, ?)",
+            (session["user_id"], commerce_id)
+        )
+        conn_hidden.commit()
+        conn_hidden.close()
 
     return redirect(request.referrer or url_for("index"))
 
@@ -1107,14 +1108,15 @@ def hide_result(commerce_id):
 @app.route("/unhide_result/<int:commerce_id>")
 @login_required
 def unhide_result(commerce_id):
-    hidden_ids = session.get("hidden_result_ids", [])
-    commerce_id_str = str(commerce_id)
-
-    if commerce_id_str in hidden_ids:
-        hidden_ids.remove(commerce_id_str)
-
-    session["hidden_result_ids"] = hidden_ids
-    session.modified = True
+    if session.get("user_id"):
+        conn_hidden = sqlite3.connect(AUTH_DB_FILE)
+        cur_hidden = conn_hidden.cursor()
+        cur_hidden.execute(
+            "DELETE FROM user_hidden_commerces WHERE user_id = ? AND commerce_id = ?",
+            (session["user_id"], commerce_id)
+        )
+        conn_hidden.commit()
+        conn_hidden.close()
 
     return redirect(request.referrer or url_for("index"))
 
