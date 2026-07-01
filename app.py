@@ -1057,8 +1057,14 @@ def index():
         hidden_ids = [str(row[0]) for row in cur_hidden.fetchall()]
         conn_hidden.close()
 
-    for item in data:
-        item["is_hidden"] = str(item.get("id")) in hidden_ids
+if camping_stars == "3_5":
+    data = [
+        item for item in data
+        if item.get("type") != "camping" or str(item.get("etoiles")) in ["3", "4", "5"]
+    ]
+
+for item in data:
+    item["is_hidden"] = str(item.get("id")) in hidden_ids
 
     visible_data = [
         item for item in data
