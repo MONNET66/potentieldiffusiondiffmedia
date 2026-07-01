@@ -660,8 +660,7 @@
                 </div>
             </div>
 			
-{% if 'camping' in selected_types %}
-<div class="search-cell">
+<div class="search-cell" id="campingStarsBox" style="display:none;">
     <select name="camping_stars" id="camping_stars">
         <option value="all" {% if camping_stars == "all" %}selected{% endif %}>
             Tous les campings
@@ -671,7 +670,7 @@
         </option>
     </select>
 </div>
-{% endif %}
+
             <div class="search-cell">
                 <select name="support" id="support">
                     {% for support_key in available_supports %}
@@ -1005,6 +1004,12 @@ function updateTypesButtonLabel() {
 
     if (checkedTypes.includes("all") || checkedTypes.length === 0) {
         button.textContent = "Tous les commerces";
+
+        const campingBox = document.getElementById("campingStarsBox");
+        if (campingBox) {
+            campingBox.style.display = "none";
+        }
+
         return;
     }
 
@@ -1012,6 +1017,18 @@ function updateTypesButtonLabel() {
         const label = document.querySelector('label[for="type_' + typeValue + '"]');
         return label ? label.textContent.trim() : typeValue;
     });
+
+    if (labels.length <= 2) {
+        button.textContent = labels.join(" + ");
+    } else {
+        button.textContent = labels.length + " types sélectionnés";
+    }
+
+    const campingBox = document.getElementById("campingStarsBox");
+    if (campingBox) {
+        campingBox.style.display = checkedTypes.includes("camping") ? "block" : "none";
+    }
+}
 
     if (labels.length <= 2) {
         button.textContent = labels.join(" + ");
