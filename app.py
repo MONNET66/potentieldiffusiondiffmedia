@@ -1000,6 +1000,7 @@ def index():
         selected_types = get_selected_types_from_form(request.form)
         selected_type = selected_types[0] if len(selected_types) == 1 and selected_types[0] != "all" else "all"
         selected_support = request.form.get("support", "all")
+        camping_stars = request.form.get("camping_stars", "all")
         search_value = (request.form.get("ville") or "").strip()
         mode = request.form.get("mode", "ville")
         departement_value = (request.form.get("departement") or "").strip()
@@ -1007,6 +1008,7 @@ def index():
         current_criteria = {
             "selected_types": selected_types,
             "selected_support": selected_support,
+            "camping_stars": camping_stars,
             "search_value": search_value,
             "mode": mode,
             "departement_value": departement_value,
