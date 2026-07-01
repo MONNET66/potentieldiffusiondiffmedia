@@ -1787,7 +1787,7 @@ def edit_commerce(commerce_id):
         return "Accès refusé", 403
     conn = get_db_connection()
     cur = conn.cursor()
-    commerce = cur.execute("SELECT rowid AS id, nom, adresse, telephone FROM commerces WHERE rowid = ?", (commerce_id,)).fetchone()
+    commerce = cur.execute("SELECT id, nom, adresse, telephone FROM commerces WHERE id = ?", (commerce_id,)).fetchone()
     if not commerce:
         conn.close()
         return "Commerce introuvable", 404
@@ -1798,7 +1798,7 @@ def edit_commerce(commerce_id):
         if not nouveau_nom:
             conn.close()
             return "<h3>Nom manquant</h3><a href='javascript:history.back()'>Retour</a>"
-        cur.execute("UPDATE commerces SET nom = ?, adresse = ?, telephone = ? WHERE rowid = ?", (nouveau_nom, nouvelle_adresse, nouveau_telephone, commerce_id))
+        cur.execute("UPDATE commerces SET nom = ?, adresse = ?, telephone = ? WHERE id = ?", (nouveau_nom, nouvelle_adresse, nouveau_telephone, commerce_id))
         conn.commit()
         conn.close()
         return redirect(url_for("index"))
