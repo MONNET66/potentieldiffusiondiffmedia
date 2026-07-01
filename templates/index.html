@@ -662,12 +662,8 @@
 			
 <div class="search-cell" id="campingStarsBox" style="display:none;">
     <select name="camping_stars" id="camping_stars">
-        <option value="all" {% if camping_stars == "all" %}selected{% endif %}>
-            Tous les campings
-        </option>
-        <option value="3_5" {% if camping_stars == "3_5" %}selected{% endif %}>
-            Campings 3 à 5 étoiles
-        </option>
+        <option value="all">Tous les campings</option>
+        <option value="3_5">Campings 3 à 5 étoiles</option>
     </select>
 </div>
 
@@ -1001,15 +997,11 @@ function getCheckedTypes() {
 function updateTypesButtonLabel() {
     const checkedTypes = getCheckedTypes();
     const button = document.getElementById("typesButton");
+    const campingBox = document.getElementById("campingStarsBox");
 
     if (checkedTypes.includes("all") || checkedTypes.length === 0) {
         button.textContent = "Tous les commerces";
-
-        const campingBox = document.getElementById("campingStarsBox");
-        if (campingBox) {
-            campingBox.style.display = "none";
-        }
-
+        if (campingBox) campingBox.style.display = "none";
         return;
     }
 
@@ -1024,7 +1016,6 @@ function updateTypesButtonLabel() {
         button.textContent = labels.length + " types sélectionnés";
     }
 
-    const campingBox = document.getElementById("campingStarsBox");
     if (campingBox) {
         campingBox.style.display = checkedTypes.includes("camping") ? "block" : "none";
     }
