@@ -758,7 +758,8 @@
             {% if data %}
                 <div class="results-list">
                     {% for item in data %}
-                        <div class="result-card" id="commerce-{{ item['id'] }}">
+                        <div class="result-card" id="result-{{ loop.index0 }}">
+                            <span id="commerce-{{ item['id'] }}"></span>
                             <div class="result-name">{{ item.name }}</div>
 
                             <div class="result-type">
