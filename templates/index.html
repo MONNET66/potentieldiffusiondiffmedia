@@ -660,13 +660,18 @@
                 </div>
             </div>
 			
+{% if 'camping' in selected_types %}
 <div class="search-cell">
-    <label for="camping_stars">Filtre campings</label>
     <select name="camping_stars" id="camping_stars">
-        <option value="all">Tous les campings</option>
-        <option value="3_5">Campings 3 à 5 étoiles</option>
+        <option value="all" {% if camping_stars == "all" %}selected{% endif %}>
+            Tous les campings
+        </option>
+        <option value="3_5" {% if camping_stars == "3_5" %}selected{% endif %}>
+            Campings 3 à 5 étoiles
+        </option>
     </select>
 </div>
+{% endif %}
             <div class="search-cell">
                 <select name="support" id="support">
                     {% for support_key in available_supports %}
