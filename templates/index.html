@@ -758,7 +758,7 @@
             {% if data %}
                 <div class="results-list">
                     {% for item in data %}
-                        <div class="result-card" id="result-{{ loop.index0 }}">
+                        <div class="result-card" id="commerce-{{ item['id'] }}">
                             <div class="result-name">{{ item.name }}</div>
 
                             <div class="result-type">
@@ -824,7 +824,7 @@
 
 {% if item.is_hidden %}
     <a
-        href="/unhide_result/{{ item['id'] }}"
+        href="/unhide_result/{{ item['id'] }}#commerce-{{ item['id'] }}"
         class="view-map-btn"
         style="background:#10b981; text-decoration:none;"
     >
@@ -832,7 +832,7 @@
     </a>
 {% else %}
     <a
-        href="/hide_result/{{ item['id'] }}"
+        href="/hide_result/{{ item['id'] }}#commerce-{{ item['id'] }}"
         class="view-map-btn"
         style="background:#f59e0b; text-decoration:none;"
     >
