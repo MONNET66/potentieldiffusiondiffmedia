@@ -1030,13 +1030,6 @@ function updateTypesButtonLabel() {
     }
 }
 
-    if (labels.length <= 2) {
-        button.textContent = labels.join(" + ");
-    } else {
-        button.textContent = labels.length + " types sélectionnés";
-    }
-}
-
 function updateSupports() {
     const supportSelect = document.getElementById("support");
     const currentValue = supportSelect.value;
