@@ -839,14 +839,14 @@ def ensure_databases_exist():
     conn = sqlite3.connect(AUTH_DB_FILE)
     cur = conn.cursor()
     
-cur.execute("""
-    CREATE TABLE IF NOT EXISTS user_hidden_commerces (
-        user_id INTEGER NOT NULL,
-        commerce_id INTEGER NOT NULL,
-        PRIMARY KEY (user_id, commerce_id)
-    )
-""")
-conn.commit()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS user_hidden_commerces (
+            user_id INTEGER NOT NULL,
+            commerce_id INTEGER NOT NULL,
+            PRIMARY KEY (user_id, commerce_id)
+        )
+    """)
+    conn.commit()
     admin_exists = cur.execute(
         "SELECT * FROM users WHERE username = ?",
         ("admin",)
@@ -995,9 +995,6 @@ def index():
 
     if request.method == "POST":
         action = request.form.get("action", "search")
-        if action == "search":
-            session["hidden_result_ids"] = []
-            session.modified = True
         selected_types = get_selected_types_from_form(request.form)
         selected_type = selected_types[0] if len(selected_types) == 1 and selected_types[0] != "all" else "all"
         selected_support = request.form.get("support", "all")
