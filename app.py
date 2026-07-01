@@ -1099,7 +1099,7 @@ def hide_result(commerce_id):
         conn_hidden.commit()
         conn_hidden.close()
 
-    return redirect(request.referrer or url_for("index"))
+    return redirect(url_for("index") + f"#commerce-{commerce_id}")
 
 
 @app.route("/unhide_result/<int:commerce_id>")
