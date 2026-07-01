@@ -498,7 +498,7 @@ def get_results_for_city(city_value, selected_types):
             cp_match = (cp_db == requested_cp)
 
         if forced_city and forced_cp:
-            if city_match:
+            if ville_db == requested_city_clean:
                 filtered_rows.append(row)
         else:
             if city_match or cp_match:
