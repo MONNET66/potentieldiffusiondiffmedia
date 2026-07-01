@@ -79,7 +79,7 @@ SUPPORTS_BY_TYPE = {
     "bar": ["all", "sous_bock", "affiche"],
     "restaurant": ["all", "set_table", "sous_bock", "affiche"],
     "fast_food": ["all", "set_table", "sous_bock", "affiche"],
-    "camping": ["all", "flyer", "affiche", "sac_pain"],
+    "camping": ["all", "set_table", "flyer", "affiche", "sac_pain"],
     "tourism_office": ["all", "flyer", "affiche"],
     "hotel": ["all", "flyer", "affiche"],
     "tobacco": ["all", "flyer", "affiche"],
@@ -92,7 +92,7 @@ SUPPORTS_DISPLAY_BY_TYPE = {
     "bar": ["Sous-bocks", "Affiches"],
     "restaurant": ["Sets de table", "Sous-bocks", "Affiches"],
     "fast_food": ["Sets de table", "Sous-bocks", "Affiches"],
-    "camping": ["Flyers", "Affiches", "Sacs à pain"],
+    "camping": ["Sets de table", "Flyers", "Affiches", "Sacs à pain"],
     "tourism_office": ["Flyers", "Affiches"],
     "hotel": ["Flyers", "Affiches"],
     "tobacco": ["Flyers", "Affiches"],
@@ -769,7 +769,7 @@ def compute_potentiel_and_supports(data):
         elif t == "fast_food":
             p = math.floor(count * 0.3); potentiel += p; add_support("Sets de table", p * 1000); add_support("Sous-bocks", p * 250); add_support("Affiches", math.floor(count * 0.2))
         elif t == "camping":
-            p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", math.floor(count * 0.2)); add_support("Sacs à pain", p * 1000);
+            p = math.floor(count * 0.3); potentiel += p; add_support("Sets de table", p * 1000); add_support("Flyers", p * 50); add_support("Affiches", math.floor(count * 0.2)); add_support("Sacs à pain", p * 1000);
         elif t == "tourism_office":
             p = math.floor(count * 0.3); potentiel += p; add_support("Flyers", p * 50); add_support("Affiches", math.floor(count * 0.2))
         elif t == "hotel":
