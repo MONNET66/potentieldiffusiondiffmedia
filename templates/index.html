@@ -812,13 +812,15 @@
                                     Voir sur la carte
                                 </button>
 
-                                    <a
-                                        href="/edit_commerce/{{ item['id'] }}"
-                                        class="view-map-btn"
-                                        style="background:#2563eb; text-decoration:none;"
-                                    >
-                                        Modifier
-                                    </a>
+                                    {% if session.role == "admin" %}
+<a
+    href="/edit_commerce/{{ item['id'] }}"
+    class="view-map-btn"
+    style="background:#2563eb; text-decoration:none;"
+>
+    Modifier
+</a>
+{% endif %}
 
 {% if item.is_hidden %}
     <a
