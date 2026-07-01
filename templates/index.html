@@ -837,15 +837,23 @@
         Masquer
     </a>
 {% endif %}
-				
 
-                                    <button
-                                        type="button"
-                                        class="view-map-btn delete-btn"
-                                        onclick="deleteCommerce({{ item['id'] }}, this)"
-                                    >
-                                        Supprimer
-                                    </button>
+{% if session.role == "admin" %}
+    <a
+        href="/edit_commerce/{{ item['id'] }}"
+        class="view-map-btn"
+    >
+        Modifier
+    </a>
+
+    <button
+        type="button"
+        class="view-map-btn delete-btn"
+        onclick="deleteCommerce({{ item['id'] }}, this)"
+    >
+        Supprimer
+    </button>
+{% endif %}
                             </div>
                         </div>
                     {% endfor %}
