@@ -974,6 +974,7 @@ def index():
     selected_types = ["all"]
     selected_type = "all"
     selected_support = "all"
+    camping_stars = "all"
     search_value = ""
     mode = "ville"
     departement_value = ""
