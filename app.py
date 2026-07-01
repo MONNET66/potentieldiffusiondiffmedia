@@ -432,6 +432,7 @@ def build_results_from_rows(rows):
             "accepte_support": row["accepte_support"] if "accepte_support" in row.keys() else "",
             "commentaire_support": row["commentaire_support"] if "commentaire_support" in row.keys() else "",
             "quantite_support": row["quantite_support"] if "quantite_support" in row.keys() else 0,
+            "etoiles": row["etoiles"] if "etoiles" in row.keys() else "",
             "source": "sqlite",
             "supports": supports_list,
             "nb_supports": len(supports_list),
@@ -464,7 +465,7 @@ def get_results_for_city(city_value, selected_types):
 
     cursor.execute(f"""
         SELECT rowid AS id, nom, latitude, longitude, type, ville, code_postal, adresse, telephone,
-       accepte_support, commentaire_support, quantite_support
+       accepte_support, commentaire_support, quantite_support, etoiles
         FROM commerces
         WHERE is_active = 1
           AND COALESCE(exclude_from_results, 0) = 0
@@ -514,7 +515,7 @@ def get_results_for_departement(departement_code, selected_types):
     cursor = conn.cursor()
     cursor.execute(f"""
         SELECT rowid AS id, nom, latitude, longitude, type, ville, code_postal, adresse, telephone,
-       accepte_support, commentaire_support, quantite_support
+       accepte_support, commentaire_support, quantite_support, etoiles
         FROM commerces
         WHERE is_active = 1
           AND COALESCE(exclude_from_results, 0) = 0
@@ -570,7 +571,7 @@ def get_results_in_radius(city_value, radius_km, selected_types):
     cursor = conn.cursor()
     cursor.execute(f"""
         SELECT rowid AS id, nom, latitude, longitude, type, ville, code_postal, adresse, telephone,
-       accepte_support, commentaire_support, quantite_support
+       accepte_support, commentaire_support, quantite_support, etoiles
         FROM commerces
         WHERE is_active = 1
           AND COALESCE(exclude_from_results, 0) = 0
