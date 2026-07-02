@@ -1851,7 +1851,57 @@ def edit_commerce(commerce_id):
     </body>
     </html>
     """
+@app.route("/mon_equipe")
+@login_required
+def mon_equipe():
+    if session.get("role") not in ("manager", "admin"):
+        return "Accès refusé", 403
 
+    conn = get_auth_connection()
+    cur = conn.cursor()
+
+    if session.get("role") == "admin":
+        members = cur.execute("""
+            SELECT u.id, u.username, u.display_name, u.manager_id, m.username AS manager_username
+            FROM users u
+            LEFT JOIN users m ON m.id = u.manager_id
+            WHERE u.role = 'user'
+            ORDER BY m.username, u.username
+        """).fetchall()
+    else:
+        members = cur.execute("""
+            SELECT id, username, display_name, manager_id, NULL AS manager_username
+            FROM users
+            WHERE manager_id = ?
+            ORDER BY username
+        """, (session.get("user_id"),)).fetchall()
+
+    conn.close()
+
+    rows = ""
+    for member in members:
+        manager_name = member["manager_username"] or session.get("username", "")
+        display_name = member["display_name"] or ""
+        rows += f"""
+            <tr>
+                <td>{manager_name}</td>
+                <td>{member['username']}</td>
+                <td>{display_name}</td>
+            </tr>
+        """
+
+    return f"""
+    <h2>Mon équipe</h2>
+    <p><a href="/">← Retour</a></p>
+    <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+            <th>Manager</th>
+            <th>Identifiant commercial</th>
+            <th>Nom affiché</th>
+        </tr>
+        {rows}
+    </table>
+    """
 
 if __name__ == "__main__":
     print("DB commerces utilisée =", Path(DB_FILE).resolve())
