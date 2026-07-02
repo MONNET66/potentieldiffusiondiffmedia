@@ -2124,33 +2124,142 @@ def dashboard_equipe():
         commercial_options += f'<option value="{username}" {selected}>{display_name}</option>'
 
     return f"""
-    <h2>Dashboard équipe</h2>
-    
-    <form method="GET" style="margin-bottom:20px; display:flex; gap:10px;">
-    <input type="month" name="month" value="{selected_month}">
+    <style>
+        body {{
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }}
 
-    <select name="commercial">
-        <option value="">Tous les commerciaux</option>
-        {commercial_options}
-    </select>
+        .dashboard-container {{
+            max-width: 1400px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }}
 
-    <button type="submit">Filtrer</button>
-</form>
-    <p><a href="/">← Retour</a></p>
+        .dashboard-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }}
 
-    <table border="1" cellpadding="8" cellspacing="0">
-        <tr>
-            <th>Année</th>
-            <th>Mois</th>
-            <th>Commercial</th>
-            <th>Campagne</th>
-            <th>Support</th>
-            <th>Type</th>
-            <th>Nb commerces</th>
-            <th>Quantité totale</th>
-        </tr>
-        {rows}
-    </table>
+        .dashboard-title {{
+            color: #f28c28;
+            font-size: 28px;
+            font-weight: bold;
+        }}
+
+        .filters {{
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }}
+
+        .filters input,
+        .filters select,
+        .filters button {{
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }}
+
+        .filters button {{
+            background: #f28c28;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }}
+
+        .filters button:hover {{
+            background: #d97414;
+        }}
+
+        .back-link {{
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }}
+
+        .dashboard-table {{
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 12px;
+        }}
+
+        .dashboard-table th {{
+            background: #f28c28;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }}
+
+        .dashboard-table td {{
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+        }}
+
+        .dashboard-table tr:nth-child(even) {{
+            background: #fafafa;
+        }}
+
+        .dashboard-table tr:hover {{
+            background: #fff4e8;
+        }}
+
+        .badge {{
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }}
+    </style>
+
+    <div class="dashboard-container">
+
+        <div class="dashboard-header">
+            <div class="dashboard-title">Dashboard équipe</div>
+        </div>
+
+        <form method="GET" class="filters">
+            <input type="month" name="month" value="{selected_month}">
+
+            <select name="commercial">
+                <option value="">Tous les commerciaux</option>
+                {commercial_options}
+            </select>
+
+            <button type="submit">Filtrer</button>
+        </form>
+
+        <a href="/" class="back-link">← Retour</a>
+
+        <table class="dashboard-table">
+            <tr>
+                <th>Année</th>
+                <th>Mois</th>
+                <th>Commercial</th>
+                <th>Campagne</th>
+                <th>Support</th>
+                <th>Type</th>
+                <th>Nb commerces</th>
+                <th>Quantité totale</th>
+            </tr>
+            {rows}
+        </table>
+
+    </div>
     """
     
 @app.route("/commercial/<int:user_id>")
