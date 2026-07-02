@@ -1159,7 +1159,7 @@ def create_campaign():
             conn = get_campaign_connection()
             cur = conn.cursor()
             token = uuid.uuid4().hex
-           selected_support = ""
+selected_support = ""
 
 cur.execute("""
     INSERT INTO campaigns (name, notes, created_by, created_at, token, search_zones, support)
@@ -1186,12 +1186,12 @@ for item in campaign_results:
         item.get("code_postal"), item.get("adresse"), item.get("telephone"),
         item.get("lat"), item.get("lon"), 0,
     ))
-        conn.commit()
-        conn.close()
-        campaign_link = url_for("view_campaign", token=token, _external=True)
-        success = "Campagne enregistrée avec succès."
-        return render_template("create_campaign.html", current_user=current_user, error="", success=success, campaign_name="", campaign_notes="", campaign_link=campaign_link)
-        return render_template("create_campaign.html", current_user=current_user, error=error, success=success, campaign_name="", campaign_notes="", campaign_link=campaign_link)
+
+conn.commit()
+conn.close()
+campaign_link = url_for("view_campaign", token=token, _external=True)
+success = "Campagne enregistrée avec succès."
+return render_template("create_campaign.html", current_user=current_user, error="", success=success, campaign_name="", campaign_notes="", campaign_link=campaign_link)
 
 
 @app.route("/export")
