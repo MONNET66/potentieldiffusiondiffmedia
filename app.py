@@ -2001,6 +2001,18 @@ def commercial_detail(user_id):
 """, (commercial["username"],)).fetchall()
 
     conn_campaign.close()
+    conn_massive = sqlite3.connect(CAMPAIGN_DB_FILE)
+    conn_massive.row_factory = sqlite3.Row
+    cur_massive = conn_massive.cursor()
+
+    massive_exports = cur_massive.execute("""
+        SELECT filename, nb_commerces, created_at
+        FROM massive_exports
+        WHERE username = ?
+        ORDER BY created_at DESC
+    """, (commercial["username"],)).fetchall()
+
+    conn_massive.close()
 
     campaign_rows = ""
     for campaign in campaigns:
@@ -2013,6 +2025,17 @@ def commercial_detail(user_id):
 
     if not campaign_rows:
         campaign_rows = "<li>Aucune campagne</li>"
+
+    massive_rows = ""
+    for export in massive_exports:
+        massive_rows += f"""
+            <li>
+                {export['filename']} ({export['created_at']}) — {export['nb_commerces']} commerce(s)
+            </li>
+        """
+
+    if not massive_rows:
+        massive_rows = "<li>Aucun export massif</li>"
 
     return f"""
     <h2>Fiche commercial</h2>
