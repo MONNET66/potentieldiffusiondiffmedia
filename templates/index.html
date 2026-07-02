@@ -1510,6 +1510,7 @@ function exportRouteCSV() {
     document.body.appendChild(link);
 	fetch("/log_massive_export", {
     method: "POST",
+    credentials: "same-origin",
     headers: {
         "Content-Type": "application/json"
     },
@@ -1517,7 +1518,14 @@ function exportRouteCSV() {
         filename: "tournee.csv",
         nb_commerces: data.length
     })
-}).finally(function() {
+})
+.then(function(response) {
+    console.log("Export massif log status:", response.status);
+})
+.catch(function(error) {
+    console.error("Erreur log export massif:", error);
+})
+.finally(function() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
