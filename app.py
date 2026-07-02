@@ -1441,7 +1441,10 @@ def log_massive_export():
 
     quantite_totale = nb_commerces * quantite_map.get(support, 0)
 
-    filename = f"Campagne massive du {datetime.now().strftime('%d/%m/%Y')}"
+    filename = data.get(
+        "filename",
+        f"Campagne massive du {datetime.now().strftime('%d/%m/%Y')}"
+    )
 
     conn = sqlite3.connect(CAMPAIGN_DB_FILE)
     cur = conn.cursor()
