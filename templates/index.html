@@ -1516,9 +1516,10 @@ function exportRouteCSV() {
         "Content-Type": "application/json"
     },
     body: JSON.stringify({
-    filename: "tournee.csv",
-    nb_commerces: data.length,
-    support: document.getElementById("support").value
+        filename: "tournee.csv",
+        nb_commerces: data.length,
+        support: document.getElementById("support").value
+    })
 })
 .then(function(response) {
     console.log("Export massif log status:", response.status);
@@ -1531,7 +1532,6 @@ function exportRouteCSV() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 });
-}
 
 function openAddCommerceModal() {
     const modal = document.getElementById("addCommerceModal");
