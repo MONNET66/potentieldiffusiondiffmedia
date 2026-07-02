@@ -1188,6 +1188,16 @@ def create_campaign():
 
             campaign_id = cur.lastrowid
 
+            quantite_par_commerce = {
+                "sac_pain": 1000,
+                "set_table": 1000,
+                "sous_bock": 250,
+                "flyer": 50,
+                "affiche": 1,
+                "sac_pharmacie": 1000,
+                "sac_galette": 1000,
+            }.get(selected_support, 0)
+            
             for item in campaign_results:
                 cur.execute("""
                     INSERT INTO campaign_items (
@@ -1205,7 +1215,7 @@ def create_campaign():
                     item.get("telephone"),
                     item.get("lat"),
                     item.get("lon"),
-                    0
+                    quantite_par_commerce
                 ))
 
             conn.commit()
