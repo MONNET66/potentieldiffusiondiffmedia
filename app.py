@@ -1956,12 +1956,43 @@ def commercial_detail(user_id):
     if not commercial:
         return "Commercial introuvable", 404
 
+    conn_campaign = sqlite3.connect(CAMPAIGN_DB_FILE)
+    conn_campaign.row_factory = sqlite3.Row
+    cur_campaign = conn_campaign.cursor()
+
+    campaigns = cur_campaign.execute("""
+        SELECT id, name, created_at, token
+        FROM campaigns
+        WHERE created_by = ?
+        ORDER BY created_at DESC
+    """, (commercial["username"],)).fetchall()
+
+    conn_campaign.close()
+
+    campaign_rows = ""
+    for campaign in campaigns:
+        campaign_rows += f"""
+            <li>
+                <a href="/campaign/{campaign['token']}">{campaign['name']}</a>
+                ({campaign['created_at']})
+            </li>
+        """
+
+    if not campaign_rows:
+        campaign_rows = "<li>Aucune campagne</li>"
+
     return f"""
     <h2>Fiche commercial</h2>
     <p><a href="/mon_equipe">← Retour équipe</a></p>
+
     <p><b>Identifiant :</b> {commercial['username']}</p>
     <p><b>Nom affiché :</b> {commercial['display_name'] or ''}</p>
     <p><b>Manager :</b> {commercial['manager_username'] or ''}</p>
+
+    <h3>Campagnes</h3>
+    <ul>
+        {campaign_rows}
+    </ul>
     """
 
 if __name__ == "__main__":
