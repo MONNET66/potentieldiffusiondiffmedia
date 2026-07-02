@@ -571,6 +571,11 @@
         {% endif %}
 
         <a href="/campaigns" class="logout-btn">Mes campagnes</a>
+
+        {% if session.role in ["manager", "admin"] %}
+            <a href="/mon_equipe" class="logout-btn">Mon équipe</a>
+        {% endif %}
+
         <a href="{{ url_for('logout') }}" class="logout-btn">Déconnexion</a>
     </div>
 </div>
