@@ -1525,7 +1525,7 @@ const supportLabels = {
     all: "Tous supports"
 };
 
-const campaignName = `Massive ${supportLabels[support] || support} – ${city}${radius ? " (" + radius + "km)" : ""}`;
+const campaignName = `${supportLabels[support] || support} – ${city}${radius ? " (" + radius + "km)" : ""}`;
 
 fetch("/log_massive_export", {
     method: "POST",
