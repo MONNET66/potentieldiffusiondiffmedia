@@ -1976,6 +1976,88 @@ def mon_equipe():
         {rows}
     </table>
     """
+@app.route("/dashboard_equipe")
+@login_required
+def dashboard_equipe():
+    if session.get("role") not in ("manager", "admin"):
+        return "Accès refusé", 403
+
+    conn_auth = get_auth_connection()
+    cur_auth = conn_auth.cursor()
+
+    if session.get("role") == "admin":
+        commerciaux = cur_auth.execute("""
+            SELECT id, username, display_name
+            FROM users
+            WHERE role = 'user'
+        """).fetchall()
+    else:
+        commerciaux = cur_auth.execute("""
+            SELECT id, username, display_name
+            FROM users
+            WHERE role = 'user' AND manager_id = ?
+        """, (session.get("user_id"),)).fetchall()
+
+    conn_auth.close()
+
+    conn_campaign = get_campaign_connection()
+    cur_campaign = conn_campaign.cursor()
+
+    rows = ""
+
+    for commercial in commerciaux:
+        username = commercial["username"]
+        display_name = commercial["display_name"] or username
+
+        items = cur_campaign.execute("""
+            SELECT
+                campaigns.created_at,
+                campaign_items.name,
+                campaign_items.type
+            FROM campaigns
+            INNER JOIN campaign_items
+                ON campaign_items.campaign_id = campaigns.id
+            WHERE campaigns.created_by = ?
+            ORDER BY campaigns.created_at DESC
+        """, (username,)).fetchall()
+
+        for item in items:
+            created_at = item["created_at"]
+            annee = created_at[:4]
+            mois = created_at[5:7]
+
+            rows += f"""
+                <tr>
+                    <td>{annee}</td>
+                    <td>{mois}</td>
+                    <td>{display_name}</td>
+                    <td>{item['name']}</td>
+                    <td>{item['type']}</td>
+                    <td>Oui</td>
+                    <td>Non</td>
+                </tr>
+            """
+
+    conn_campaign.close()
+
+    return f"""
+    <h2>Dashboard équipe</h2>
+    <p><a href="/">← Retour</a></p>
+
+    <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+            <th>Année</th>
+            <th>Mois</th>
+            <th>Commercial</th>
+            <th>Nom du client</th>
+            <th>Support</th>
+            <th>Campagnes ciblées</th>
+            <th>Campagnes massives</th>
+        </tr>
+        {rows}
+    </table>
+    """
+    
 @app.route("/commercial/<int:user_id>")
 @login_required
 def commercial_detail(user_id):
