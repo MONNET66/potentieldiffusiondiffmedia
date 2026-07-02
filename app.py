@@ -2049,6 +2049,10 @@ def commercial_detail(user_id):
     <ul>
         {campaign_rows}
     </ul>
+    <h3>Campagnes massives</h3>
+    <ul>
+        {massive_rows}
+    </ul>
     """
 
 if __name__ == "__main__":
