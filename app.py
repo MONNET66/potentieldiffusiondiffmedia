@@ -1065,7 +1065,7 @@ def index():
     if camping_stars == "3_5":
         data = [
             item for item in data
-            if item.get("type") != "camping" or str(item.get("etoiles")) in ["3", "4", "5"]
+            if item.get("type") == "camping" and str(item.get("etoiles")) in ["3", "4", "5"]
         ]
 
     for item in data:
