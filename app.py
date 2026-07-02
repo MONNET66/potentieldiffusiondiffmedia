@@ -2062,6 +2062,9 @@ def dashboard_equipe():
     for commercial in commerciaux:
         username = commercial["username"]
         display_name = commercial["display_name"] or username
+        
+        if selected_commercial and username != selected_commercial:
+            continue
 
         items = cur_campaign.execute("""
             SELECT
@@ -2079,6 +2082,9 @@ def dashboard_equipe():
             created_at = item["created_at"]
             annee = created_at[:4]
             mois = created_at[5:7]
+            mois_key = created_at[:7]
+            if selected_month and mois_key != selected_month:
+                continue
 
             rows += f"""
                 <tr>
@@ -2094,8 +2100,26 @@ def dashboard_equipe():
 
     conn_campaign.close()
 
+    commercial_options = ""
+    for commercial in commerciaux:
+        username = commercial["username"]
+        display_name = commercial["display_name"] or username
+        selected = "selected" if username == selected_commercial else ""
+        commercial_options += f'<option value="{username}" {selected}>{display_name}</option>'
+
     return f"""
     <h2>Dashboard équipe</h2>
+    
+    <form method="GET" style="margin-bottom:20px; display:flex; gap:10px;">
+    <input type="month" name="month" value="{selected_month}">
+
+    <select name="commercial">
+        <option value="">Tous les commerciaux</option>
+        {commercial_options}
+    </select>
+
+    <button type="submit">Filtrer</button>
+</form>
     <p><a href="/">← Retour</a></p>
 
     <table border="1" cellpadding="8" cellspacing="0">
