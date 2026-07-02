@@ -2144,8 +2144,8 @@ def dashboard_equipe():
 
         items = cur_campaign.execute("""
             SELECT
+                campaigns.id,
                 campaigns.name,
-                campaigns.notes,
                 campaigns.created_at,
                 campaigns.support,
                 campaigns.token,
@@ -2171,9 +2171,26 @@ def dashboard_equipe():
             total_campaigns += 1
             total_commerces += item["nb_commerces"] or 0
             total_quantite += item["quantite_totale"] or 0
-            potentiel_quantite = item["quantite_totale"] or 0
+
+            campaign_items_for_potential = cur_campaign.execute("""
+                SELECT type
+                FROM campaign_items
+                WHERE campaign_id = ?
+            """, (item["id"],)).fetchall()
+
+            potential_data = [dict(row) for row in campaign_items_for_potential]
+
+            _, totals_by_label = compute_potentiel_and_supports(potential_data)
+
+            support_label = SUPPORT_LABELS.get(item["support"], "")
+
+            if item["support"] == "all":
+                potentiel_quantite = sum(totals_by_label.values())
+            else:
+                potentiel_quantite = totals_by_label.get(support_label, 0)
+
             active_commerciaux.add(username)
-            
+
             support_key = item["support"] or "Sans support"
             support_totals[support_key] = support_totals.get(support_key, 0) + 1
 
