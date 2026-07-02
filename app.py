@@ -2133,10 +2133,11 @@ def dashboard_equipe():
             <th>Année</th>
             <th>Mois</th>
             <th>Commercial</th>
-            <th>Nom du client</th>
+            <th>Campagne</th>
             <th>Support</th>
-            <th>Campagnes ciblées</th>
-            <th>Campagnes massives</th>
+            <th>Type</th>
+            <th>Nb commerces</th>
+            <th>Quantité totale</th>
         </tr>
         {rows}
     </table>
