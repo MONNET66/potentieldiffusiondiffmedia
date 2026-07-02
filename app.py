@@ -1358,6 +1358,31 @@ def export_campaign(token):
     csv_content = "\ufeff" + output.getvalue()
     return Response(csv_content, mimetype="text/csv; charset=utf-8", headers={"Content-Disposition": f"attachment; filename=campagne_{campaign['name']}.csv"})
 
+@app.route("/log_massive_export", methods=["POST"])
+@login_required
+def log_massive_export():
+    data = request.get_json()
+
+    filename = data.get("filename", "tournee.csv")
+    nb_commerces = data.get("nb_commerces", 0)
+
+    conn = sqlite3.connect(CAMPAIGN_DB_FILE)
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO massive_exports (username, filename, nb_commerces, created_at)
+        VALUES (?, ?, ?, ?)
+    """, (
+        session.get("username"),
+        filename,
+        nb_commerces,
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"success": True})
 
 @app.route("/campaigns")
 @login_required
