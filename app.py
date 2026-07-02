@@ -2033,6 +2033,8 @@ def mon_equipe():
 def dashboard_equipe():
     if session.get("role") not in ("manager", "admin"):
         return "Accès refusé", 403
+    selected_month = request.args.get("month", "")
+    selected_commercial = request.args.get("commercial", "")
 
     conn_auth = get_auth_connection()
     cur_auth = conn_auth.cursor()
