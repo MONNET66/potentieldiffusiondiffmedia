@@ -2142,6 +2142,7 @@ def dashboard_equipe():
         items = cur_campaign.execute("""
             SELECT
                 campaigns.name,
+                campaigns.notes,
                 campaigns.created_at,
                 campaigns.support,
                 campaigns.token,
@@ -2177,9 +2178,15 @@ def dashboard_equipe():
                     <td>{annee}</td>
                     <td>{mois}</td>
                     <td>{display_name}</td>
-                    <td><a href="/campaign/{item['token']}/export">{item['name']}</a></td>
+                    <td>
+                        <a href="/campaign/{item['token']}{'/export' if item['notes'] == 'Campagne massive' else ''}">
+                            {item['name']}
+                        </a>
+                    </td>
                     <td>{item['support'] or ''}</td>
-                    <td><span class="type-badge type-ciblee">Ciblée</span></td>
+                    <td>
+                        {"<span class='type-badge type-massive'>Massive</span>" if item["notes"] == "Campagne massive" else "<span class='type-badge type-ciblee'>Ciblée</span>"}
+                    </td>
                     <td>{item['nb_commerces']}</td>
                     <td>{item['quantite_totale'] or 0}</td>
                 </tr>
