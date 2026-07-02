@@ -1851,7 +1851,7 @@ def edit_commerce(commerce_id):
     </body>
     </html>
     """
-@app.route("/mon_equipe")
+@app.route("/mon_equipe", methods=["GET", "POST"])
 @login_required
 def mon_equipe():
     if session.get("role") not in ("manager", "admin"):
@@ -1859,6 +1859,25 @@ def mon_equipe():
 
     conn = get_auth_connection()
     cur = conn.cursor()
+
+    if request.method == "POST":
+        member_id = request.form.get("member_id")
+        display_name = (request.form.get("display_name") or "").strip()
+
+        if session.get("role") == "admin":
+            cur.execute(
+                "UPDATE users SET display_name = ? WHERE id = ? AND role = 'user'",
+                (display_name, member_id)
+            )
+        else:
+            cur.execute(
+                "UPDATE users SET display_name = ? WHERE id = ? AND manager_id = ? AND role = 'user'",
+                (display_name, member_id, session.get("user_id"))
+            )
+
+        conn.commit()
+        conn.close()
+        return redirect(url_for("mon_equipe"))
 
     if session.get("role") == "admin":
         members = cur.execute("""
@@ -1886,7 +1905,13 @@ def mon_equipe():
             <tr>
                 <td>{manager_name}</td>
                 <td>{member['username']}</td>
-                <td>{display_name}</td>
+                <td>
+                    <form method="POST" style="display:flex; gap:8px;">
+                        <input type="hidden" name="member_id" value="{member['id']}">
+                        <input type="text" name="display_name" value="{display_name}">
+                        <button type="submit">Enregistrer</button>
+                    </form>
+                </td>
             </tr>
         """
 
