@@ -1511,8 +1511,20 @@ function exportRouteCSV() {
 document.body.appendChild(link);
 
 const support = document.getElementById("support").value;
+const mode = document.querySelector('select[name="mode"]')?.value || "";
 const city = document.getElementById("villeInput")?.value || "";
-const radius = document.getElementById("radius")?.value || "";
+const departement = document.getElementById("departementInput")?.value || "";
+const rayon = document.getElementById("rayonInput")?.value || "";
+
+let zoneLabel = "";
+
+if (mode === "departement" && departement) {
+    zoneLabel = `Département ${departement}`;
+} else if (mode === "rayon" && city && rayon) {
+    zoneLabel = `${city} (${rayon}km)`;
+} else if (city) {
+    zoneLabel = city;
+}
 
 const supportLabels = {
     sac_pain: "Sacs pain",
@@ -1525,7 +1537,7 @@ const supportLabels = {
     all: "Tous supports"
 };
 
-const campaignName = `${supportLabels[support] || support} – ${city}${radius ? " (" + radius + "km)" : ""}`;
+const campaignName = `${supportLabels[support] || support}${zoneLabel ? " – " + zoneLabel : ""}`;
 
 fetch("/log_massive_export", {
     method: "POST",
