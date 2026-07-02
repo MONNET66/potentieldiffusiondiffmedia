@@ -1135,63 +1135,103 @@ def create_campaign():
     success = ""
     campaign_link = None
     current_user = session.get("username", "")
+
     if request.method == "POST":
         campaign_name = (request.form.get("campaign_name") or "").strip()
         campaign_notes = (request.form.get("campaign_notes") or "").strip()
+
         if not campaign_name:
             error = "Le nom de la campagne est obligatoire."
+
         else:
             temp_searches = session.get("temp_searches", [])
             campaign_results = []
             search_zone_labels = []
+
             if temp_searches:
                 all_data = []
+
                 for saved_search in temp_searches:
                     saved_data, _, _, _ = execute_search_criteria(saved_search)
                     all_data.append(saved_data)
+
                     label = (saved_search.get("label") or "").strip()
                     if label:
                         search_zone_labels.append(label)
+
                 campaign_results = merge_results_lists(all_data)
+
             else:
                 campaign_results = LAST_RESULTS
                 search_zone_labels = []
+
             conn = get_campaign_connection()
             cur = conn.cursor()
             token = uuid.uuid4().hex
-selected_support = ""
 
-cur.execute("""
-    INSERT INTO campaigns (name, notes, created_by, created_at, token, search_zones, support)
-    VALUES (?, ?, ?, datetime('now'), ?, ?, ?)
-""", (
-    campaign_name,
-    campaign_notes,
-    current_user,
-    token,
-    json.dumps(search_zone_labels, ensure_ascii=False),
-    selected_support
-))
+            selected_support = ""
 
-campaign_id = cur.lastrowid
+            cur.execute("""
+                INSERT INTO campaigns (
+                    name, notes, created_by, created_at, token, search_zones, support
+                )
+                VALUES (?, ?, ?, datetime('now'), ?, ?, ?)
+            """, (
+                campaign_name,
+                campaign_notes,
+                current_user,
+                token,
+                json.dumps(search_zone_labels, ensure_ascii=False),
+                selected_support
+            ))
 
-for item in campaign_results:
-    cur.execute("""
-        INSERT INTO campaign_items (
-            campaign_id, name, type, ville, code_postal,
-            adresse, telephone, lat, lon, priority
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        campaign_id, item.get("name"), item.get("type"), item.get("ville"),
-        item.get("code_postal"), item.get("adresse"), item.get("telephone"),
-        item.get("lat"), item.get("lon"), 0,
-    ))
+            campaign_id = cur.lastrowid
 
-conn.commit()
-conn.close()
-campaign_link = url_for("view_campaign", token=token, _external=True)
-success = "Campagne enregistrée avec succès."
-return render_template("create_campaign.html", current_user=current_user, error="", success=success, campaign_name="", campaign_notes="", campaign_link=campaign_link)
+            for item in campaign_results:
+                cur.execute("""
+                    INSERT INTO campaign_items (
+                        campaign_id, name, type, ville, code_postal,
+                        adresse, telephone, lat, lon, priority
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    campaign_id,
+                    item.get("name"),
+                    item.get("type"),
+                    item.get("ville"),
+                    item.get("code_postal"),
+                    item.get("adresse"),
+                    item.get("telephone"),
+                    item.get("lat"),
+                    item.get("lon"),
+                    0
+                ))
+
+            conn.commit()
+            conn.close()
+
+            campaign_link = url_for("view_campaign", token=token, _external=True)
+            success = "Campagne enregistrée avec succès."
+
+            return render_template(
+                "create_campaign.html",
+                current_user=current_user,
+                error="",
+                success=success,
+                campaign_name="",
+                campaign_notes="",
+                campaign_link=campaign_link
+            )
+
+    return render_template(
+        "create_campaign.html",
+        current_user=current_user,
+        error=error,
+        success=success,
+        campaign_name="",
+        campaign_notes="",
+        campaign_link=campaign_link
+    )
 
 
 @app.route("/export")
