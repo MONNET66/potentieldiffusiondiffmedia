@@ -2143,7 +2143,7 @@ def dashboard_equipe():
             """
 
         massive_items = cur_campaign.execute("""
-            SELECT filename, nb_commerces, created_at
+            SELECT filename, nb_commerces, created_at, support, quantite_totale
             FROM massive_exports
             WHERE username = ?
             ORDER BY created_at DESC
@@ -2160,6 +2160,7 @@ def dashboard_equipe():
 
             total_campaigns += 1
             total_commerces += export["nb_commerces"] or 0
+            total_quantite += export["quantite_totale"] or 0
             active_commerciaux.add(username)
 
             rows += f"""
@@ -2168,10 +2169,10 @@ def dashboard_equipe():
                     <td>{mois}</td>
                     <td>{display_name}</td>
                     <td>{export['filename']}</td>
-                    <td>-</td>
+                    <td><span class="support-badge support-{export['support']}">{export['support'] or '-'}</span></td>
                     <td>Massive</td>
                     <td>{export['nb_commerces']}</td>
-                    <td>-</td>
+                    <td>{export['quantite_totale'] or 0}</td>
                 </tr>
             """
 
