@@ -2089,6 +2089,7 @@ def dashboard_equipe():
     total_commerces = 0
     total_quantite = 0
     active_commerciaux = set()
+    support_totals = {}
 
     rows = ""
 
