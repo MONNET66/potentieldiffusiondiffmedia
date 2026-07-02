@@ -1160,9 +1160,9 @@ def create_campaign():
             cur = conn.cursor()
             token = uuid.uuid4().hex
             cur.execute("""
-                INSERT INTO campaigns (name, notes, created_by, created_at, token, search_zones)
-                VALUES (?, ?, ?, datetime('now'), ?, ?)
-            """, (campaign_name, campaign_notes, current_user, token, json.dumps(search_zone_labels, ensure_ascii=False)))
+                INSERT INTO campaigns (name, notes, created_by, created_at, token, search_zones, support)
+                VALUES (?, ?, ?, datetime('now'), ?, ?, ?)
+            """, (campaign_name, campaign_notes, current_user, token, json.dumps(search_zone_labels, ensure_ascii=False), selected_support))
             campaign_id = cur.lastrowid
             for item in campaign_results:
                 cur.execute("""
