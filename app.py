@@ -2171,6 +2171,7 @@ def dashboard_equipe():
             total_campaigns += 1
             total_commerces += item["nb_commerces"] or 0
             total_quantite += item["quantite_totale"] or 0
+            potentiel_quantite = item["quantite_totale"] or 0
             active_commerciaux.add(username)
             
             support_key = item["support"] or "Sans support"
@@ -2192,6 +2193,7 @@ def dashboard_equipe():
                     </td>
                     <td>{item['nb_commerces']}</td>
                     <td>{item['quantite_totale'] or 0}</td>
+                    <td>{potentiel_quantite}</td>
                 </tr>
             """
 
@@ -2214,6 +2216,7 @@ def dashboard_equipe():
             total_campaigns += 1
             total_commerces += export["nb_commerces"] or 0
             total_quantite += export["quantite_totale"] or 0
+            potentiel_quantite = export["quantite_totale"] or 0
             active_commerciaux.add(username)
 
             support_key = item["support"] or "Sans support"
@@ -2229,6 +2232,7 @@ def dashboard_equipe():
                     <td><span class="type-badge type-massive">Massive</span></td>
                     <td>{export['nb_commerces']}</td>
                     <td>{export['quantite_totale'] or 0}</td>
+                    <td>{potentiel_quantite}</td>
                 </tr>
             """
 
@@ -2461,6 +2465,7 @@ def dashboard_equipe():
                 <th>Type</th>
                 <th>Nb commerces</th>
                 <th>Quantité totale</th>
+                <th>Potentiel quantité</th>
             </tr>
             {rows}
         </table>
