@@ -1904,7 +1904,7 @@ def mon_equipe():
         rows += f"""
             <tr>
                 <td>{manager_name}</td>
-                <td>{member['username']}</td>
+                <td><a href="/commercial/{member['id']}">{member['username']}</a></td>
                 <td>
                     <form method="POST" style="display:flex; gap:8px;">
                         <input type="hidden" name="member_id" value="{member['id']}">
@@ -1926,6 +1926,42 @@ def mon_equipe():
         </tr>
         {rows}
     </table>
+    """
+@app.route("/commercial/<int:user_id>")
+@login_required
+def commercial_detail(user_id):
+    if session.get("role") not in ("manager", "admin"):
+        return "Accès refusé", 403
+
+    conn = get_auth_connection()
+    cur = conn.cursor()
+
+    if session.get("role") == "admin":
+        commercial = cur.execute("""
+            SELECT u.id, u.username, u.display_name, u.role, m.username AS manager_username
+            FROM users u
+            LEFT JOIN users m ON m.id = u.manager_id
+            WHERE u.id = ? AND u.role = 'user'
+        """, (user_id,)).fetchone()
+    else:
+        commercial = cur.execute("""
+            SELECT u.id, u.username, u.display_name, u.role, m.username AS manager_username
+            FROM users u
+            LEFT JOIN users m ON m.id = u.manager_id
+            WHERE u.id = ? AND u.manager_id = ? AND u.role = 'user'
+        """, (user_id, session.get("user_id"))).fetchone()
+
+    conn.close()
+
+    if not commercial:
+        return "Commercial introuvable", 404
+
+    return f"""
+    <h2>Fiche commercial</h2>
+    <p><a href="/mon_equipe">← Retour équipe</a></p>
+    <p><b>Identifiant :</b> {commercial['username']}</p>
+    <p><b>Nom affiché :</b> {commercial['display_name'] or ''}</p>
+    <p><b>Manager :</b> {commercial['manager_username'] or ''}</p>
     """
 
 if __name__ == "__main__":
