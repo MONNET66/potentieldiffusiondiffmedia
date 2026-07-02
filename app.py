@@ -2128,6 +2128,9 @@ def dashboard_equipe():
             total_commerces += item["nb_commerces"] or 0
             total_quantite += item["quantite_totale"] or 0
             active_commerciaux.add(username)
+            
+            support_key = item["support"] or "Sans support"
+            support_totals[support_key] = support_totals.get(support_key, 0) + 1
 
             rows += f"""
                 <tr>
@@ -2163,6 +2166,9 @@ def dashboard_equipe():
             total_quantite += export["quantite_totale"] or 0
             active_commerciaux.add(username)
 
+            support_key = item["support"] or "Sans support"
+            support_totals[support_key] = support_totals.get(support_key, 0) + 1
+
             rows += f"""
                 <tr>
                     <td>{annee}</td>
@@ -2184,6 +2190,15 @@ def dashboard_equipe():
         display_name = commercial["display_name"] or username
         selected = "selected" if username == selected_commercial else ""
         commercial_options += f'<option value="{username}" {selected}>{display_name}</option>'
+
+    support_summary = ""
+    for support, count in support_totals.items():
+        support_summary += f"""
+            <div class="summary-card">
+                <div class="summary-card-title">{support}</div>
+                <div class="summary-card-value">{count}</div>
+            </div>
+        """    
 
     return f"""
     <style>
@@ -2371,7 +2386,11 @@ def dashboard_equipe():
         </div>
     </div>
 
-        <a href="/" class="back-link">← Retour</a>
+    <div class="summary-cards" style="margin-top:20px;">
+        {support_summary}
+    </div>
+
+    <a href="/" class="back-link">← Retour</a>
 
         <table class="dashboard-table">
             <tr>
