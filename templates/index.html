@@ -1528,9 +1528,9 @@ function exportRouteCSV() {
     console.error("Erreur log export massif:", error);
 })
 .finally(function() {
-    link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    alert("Campagne massive enregistrée dans Mes campagnes.");
 });
 
 }	
