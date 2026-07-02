@@ -1508,6 +1508,16 @@ function exportRouteCSV() {
     link.download = "tournee.csv";
 
     document.body.appendChild(link);
+	fetch("/log_massive_export", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        filename: "tournee.csv",
+        nb_commerces: data.length
+    })
+});
     link.click();
     document.body.removeChild(link);
 
