@@ -1202,7 +1202,7 @@ def create_campaign():
                 cur.execute("""
                     INSERT INTO campaign_items (
                         campaign_id, name, type, ville, code_postal,
-                        adresse, telephone, lat, lon, priority
+                        adresse, telephone, lat, lon, quantite
                     )
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
