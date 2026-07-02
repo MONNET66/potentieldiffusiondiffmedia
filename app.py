@@ -2106,10 +2106,10 @@ def dashboard_equipe():
             if selected_month and mois_key != selected_month:
                 continue
 
-    total_campaigns += 1
-    total_commerces += item["nb_commerces"] or 0
-    total_quantite += item["quantite_totale"] or 0
-    active_commerciaux.add(username)
+            total_campaigns += 1
+            total_commerces += item["nb_commerces"] or 0
+            total_quantite += item["quantite_totale"] or 0
+            active_commerciaux.add(username)
 
             rows += f"""
                 <tr>
