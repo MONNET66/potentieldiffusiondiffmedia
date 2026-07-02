@@ -1169,7 +1169,7 @@ def create_campaign():
             cur = conn.cursor()
             token = uuid.uuid4().hex
 
-            selected_support = ""
+            selected_support = request.form.get("support", "")
 
             cur.execute("""
                 INSERT INTO campaigns (
