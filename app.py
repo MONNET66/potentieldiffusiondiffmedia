@@ -24,7 +24,7 @@ app.secret_key = "CHANGE_MOI_PAR_UNE_CLE_SECRETE_LONGUE_ET_UNIQUE"
 BASE_DIR = Path(__file__).resolve().parent
 DB_FILE = "/data/commerces_render.db"
 AUTH_DB_FILE = Path("/data/auth.db")
-CAMPAIGN_DB_FILE = BASE_DIR / "campaigns.db"
+CAMPAIGN_DB_FILE = "/data/campaigns.db"
 LAST_RESULTS = []
 
 DEFAULT_LAT = 46.6
