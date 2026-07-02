@@ -2146,6 +2146,7 @@ def dashboard_equipe():
             SELECT
                 campaigns.id,
                 campaigns.name,
+                campaigns.notes,
                 campaigns.created_at,
                 campaigns.support,
                 campaigns.token,
