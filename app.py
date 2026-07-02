@@ -1476,7 +1476,29 @@ def log_massive_export():
         "[]",
         support
     ))
-    
+
+    campaign_id = cur.lastrowid
+
+    for item in LAST_RESULTS:
+        cur.execute("""
+            INSERT INTO campaign_items (
+                campaign_id, name, type, ville, code_postal,
+                adresse, telephone, lat, lon, quantite
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            campaign_id,
+            item.get("name"),
+            item.get("type"),
+            item.get("ville"),
+            item.get("code_postal"),
+            item.get("adresse"),
+            item.get("telephone"),
+            item.get("lat"),
+            item.get("lon"),
+            quantite_map.get(support, 0)
+        ))
+        
     conn.commit()
     conn.close()
 
