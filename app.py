@@ -2045,7 +2045,7 @@ def commercial_detail(user_id):
     <p><b>Nom affiché :</b> {commercial['display_name'] or ''}</p>
     <p><b>Manager :</b> {commercial['manager_username'] or ''}</p>
 
-    <h3>Campagnes</h3>
+    <h3>Campagnes ciblées</h3>
     <ul>
         {campaign_rows}
     </ul>
