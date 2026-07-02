@@ -1444,18 +1444,41 @@ def list_campaigns():
 @app.route("/campaign/<token>/delete", methods=["POST"])
 @login_required
 def delete_campaign(token):
-    if session.get("role") != "admin":
-        return "Accès interdit", 403
     conn = get_campaign_connection()
     cur = conn.cursor()
+
     campaign = cur.execute("SELECT * FROM campaigns WHERE token = ?", (token,)).fetchone()
     if not campaign:
         conn.close()
         return "Campagne introuvable", 404
+
+    can_delete = False
+
+    if session.get("role") == "admin":
+        can_delete = True
+
+    elif session.get("role") == "user":
+        can_delete = campaign["created_by"] == session.get("username")
+
+    elif session.get("role") == "manager":
+        conn_auth = get_auth_connection()
+        cur_auth = conn_auth.cursor()
+        commercial = cur_auth.execute(
+            "SELECT id FROM users WHERE username = ? AND manager_id = ?",
+            (campaign["created_by"], session.get("user_id"))
+        ).fetchone()
+        conn_auth.close()
+        can_delete = commercial is not None
+
+    if not can_delete:
+        conn.close()
+        return "Accès interdit", 403
+
     cur.execute("DELETE FROM campaign_items WHERE campaign_id = ?", (campaign["id"],))
     cur.execute("DELETE FROM campaigns WHERE id = ?", (campaign["id"],))
     conn.commit()
     conn.close()
+
     return redirect(url_for("list_campaigns"))
 
 
