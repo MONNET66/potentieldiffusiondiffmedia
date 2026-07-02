@@ -308,9 +308,15 @@
                     </div>
 
                     <div class="campaign-actions">
-                        <a href="/campaign/{{ c['token'] }}" class="btn btn-open">
-                            Ouvrir la campagne
-                        </a>
+                        {% if c["notes"] == "Campagne massive" %}
+                            <a href="/campaign/{{ c['token'] }}/export" class="btn btn-open">
+                                Télécharger la campagne
+                            </a>
+                        {% else %}
+                            <a href="/campaign/{{ c['token'] }}" class="btn btn-open">
+                                Ouvrir la campagne
+                            </a>
+                        {% endif %}
 
                         <button
                             type="button"
