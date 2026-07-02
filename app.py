@@ -2050,7 +2050,7 @@ def dashboard_equipe():
             <th>Mois</th>
             <th>Commercial</th>
             <th>Nom du client</th>
-            <th>Support</th>
+            <th>Type de commerce</th>
             <th>Campagnes ciblées</th>
             <th>Campagnes massives</th>
         </tr>
