@@ -1515,10 +1515,37 @@ function exportRouteCSV() {
     headers: {
         "Content-Type": "application/json"
     },
+const support = document.getElementById("support").value;
+const city = document.getElementById("city")?.value || "";
+const radius = document.getElementById("radius")?.value || "";
+
+const support = document.getElementById("support").value;
+const city = document.getElementById("city")?.value || "";
+const radius = document.getElementById("radius")?.value || "";
+
+const supportLabels = {
+    sac_pain: "Sacs pain",
+    set_table: "Sets de table",
+    sous_bock: "Sous-bocks",
+    flyer: "Flyers",
+    affiche: "Affiches",
+    sac_pharmacie: "Sacs pharmacie",
+    sac_galette: "Sacs galette",
+    all: "Tous supports"
+};
+
+const campaignName = `Massive ${supportLabels[support] || support} – ${city}${radius ? " (" + radius + "km)" : ""}`;
+
+fetch("/log_massive_export", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+        "Content-Type": "application/json"
+    },
     body: JSON.stringify({
-        filename: "tournee.csv",
+        filename: campaignName,
         nb_commerces: data.length,
-        support: document.getElementById("support").value
+        support: support
     })
 })
 .then(function(response) {
