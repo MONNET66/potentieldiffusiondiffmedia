@@ -1426,20 +1426,38 @@ def export_campaign(token):
 def log_massive_export():
     data = request.get_json()
 
-    filename = data.get("filename", "tournee.csv")
     nb_commerces = data.get("nb_commerces", 0)
+    support = data.get("support", "")
+
+    quantite_map = {
+        "sac_pain": 1000,
+        "set_table": 1000,
+        "sous_bock": 250,
+        "flyer": 50,
+        "affiche": 1,
+        "sac_pharmacie": 1000,
+        "sac_galette": 1000,
+    }
+
+    quantite_totale = nb_commerces * quantite_map.get(support, 0)
+
+    filename = f"Campagne massive du {datetime.now().strftime('%d/%m/%Y')}"
 
     conn = sqlite3.connect(CAMPAIGN_DB_FILE)
     cur = conn.cursor()
 
     cur.execute("""
-        INSERT INTO massive_exports (username, filename, nb_commerces, created_at)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO massive_exports (
+            username, filename, nb_commerces, created_at, support, quantite_totale
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
     """, (
         session.get("username"),
         filename,
         nb_commerces,
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        support,
+        quantite_totale
     ))
 
     conn.commit()
