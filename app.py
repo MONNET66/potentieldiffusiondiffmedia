@@ -1460,6 +1460,23 @@ def log_massive_export():
         quantite_totale
     ))
 
+    token = uuid.uuid4().hex
+
+    cur.execute("""
+        INSERT INTO campaigns (
+            name, notes, created_by, created_at, token, search_zones, support
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        filename,
+        "Campagne massive",
+        session.get("username"),
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        token,
+        "[]",
+        support
+    ))
+    
     conn.commit()
     conn.close()
 
