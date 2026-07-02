@@ -1517,11 +1517,11 @@ function exportRouteCSV() {
         filename: "tournee.csv",
         nb_commerces: data.length
     })
-});
+}).finally(function() {
     link.click();
     document.body.removeChild(link);
-
     URL.revokeObjectURL(url);
+});
 }
 
 function openAddCommerceModal() {
