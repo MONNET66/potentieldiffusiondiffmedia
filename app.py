@@ -2177,7 +2177,7 @@ def dashboard_equipe():
                     <td>{annee}</td>
                     <td>{mois}</td>
                     <td>{display_name}</td>
-                    <td><a href="/campaign/{item['token']}">{item['name']}</a></td>
+                    <td><a href="/campaign/{item['token']}/export">{item['name']}</a></td>
                     <td>{item['support'] or ''}</td>
                     <td><span class="type-badge type-ciblee">Ciblée</span></td>
                     <td>{item['nb_commerces']}</td>
