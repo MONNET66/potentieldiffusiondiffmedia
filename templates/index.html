@@ -574,6 +574,7 @@
 
         {% if session.role in ["manager", "admin"] %}
             <a href="/mon_equipe" class="logout-btn">Mon équipe</a>
+		    <a href="/dashboard_equipe" class="logout-btn">Dashboard équipe</a>
         {% endif %}
 
         <a href="{{ url_for('logout') }}" class="logout-btn">Déconnexion</a>
