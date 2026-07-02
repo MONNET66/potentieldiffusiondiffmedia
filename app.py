@@ -1001,6 +1001,7 @@ def index():
         selected_types = get_selected_types_from_form(request.form)
         selected_type = selected_types[0] if len(selected_types) == 1 and selected_types[0] != "all" else "all"
         selected_support = request.form.get("support", "all")
+        session["selected_support"] = selected_support
         camping_stars = request.form.get("camping_stars", "all")
         search_value = (request.form.get("ville") or "").strip()
         mode = request.form.get("mode", "ville")
@@ -1169,7 +1170,7 @@ def create_campaign():
             cur = conn.cursor()
             token = uuid.uuid4().hex
 
-            selected_support = request.form.get("support", "")
+            selected_support = session.get("selected_support", "")
 
             cur.execute("""
                 INSERT INTO campaigns (
@@ -2101,7 +2102,7 @@ def dashboard_equipe():
             <th>Mois</th>
             <th>Commercial</th>
             <th>Nom du client</th>
-            <th>Type de commerce</th>
+            <th>Support</th>
             <th>Campagnes ciblées</th>
             <th>Campagnes massives</th>
         </tr>
