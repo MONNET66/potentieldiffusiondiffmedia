@@ -2136,7 +2136,7 @@ def dashboard_equipe():
                     <td>{display_name}</td>
                     <td><a href="/campaign/{item['token']}">{item['name']}</a></td>
                     <td>{item['support'] or ''}</td>
-                    <td>Ciblée</td>
+                    <td><span class="type-badge type-ciblee">Ciblée</span></td>
                     <td>{item['nb_commerces']}</td>
                     <td>{item['quantite_totale'] or 0}</td>
                 </tr>
@@ -2170,7 +2170,7 @@ def dashboard_equipe():
                     <td>{display_name}</td>
                     <td>{export['filename']}</td>
                     <td><span class="support-badge support-{export['support']}">{export['support'] or '-'}</span></td>
-                    <td>Massive</td>
+                    <td><span class="type-badge type-massive">Massive</span></td>
                     <td>{export['nb_commerces']}</td>
                     <td>{export['quantite_totale'] or 0}</td>
                 </tr>
@@ -2311,6 +2311,25 @@ def dashboard_equipe():
             font-size: 12px;
             font-weight: bold;
         }}
+
+         .type-badge {{
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+         }}
+
+         .type-ciblee {{
+            background: #e8f5e9;
+            color: #2e7d32;
+        }}
+
+        .type-massive {{
+            background: #e3f2fd;
+            color: #1565c0;
+        }}   
+        
     </style>
 
     <div class="dashboard-container">
