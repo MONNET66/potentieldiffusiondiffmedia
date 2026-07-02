@@ -523,9 +523,10 @@ def get_results_for_departement(departement_code, selected_types):
           AND latitude IS NOT NULL
           AND longitude IS NOT NULL
           AND COALESCE(departement, '') = ?
+          AND code_postal LIKE ?
           AND type IN ({placeholders})
         ORDER BY nom
-    """, [departement_code] + type_filter)
+    """, [departement_code, f"{departement_code}%"] + type_filter)
     rows = cursor.fetchall()
     conn.close()
     return build_results_from_rows(rows)
