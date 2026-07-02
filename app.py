@@ -2242,7 +2242,7 @@ def dashboard_equipe():
     for support, count in support_totals.items():
         support_summary += f"""
             <div class="summary-card">
-                <div class="summary-card-title">{support}</div>
+                <div class="summary-card-title">{"Tous les supports" if support == "all" else support}</div>
                 <div class="summary-card-value">{count}</div>
             </div>
         """    
@@ -2291,6 +2291,15 @@ def dashboard_equipe():
             border-radius: 8px;
             border: 1px solid #ddd;
             font-size: 14px;
+        }}
+
+        .filters input[type="month"] {{
+            border: 2px solid #f28c28;
+            background: #fff7ed;
+            font-weight: bold;
+            min-width: 210px;
+            padding: 12px;
+           border-radius: 12px;
         }}
 
         .filters button {{
