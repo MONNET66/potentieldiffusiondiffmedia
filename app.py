@@ -2067,6 +2067,11 @@ def dashboard_equipe():
     conn_campaign = get_campaign_connection()
     cur_campaign = conn_campaign.cursor()
 
+    total_campaigns = 0
+    total_commerces = 0
+    total_quantite = 0
+    active_commerciaux = set()
+
     rows = ""
 
     for commercial in commerciaux:
@@ -2100,6 +2105,11 @@ def dashboard_equipe():
 
             if selected_month and mois_key != selected_month:
                 continue
+
+    total_campaigns += 1
+    total_commerces += item["nb_commerces"] or 0
+    total_quantite += item["quantite_totale"] or 0
+    active_commerciaux.add(username)
 
             rows += f"""
                 <tr>
@@ -2188,7 +2198,32 @@ def dashboard_equipe():
             text-decoration: none;
             font-weight: bold;
         }}
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 28px;
+    }
 
+    .summary-card {
+        background: #fff7ed;
+        border-left: 6px solid #f28c28;
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+
+    .summary-card-title {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .summary-card-value {
+        color: #333;
+        font-size: 26px;
+        font-weight: bold;
+    }
         .dashboard-table {{
             width: 100%;
             border-collapse: collapse;
@@ -2242,6 +2277,28 @@ def dashboard_equipe():
 
             <button type="submit">Filtrer</button>
         </form>
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-card-title">Campagnes</div>
+                <div class="summary-card-value">{total_campaigns}</div>
+            </div>
+
+        <div class="summary-card">
+            <div class="summary-card-title">Commerces</div>
+            <div class="summary-card-value">{total_commerces}</div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-card-title">Quantité totale</div>
+            <div class="summary-card-value">{total_quantite}</div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-card-title">Commerciaux actifs</div>
+            <div class="summary-card-value">{len(active_commerciaux)}</div>
+        </div>
+    </div>
 
         <a href="/" class="back-link">← Retour</a>
 
