@@ -1961,11 +1961,18 @@ def commercial_detail(user_id):
     cur_campaign = conn_campaign.cursor()
 
     campaigns = cur_campaign.execute("""
-        SELECT id, name, created_at, token
-        FROM campaigns
-        WHERE created_by = ?
-        ORDER BY created_at DESC
-    """, (commercial["username"],)).fetchall()
+    SELECT
+        campaigns.id,
+        campaigns.name,
+        campaigns.created_at,
+        campaigns.token,
+        COUNT(campaign_items.id) AS nb_items
+    FROM campaigns
+    LEFT JOIN campaign_items ON campaign_items.campaign_id = campaigns.id
+    WHERE campaigns.created_by = ?
+    GROUP BY campaigns.id
+    ORDER BY campaigns.created_at DESC
+""", (commercial["username"],)).fetchall()
 
     conn_campaign.close()
 
@@ -1974,7 +1981,7 @@ def commercial_detail(user_id):
         campaign_rows += f"""
             <li>
                 <a href="/campaign/{campaign['token']}">{campaign['name']}</a>
-                ({campaign['created_at']})
+                ({campaign['created_at']}) — {campaign['nb_items']} commerce(s)
             </li>
         """
 
