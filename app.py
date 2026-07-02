@@ -2198,32 +2198,32 @@ def dashboard_equipe():
             text-decoration: none;
             font-weight: bold;
         }}
-    .summary-cards {
+    .summary-cards {{
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 18px;
         margin-bottom: 28px;
-    }
+    }}
 
-    .summary-card {
+    .summary-card {{
         background: #fff7ed;
         border-left: 6px solid #f28c28;
         border-radius: 14px;
         padding: 18px;
         box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-    }
+    }}
 
-    .summary-card-title {
+    .summary-card-title {{
         color: #666;
         font-size: 14px;
         margin-bottom: 8px;
-    }
+    }}
 
-    .summary-card-value {
+    .summary-card-value {{
         color: #333;
         font-size: 26px;
         font-weight: bold;
-    }
+    }}
         .dashboard-table {{
             width: 100%;
             border-collapse: collapse;
