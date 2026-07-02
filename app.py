@@ -2013,7 +2013,7 @@ def dashboard_equipe():
             SELECT
                 campaigns.created_at,
                 campaign_items.name,
-                campaign_items.type
+                campaigns.support
             FROM campaigns
             INNER JOIN campaign_items
                 ON campaign_items.campaign_id = campaigns.id
@@ -2032,7 +2032,7 @@ def dashboard_equipe():
                     <td>{mois}</td>
                     <td>{display_name}</td>
                     <td>{item['name']}</td>
-                    <td>{item['type']}</td>
+                    <td>{item['support'] or ''}</td>
                     <td>Oui</td>
                     <td>Non</td>
                 </tr>
