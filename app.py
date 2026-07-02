@@ -2068,13 +2068,17 @@ def dashboard_equipe():
 
         items = cur_campaign.execute("""
             SELECT
+                campaigns.name,
                 campaigns.created_at,
-                campaign_items.name,
-                campaigns.support
+                campaigns.support,
+                campaigns.token,
+                COUNT(campaign_items.id) AS nb_commerces,
+                SUM(COALESCE(campaign_items.quantite, 0)) AS quantite_totale
             FROM campaigns
-            INNER JOIN campaign_items
+            LEFT JOIN campaign_items
                 ON campaign_items.campaign_id = campaigns.id
             WHERE campaigns.created_by = ?
+            GROUP BY campaigns.id
             ORDER BY campaigns.created_at DESC
         """, (username,)).fetchall()
 
@@ -2083,6 +2087,7 @@ def dashboard_equipe():
             annee = created_at[:4]
             mois = created_at[5:7]
             mois_key = created_at[:7]
+
             if selected_month and mois_key != selected_month:
                 continue
 
@@ -2091,10 +2096,11 @@ def dashboard_equipe():
                     <td>{annee}</td>
                     <td>{mois}</td>
                     <td>{display_name}</td>
-                    <td>{item['name']}</td>
+                    <td><a href="/campaign/{item['token']}">{item['name']}</a></td>
                     <td>{item['support'] or ''}</td>
-                    <td>Oui</td>
-                    <td>Non</td>
+                    <td>Ciblée</td>
+                    <td>{item['nb_commerces']}</td>
+                    <td>{item['quantite_totale'] or 0}</td>
                 </tr>
             """
 
