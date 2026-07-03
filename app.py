@@ -2860,7 +2860,9 @@ def mon_dashboard():
                     </a>
                 </td>
                 <td><span class="support-badge">{item['support'] or '-'}</span></td>
-                <td><span class="type-badge type-ciblee">Ciblée</span></td>
+                <td>
+                    {"<span class='type-badge type-massive'>Massive</span>" if item["notes"] == "Campagne massive" else "<span class='type-badge type-ciblee'>Ciblée</span>"}
+                </td>
                 <td>{item['nb_commerces'] or 0}</td>
                 <td>{item['quantite_totale'] or 0}</td>
             </tr>
