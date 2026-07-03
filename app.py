@@ -2820,6 +2820,7 @@ def mon_dashboard():
         return "Accès refusé", 403
 
     username = session.get("username", "")
+    selected_month = request.args.get("month", "")
 
     conn = get_campaign_connection()
     cur = conn.cursor()
@@ -2842,30 +2843,25 @@ def mon_dashboard():
         ORDER BY campaigns.created_at DESC
     """, (username,)).fetchall()
 
-    massive = cur.execute("""
-        SELECT filename, nb_commerces, created_at, support, quantite_totale
-        FROM massive_exports
-        WHERE username = ?
-        ORDER BY created_at DESC
-    """, (username,)).fetchall()
-
     conn.close()
 
     total_ciblees = len(targeted)
-    total_massives = len(massive)
-    total_campaigns = total_ciblees + total_massives
+    total_campaigns = total_ciblees
 
     total_commerces = sum((row["nb_commerces"] or 0) for row in targeted)
-    total_commerces += sum((row["nb_commerces"] or 0) for row in massive)
 
     total_quantite = sum((row["quantite_totale"] or 0) for row in targeted)
-    total_quantite += sum((row["quantite_totale"] or 0) for row in massive)
 
     rows = ""
 
-    for item in targeted[:10]:
+    for item in targeted:
         created_at = item["created_at"] or ""
         date_label = created_at[:10]
+        
+        mois_key = created_at[:7]
+
+        if selected_month and mois_key != selected_month:
+            continue
         rows += f"""
             <tr>
                 <td>{date_label}</td>
@@ -2880,20 +2876,7 @@ def mon_dashboard():
                 </td>
                 <td>{item['nb_commerces'] or 0}</td>
                 <td>{item['quantite_totale'] or 0}</td>
-            </tr>
-        """
-
-    for export in massive[:10]:
-        created_at = export["created_at"] or ""
-        date_label = created_at[:10]
-        rows += f"""
-            <tr>
-                <td>{date_label}</td>
-                <td>{export['filename'] or 'Campagne massive'}</td>
-                <td><span class="support-badge">{export['support'] or '-'}</span></td>
-                <td><span class="type-badge type-massive">Massive</span></td>
-                <td>{export['nb_commerces'] or 0}</td>
-                <td>{export['quantite_totale'] or 0}</td>
+                <td>{item['quantite_totale'] or 0}</td>
             </tr>
         """
 
@@ -3128,6 +3111,15 @@ def mon_dashboard():
             </div>
         </div>
     </div>
+
+    <form method="GET" class="filters">
+        <div class="filter-group">
+            <label>Période</label>
+            <input type="month" name="month" value="{selected_month}">
+        </div>
+
+        <button type="submit">Filtrer</button>
+    </form>
 
     <a href="/" class="back-link">← Retour</a>
 
