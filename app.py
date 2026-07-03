@@ -1661,7 +1661,10 @@ def delete_campaign(token):
     conn.commit()
     conn.close()
 
-    return redirect(url_for("list_campaigns"))
+    if session.get("role") == "user":
+        return redirect(url_for("mon_dashboard"))
+    else:
+        return redirect(url_for("dashboard_equipe"))
 
 
 @app.route("/remove_temp_search/<int:index>")
