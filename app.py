@@ -1427,6 +1427,54 @@ def export_campaign(token):
     csv_content = "\ufeff" + output.getvalue()
     return Response(csv_content, mimetype="text/csv; charset=utf-8", headers={"Content-Disposition": f"attachment; filename=campagne_{campaign['name']}.csv"})
 
+@app.route("/massive_export/<int:campaign_id>/download")
+@login_required
+def massive_export_download(campaign_id):
+    conn = get_campaign_connection()
+    cur = conn.cursor()
+
+    items = cur.execute("""
+        SELECT name, type, adresse, ville, code_postal, telephone
+        FROM campaign_items
+        WHERE campaign_id = ?
+        ORDER BY name
+    """, (campaign_id,)).fetchall()
+
+    campaign = cur.execute("""
+        SELECT name
+        FROM campaigns
+        WHERE id = ?
+    """, (campaign_id,)).fetchone()
+
+    conn.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=";", quoting=csv.QUOTE_MINIMAL)
+
+    writer.writerow([
+        "Nom", "Type", "Adresse", "Ville", "Code postal", "Téléphone"
+    ])
+
+    for item in items:
+        writer.writerow([
+            item["name"] or "",
+            item["type"] or "",
+            item["adresse"] or "",
+            item["ville"] or "",
+            item["code_postal"] or "",
+            item["telephone"] or ""
+        ])
+
+    csv_content = "\ufeff" + output.getvalue()
+
+    return Response(
+        csv_content,
+        mimetype="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": f"attachment; filename=massive_{campaign['name']}.csv"
+        }
+    )
+
 @app.route("/log_massive_export", methods=["POST"])
 @login_required
 def log_massive_export():
@@ -2424,7 +2472,7 @@ def dashboard_equipe():
                         <span class="commercial-badge">👤 {display_name}</span>
                     </td>
                     <td>
-                        <a class="campaign-link" href="/campaign/{item['token']}{'/export' if item['notes'] != 'Campagne massive' else ''}">
+                        <a class="campaign-link" href="{f'/massive_export/{item["id"]}/download' if item['notes'] == 'Campagne massive' else f'/campaign/{item["token"]}/export'}">
                             {item['name']}
                         </a>
                     </td>
@@ -2855,7 +2903,7 @@ def mon_dashboard():
             <tr>
                 <td>{date_label}</td>
                 <td>
-                    <a class="campaign-link" href="/campaign/{item['token']}{'/export' if item['notes'] != 'Campagne massive' else ''}">
+                    <a class="campaign-link" href="{f'/massive_export/{item["id"]}/download' if item['notes'] == 'Campagne massive' else f'/campaign/{item["token"]}/export'}">
                         {item['name']}
                     </a>
                 </td>
