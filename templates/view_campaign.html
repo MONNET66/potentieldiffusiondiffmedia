@@ -213,7 +213,11 @@
 <div class="page">
     <div class="box">
         <div style="margin-bottom: 15px;">
-            <a href="/campaigns" style="
+            {% if session.role == "user" %}
+                <a href="/mon_dashboard" style="
+            {% else %}
+                <a href="/dashboard_equipe" style="
+            {% endif %}
                 text-decoration: none;
                 background: #4b5563;
                 color: white;
@@ -221,7 +225,7 @@
                 border-radius: 6px;
                 font-size: 14px;
             ">
-            ← Retour aux campagnes
+            ← Retour au dashboard
             </a>
         </div>
 
