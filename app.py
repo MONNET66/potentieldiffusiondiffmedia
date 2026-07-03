@@ -3050,6 +3050,46 @@ def mon_dashboard():
         color: #1565c0;
     }}
 
+    .filters {{
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 28px;
+        align-items: end;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 22px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }}
+
+    .filter-group label {{
+        display: block;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }}
+
+    .filters input {{
+        width: 100%;
+        padding: 13px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 15px;
+        box-sizing: border-box;
+        background: white;
+    }}
+
+    .filters button {{
+        background: #ff5a00;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 14px 26px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 15px;
+    }}
+
     .back-link {{
         display: inline-block;
         margin-bottom: 20px;
