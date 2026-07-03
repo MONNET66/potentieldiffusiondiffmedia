@@ -2843,8 +2843,6 @@ def mon_dashboard():
         ORDER BY campaigns.created_at DESC
     """, (username,)).fetchall()
 
-    conn.close()
-
     total_ciblees = len(targeted)
     total_campaigns = total_ciblees
 
@@ -2897,7 +2895,8 @@ def mon_dashboard():
                 <td>{potentiel_quantite}</td>
             </tr>
         """
-
+    conn.close()
+    
     return f"""
 <style>
     body {{
