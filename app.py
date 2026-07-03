@@ -2894,7 +2894,7 @@ def mon_dashboard():
                 </td>
                 <td>{item['nb_commerces'] or 0}</td>
                 <td>{item['quantite_totale'] or 0}</td>
-                <td>{item['quantite_totale'] or 0}</td>
+                <td>{potentiel_quantite}</td>
             </tr>
         """
 
@@ -3189,6 +3189,7 @@ def mon_dashboard():
             <th>Type</th>
             <th>Nb commerces</th>
             <th>Quantité totale</th>
+            <th>Potentiel quantité</th>
         </tr>
         {rows}
     </table>
