@@ -2686,11 +2686,23 @@ def dashboard_equipe():
         }}
 
         .back-link {{
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #111827;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ff5a00, #ff7a1a);
+            color: white;
             text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 10px;
             font-weight: bold;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(255,90,0,0.25);
+            transition: all 0.2s ease;
+        }}
+
+        .back-link:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255,90,0,0.35);
         }}
 
         .dashboard-table {{
@@ -3142,12 +3154,25 @@ def mon_dashboard():
     }}
 
     .back-link {{
-        display: inline-block;
-        margin-bottom: 20px;
-        color: #111827;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #ff5a00, #ff7a1a);
+        color: white;
         text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 10px;
         font-weight: bold;
+        font-size: 15px;
+        box-shadow: 0 4px 12px rgba(255,90,0,0.25);
+        transition: all 0.2s ease;
     }}
+
+    .back-link:hover {{
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255,90,0,0.35);
+    }}
+    
 </style>
 
 <div class="top-nav">
