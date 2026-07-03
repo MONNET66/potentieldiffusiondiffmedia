@@ -2083,16 +2083,16 @@ def mon_equipe():
             <tr>
                 <td><span class="manager-badge">👤 {manager_name}</span></td>
                 <td>
-                    <a class="commercial-link" href="/commercial/{member['id']}">
-                        {member['username']}
-                    </a>
+                    <a class="commercial-link" href="/commercial/{member['id']}">{member['username']}</a>
                 </td>
                 <td>
-                    <form method="POST" class="edit-form">
+                    <form method="POST" class="edit-form" id="form-{member['id']}">
                         <input type="hidden" name="member_id" value="{member['id']}">
                         <input type="text" name="display_name" value="{display_name}">
-                        <button type="submit">💾 Enregistrer</button>
                     </form>
+                </td>
+                <td>
+                    <button type="submit" form="form-{member['id']}" class="save-btn">💾 Enregistrer</button>
                 </td>
             </tr>
         """
@@ -2100,49 +2100,88 @@ def mon_equipe():
     return f"""
     <style>
         body {{
+            margin: 0;
             background: #f4f6f8;
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }}
-
-        .team-container {{
-            max-width: 1300px;
-            margin: 40px auto;
-            padding: 30px;
-        }}
-
-        .team-header {{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }}
-
-        .team-title {{
-            font-size: 32px;
-            font-weight: bold;
             color: #111827;
         }}
 
-        .back-btn {{
-            background: #f58220;
-            color: white;
-            text-decoration: none;
-            padding: 12px 18px;
-            border-radius: 10px;
-            font-weight: bold;
+        .top-nav {{
+            height: 78px;
+            background: white;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 14px;
+            padding: 0 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }}
 
-        .back-btn:hover {{
-            background: #e36d0a;
+        .user-pill {{
+            font-size: 18px;
+            margin-right: 20px;
+            color: #111827;
+        }}
+
+        .nav-btn {{
+            background: #ff5a00;
+            color: white;
+            text-decoration: none;
+            padding: 13px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(255,90,0,0.22);
+        }}
+
+        .page {{
+            padding: 24px;
         }}
 
         .team-card {{
             background: white;
-            border-radius: 18px;
-            padding: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-radius: 14px;
+            padding: 34px 28px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }}
+
+        .title-row {{
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 10px;
+        }}
+
+        .team-icon {{
+            font-size: 42px;
+            color: #5b2aa0;
+        }}
+
+        h1 {{
+            margin: 0;
+            font-size: 32px;
+        }}
+
+        .subtitle {{
+            margin: 0 0 26px 64px;
+            color: #4b5563;
+            font-size: 16px;
+        }}
+
+        .back-btn {{
+            display: inline-block;
+            background: #ff7a00;
+            color: white;
+            text-decoration: none;
+            padding: 13px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 28px;
+        }}
+
+        .table-wrap {{
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
         }}
 
         table {{
@@ -2151,86 +2190,132 @@ def mon_equipe():
         }}
 
         th {{
-            text-align: left;
+            background: #fff4e8;
             padding: 18px;
-            background: #f9fafb;
-            color: #6b7280;
-            font-size: 14px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #e5e7eb;
+            font-size: 16px;
+            text-align: center;
         }}
 
         td {{
-            padding: 18px;
-            border-bottom: 1px solid #f3f4f6;
+            padding: 20px 28px;
+            border-top: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
             vertical-align: middle;
+            font-size: 16px;
         }}
 
-        tr:hover {{
-            background: #fff7ed;
+        td:last-child {{
+            border-right: none;
+            text-align: center;
         }}
 
         .manager-badge {{
-            background: #fff7ed;
-            color: #f58220;
-            padding: 8px 14px;
-            border-radius: 999px;
-            font-weight: bold;
+            color: #111827;
+            font-weight: 500;
         }}
 
         .commercial-link {{
-            text-decoration: none;
-            color: #111827;
-            font-weight: bold;
-        }}
-
-        .commercial-link:hover {{
-            color: #f58220;
-        }}
-
-        .edit-form {{
-            display: flex;
-            gap: 10px;
-            align-items: center;
+            color: #4c1d95;
+            font-weight: 500;
         }}
 
         .edit-form input {{
-            padding: 10px 14px;
+            width: 75%;
+            padding: 12px 14px;
             border: 1px solid #d1d5db;
-            border-radius: 10px;
-            min-width: 220px;
+            border-radius: 7px;
+            font-size: 15px;
         }}
 
-        .edit-form button {{
-            background: #f58220;
+        .save-btn {{
+            background: #ff5a00;
             color: white;
             border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
-            cursor: pointer;
+            border-radius: 7px;
+            padding: 12px 18px;
             font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
         }}
 
-        .edit-form button:hover {{
-            background: #e36d0a;
+        .info-box {{
+            margin-top: 26px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-left: 5px solid #ff7a00;
+            border-radius: 10px;
+            padding: 22px 26px;
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+        }}
+
+        .info-icon {{
+            background: #ff8a00;
+            color: white;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex: 0 0 auto;
+        }}
+
+        .info-title {{
+            color: #f97316;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }}
+
+        .info-text {{
+            line-height: 1.6;
         }}
     </style>
 
-    <div class="team-container">
-        <div class="team-header">
-            <div class="team-title">Mon équipe</div>
+    <div class="top-nav">
+        <span class="user-pill">👤 {session.get("username", "")}</span>
+        <a class="nav-btn" href="/campaigns">Mes campagnes</a>
+        <a class="nav-btn" href="/mon_equipe">Mon équipe</a>
+        <a class="nav-btn" href="/dashboard_equipe">Dashboard équipe</a>
+        <a class="nav-btn" href="/logout">Déconnexion</a>
+    </div>
+
+    <div class="page">
+        <div class="team-card">
+            <div class="title-row">
+                <div class="team-icon">👥</div>
+                <h1>Mon équipe</h1>
+            </div>
+
+            <p class="subtitle">Gérez les commerciaux rattachés à votre compte</p>
+
             <a href="/" class="back-btn">← Retour</a>
+
+            <div class="table-wrap">
+                <table>
+                    <tr>
+                        <th>Manager</th>
+                        <th>Identifiant commercial</th>
+                        <th>Nom affiché</th>
+                        <th>Actions</th>
+                    </tr>
+                    {rows}
+                </table>
+            </div>
         </div>
 
-        <div class="team-card">
-            <table>
-                <tr>
-                    <th>Manager</th>
-                    <th>Commercial</th>
-                    <th>Nom affiché</th>
-                </tr>
-                {rows}
-            </table>
+        <div class="info-box">
+            <div class="info-icon">i</div>
+            <div>
+                <div class="info-title">Information</div>
+                <div class="info-text">
+                    Modifiez le nom affiché de vos commerciaux. Ce nom sera visible dans toute l'application.<br>
+                    L'identifiant commercial sert à la connexion des utilisateurs.
+                </div>
+            </div>
         </div>
     </div>
     """
