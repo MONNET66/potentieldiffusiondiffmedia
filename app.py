@@ -2074,23 +2074,28 @@ def mon_equipe():
 
     conn.close()
 
-    rows += f"""
-        <tr>
-            <td><span class="manager-badge">👤 {manager_name}</span></td>
-            <td>
-                <a class="commercial-link" href="/commercial/{member['id']}">
-                    {member['username']}
-                </a>
-            </td>
-            <td>
-                <form method="POST" class="edit-form">
-                    <input type="hidden" name="member_id" value="{member['id']}">
-                    <input type="text" name="display_name" value="{display_name}">
-                    <button type="submit">💾 Enregistrer</button>
-                </form>
-            </td>
-        </tr>
-    """
+    rows = ""
+    for member in members:
+        manager_name = member["manager_username"] or session.get("username", "")
+        display_name = member["display_name"] or ""
+
+        rows += f"""
+            <tr>
+                <td><span class="manager-badge">👤 {manager_name}</span></td>
+                <td>
+                    <a class="commercial-link" href="/commercial/{member['id']}">
+                        {member['username']}
+                    </a>
+                </td>
+                <td>
+                    <form method="POST" class="edit-form">
+                        <input type="hidden" name="member_id" value="{member['id']}">
+                        <input type="text" name="display_name" value="{display_name}">
+                        <button type="submit">💾 Enregistrer</button>
+                    </form>
+                </td>
+            </tr>
+        """
 
     return f"""
     <style>
