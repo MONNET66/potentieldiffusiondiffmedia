@@ -569,8 +569,6 @@
         {% if session.role == "admin" %}
             <button type="button" class="logout-btn" onclick="openAddCommerceModal()">Ajouter un commerce</button>
         {% endif %}
-
-        <a href="/campaigns" class="logout-btn">Mes campagnes</a>
 		
 		{% if session.role == "user" %}
     		<a href="/mon_dashboard" class="logout-btn">Mon dashboard</a>
