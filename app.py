@@ -2495,46 +2495,7 @@ def dashboard_equipe():
                     </td>
                 </tr>
             """
-
-        massive_items = cur_campaign.execute("""
-            SELECT filename, nb_commerces, created_at, support, quantite_totale
-            FROM massive_exports
-            WHERE username = ?
-            ORDER BY created_at DESC
-        """, (username,)).fetchall()
-
-        for export in massive_items:
-            created_at = export["created_at"]
-            annee = created_at[:4]
-            mois = created_at[5:7]
-            mois_key = created_at[:7]
-
-            if selected_month and mois_key != selected_month:
-                continue
-
-            total_campaigns += 1
-            total_commerces += export["nb_commerces"] or 0
-            total_quantite += export["quantite_totale"] or 0
-            potentiel_quantite = export["quantite_totale"] or 0
-            active_commerciaux.add(username)
-
-            support_key = item["support"] or "Sans support"
-            support_totals[support_key] = support_totals.get(support_key, 0) + 1
-
-            rows += f"""
-                <tr>
-                    <td>{annee}</td>
-                    <td>{mois}</td>
-                    <td>{display_name}</td>
-                    <td>{export['filename'] or 'Campagne massive'}</td>
-                    <td><span class="support-badge support-{export['support']}">{export['support'] or '-'}</span></td>
-                    <td><span class="type-badge type-massive">Massive</span></td>
-                    <td>{export['nb_commerces']}</td>
-                    <td>{export['quantite_totale'] or 0}</td>
-                    <td>{potentiel_quantite}</td>
-                </tr>
-            """
-
+            
     conn_campaign.close()
 
     commercial_options = ""
