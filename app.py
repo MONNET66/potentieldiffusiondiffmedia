@@ -2493,6 +2493,21 @@ def dashboard_equipe():
                     <td>
                         <span class="potentiel-pill">{potentiel_quantite}</span>
                     </td>
+                    <td>
+                        <form method="POST" action="/campaign/{item['token']}/delete" onsubmit="return confirm('Supprimer cette campagne ?');">
+                            <button type="submit" style="
+                                background:#dc2626;
+                                color:white;
+                                border:none;
+                                padding:8px 12px;
+                                border-radius:6px;
+                                cursor:pointer;
+                                font-weight:bold;
+                            ">
+                                Supprimer
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             """
             
@@ -2806,6 +2821,7 @@ def dashboard_equipe():
                 <th>Nb commerces</th>
                 <th>Quantité totale</th>
                 <th>Potentiel quantité</th>
+                <th>Action</th>
             </tr>
             {rows}
         </table>
@@ -2893,6 +2909,21 @@ def mon_dashboard():
                 <td>{item['nb_commerces'] or 0}</td>
                 <td>{item['quantite_totale'] or 0}</td>
                 <td>{potentiel_quantite}</td>
+                <td>
+                    <form method="POST" action="/campaign/{item['token']}/delete" onsubmit="return confirm('Supprimer cette campagne ?');">
+                        <button type="submit" style="
+                            background:#dc2626;
+                            color:white;
+                            border:none;
+                            padding:8px 12px;
+                            border-radius:6px;
+                            cursor:pointer;
+                            font-weight:bold;
+                    ">
+                        Supprimer
+                    </button>
+                </form>
+            </td>
             </tr>
         """
     conn.close()
@@ -3189,6 +3220,7 @@ def mon_dashboard():
             <th>Nb commerces</th>
             <th>Quantité totale</th>
             <th>Potentiel quantité</th>
+            <th>Action</th>
         </tr>
         {rows}
     </table>
