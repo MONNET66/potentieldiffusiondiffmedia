@@ -2424,7 +2424,7 @@ def dashboard_equipe():
                         <span class="commercial-badge">👤 {display_name}</span>
                     </td>
                     <td>
-                        <a class="campaign-link" href="/campaign/{item['token']}{'/export' if item['notes'] == 'Campagne massive' else ''}">
+                        <a class="campaign-link" href="/campaign/{item['token']}/export"
                             {item['name']}
                         </a>
                     </td>
@@ -2855,7 +2855,7 @@ def mon_dashboard():
             <tr>
                 <td>{date_label}</td>
                 <td>
-                    <a class="campaign-link" href="/campaign/{item['token']}">
+                    <a class="campaign-link" href="/campaign/{item['token']}/export">
                         {item['name']}
                     </a>
                 </td>
