@@ -2424,7 +2424,7 @@ def dashboard_equipe():
                         <span class="commercial-badge">👤 {display_name}</span>
                     </td>
                     <td>
-                        <a class="campaign-link" href="/campaign/{item['token']}/export"
+                        <a class="campaign-link" href="/campaign/{item['token']}{'/export' if item['notes'] != 'Campagne massive' else ''}">
                             {item['name']}
                         </a>
                     </td>
@@ -2472,7 +2472,7 @@ def dashboard_equipe():
                     <td>{annee}</td>
                     <td>{mois}</td>
                     <td>{display_name}</td>
-                    <td>{export['filename']}</td>
+                    <td>{export['filename'] or 'Campagne massive'}</td>
                     <td><span class="support-badge support-{export['support']}">{export['support'] or '-'}</span></td>
                     <td><span class="type-badge type-massive">Massive</span></td>
                     <td>{export['nb_commerces']}</td>
@@ -2855,7 +2855,7 @@ def mon_dashboard():
             <tr>
                 <td>{date_label}</td>
                 <td>
-                    <a class="campaign-link" href="/campaign/{item['token']}/export">
+                    <a class="campaign-link" href="/campaign/{item['token']}{'/export' if item['notes'] != 'Campagne massive' else ''}">
                         {item['name']}
                     </a>
                 </td>
@@ -2872,7 +2872,7 @@ def mon_dashboard():
         rows += f"""
             <tr>
                 <td>{date_label}</td>
-                <td>{export['filename']}</td>
+                <td>{export['filename'] or 'Campagne massive'}</td>
                 <td><span class="support-badge">{export['support'] or '-'}</span></td>
                 <td><span class="type-badge type-massive">Massive</span></td>
                 <td>{export['nb_commerces'] or 0}</td>
