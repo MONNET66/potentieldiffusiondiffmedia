@@ -1083,10 +1083,15 @@ def index():
     if selected_support == "all":
         supports = sum(totals_by_label.values())
         stats = sorted(totals_by_label.items(), key=lambda x: x[0])
+        
     else:
         selected_label = SUPPORT_LABELS.get(selected_support)
         supports = totals_by_label.get(selected_label, 0)
         stats = [(selected_label, supports)] if selected_label else []
+
+        if selected_support == "affiche":
+            potentiel = supports
+    
     available_supports = get_available_supports(selected_types)
 
     return render_template(
