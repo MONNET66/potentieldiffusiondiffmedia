@@ -1467,11 +1467,17 @@ def massive_export_download(campaign_id):
 
     csv_content = "\ufeff" + output.getvalue()
 
+    safe_filename = re.sub(
+        r"[^A-Za-z0-9_.-]+",
+        "_",
+        campaign["name"] or "campagne_massive"
+    )
+
     return Response(
         csv_content,
         mimetype="text/csv; charset=utf-8",
         headers={
-            "Content-Disposition": f"attachment; filename=massive_{campaign['name']}.csv"
+            "Content-Disposition": f"attachment; filename=massive_{safe_filename}.csv"
         }
     )
 
