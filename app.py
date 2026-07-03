@@ -2797,6 +2797,337 @@ def dashboard_equipe():
 
     </div>
     """
+
+@app.route("/mon_dashboard")
+@login_required
+def mon_dashboard():
+    if session.get("role") != "user":
+        return "Accès refusé", 403
+
+    username = session.get("username", "")
+
+    conn = get_campaign_connection()
+    cur = conn.cursor()
+
+    targeted = cur.execute("""
+        SELECT
+            campaigns.id,
+            campaigns.name,
+            campaigns.notes,
+            campaigns.created_at,
+            campaigns.support,
+            campaigns.token,
+            COUNT(campaign_items.id) AS nb_commerces,
+            SUM(COALESCE(campaign_items.quantite, 0)) AS quantite_totale
+        FROM campaigns
+        LEFT JOIN campaign_items
+            ON campaign_items.campaign_id = campaigns.id
+        WHERE campaigns.created_by = ?
+        GROUP BY campaigns.id
+        ORDER BY campaigns.created_at DESC
+    """, (username,)).fetchall()
+
+    massive = cur.execute("""
+        SELECT filename, nb_commerces, created_at, support, quantite_totale
+        FROM massive_exports
+        WHERE username = ?
+        ORDER BY created_at DESC
+    """, (username,)).fetchall()
+
+    conn.close()
+
+    total_ciblees = len(targeted)
+    total_massives = len(massive)
+    total_campaigns = total_ciblees + total_massives
+
+    total_commerces = sum((row["nb_commerces"] or 0) for row in targeted)
+    total_commerces += sum((row["nb_commerces"] or 0) for row in massive)
+
+    total_quantite = sum((row["quantite_totale"] or 0) for row in targeted)
+    total_quantite += sum((row["quantite_totale"] or 0) for row in massive)
+
+    rows = ""
+
+    for item in targeted[:10]:
+        created_at = item["created_at"] or ""
+        date_label = created_at[:10]
+        rows += f"""
+            <tr>
+                <td>{date_label}</td>
+                <td>
+                    <a class="campaign-link" href="/campaign/{item['token']}">
+                        {item['name']}
+                    </a>
+                </td>
+                <td><span class="support-badge">{item['support'] or '-'}</span></td>
+                <td><span class="type-badge type-ciblee">Ciblée</span></td>
+                <td>{item['nb_commerces'] or 0}</td>
+                <td>{item['quantite_totale'] or 0}</td>
+            </tr>
+        """
+
+    for export in massive[:10]:
+        created_at = export["created_at"] or ""
+        date_label = created_at[:10]
+        rows += f"""
+            <tr>
+                <td>{date_label}</td>
+                <td>{export['filename']}</td>
+                <td><span class="support-badge">{export['support'] or '-'}</span></td>
+                <td><span class="type-badge type-massive">Massive</span></td>
+                <td>{export['nb_commerces'] or 0}</td>
+                <td>{export['quantite_totale'] or 0}</td>
+            </tr>
+        """
+
+    return f"""
+<style>
+    body {{
+        margin: 0;
+        background: #f4f6f8;
+        font-family: Arial, sans-serif;
+        color: #111827;
+    }}
+
+    .top-nav {{
+        height: 78px;
+        background: white;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 14px;
+        padding: 0 28px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }}
+
+    .user-pill {{
+        font-size: 18px;
+        margin-right: 20px;
+    }}
+
+    .nav-btn {{
+        background: #ff5a00;
+        color: white;
+        text-decoration: none;
+        padding: 13px 18px;
+        border-radius: 8px;
+        font-weight: bold;
+    }}
+
+    .dashboard-container {{
+        margin: 24px;
+        background: white;
+        border-radius: 14px;
+        padding: 34px 28px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }}
+
+    .dashboard-title-row {{
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 8px;
+    }}
+
+    .dashboard-icon {{
+        font-size: 42px;
+        color: #5b2aa0;
+    }}
+
+    .dashboard-title {{
+        font-size: 32px;
+        font-weight: bold;
+    }}
+
+    .dashboard-subtitle {{
+        margin: 0 0 28px 64px;
+        color: #4b5563;
+        font-size: 16px;
+    }}
+
+    .summary-cards {{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+        margin-bottom: 28px;
+    }}
+
+    .summary-card {{
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 22px;
+        background: white;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        min-height: 100px;
+    }}
+
+    .summary-icon {{
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        background: #fff1e6;
+    }}
+
+    .summary-card-title {{
+        font-size: 16px;
+        margin-bottom: 8px;
+    }}
+
+    .summary-card-value {{
+        font-size: 30px;
+        font-weight: bold;
+    }}
+
+    .summary-card-help {{
+        color: #4b5563;
+        font-size: 14px;
+        margin-top: 4px;
+    }}
+
+    .dashboard-table {{
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 12px;
+    }}
+
+    .dashboard-table th {{
+        background: #fff4e8;
+        color: #111827;
+        padding: 14px;
+        text-align: left;
+    }}
+
+    .dashboard-table td {{
+        padding: 14px;
+        border-bottom: 1px solid #eee;
+    }}
+
+    .dashboard-table tr:nth-child(even) {{
+        background: #fafafa;
+    }}
+
+    .dashboard-table tr:hover {{
+        background: #fff4e8;
+    }}
+
+    .campaign-link {{
+        color: #4c1d95;
+        font-weight: bold;
+        text-decoration: none;
+    }}
+
+    .support-badge {{
+        background: #fff7ed;
+        color: #f97316;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-weight: bold;
+        font-size: 12px;
+    }}
+
+    .type-badge {{
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: bold;
+    }}
+
+    .type-ciblee {{
+        background: #e8f5e9;
+        color: #2e7d32;
+    }}
+
+    .type-massive {{
+        background: #e3f2fd;
+        color: #1565c0;
+    }}
+
+    .back-link {{
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #111827;
+        text-decoration: none;
+        font-weight: bold;
+    }}
+</style>
+
+<div class="top-nav">
+    <span class="user-pill">👤 {username}</span>
+    <a class="nav-btn" href="/campaigns">Mes campagnes</a>
+    <a class="nav-btn" href="/logout">Déconnexion</a>
+</div>
+
+<div class="dashboard-container">
+
+    <div class="dashboard-title-row">
+        <div class="dashboard-icon">📊</div>
+        <div class="dashboard-title">Mon dashboard</div>
+    </div>
+
+    <p class="dashboard-subtitle">Vue d'ensemble de vos campagnes et distributions</p>
+
+    <div class="summary-cards">
+        <div class="summary-card">
+            <div class="summary-icon">📋</div>
+            <div>
+                <div class="summary-card-title">Total campagnes</div>
+                <div class="summary-card-value">{total_campaigns}</div>
+                <div class="summary-card-help">Ciblées + massives</div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-icon">🎯</div>
+            <div>
+                <div class="summary-card-title">Campagnes ciblées</div>
+                <div class="summary-card-value">{total_ciblees}</div>
+                <div class="summary-card-help">Campagnes enregistrées</div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-icon">🏪</div>
+            <div>
+                <div class="summary-card-title">Commerces touchés</div>
+                <div class="summary-card-value">{total_commerces}</div>
+                <div class="summary-card-help">Toutes campagnes</div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-icon">📦</div>
+            <div>
+                <div class="summary-card-title">Quantités distribuées</div>
+                <div class="summary-card-value">{total_quantite}</div>
+                <div class="summary-card-help">Supports distribués</div>
+            </div>
+        </div>
+    </div>
+
+    <a href="/" class="back-link">← Retour</a>
+
+    <table class="dashboard-table">
+        <tr>
+            <th>Date</th>
+            <th>Campagne</th>
+            <th>Support</th>
+            <th>Type</th>
+            <th>Nb commerces</th>
+            <th>Quantité totale</th>
+        </tr>
+        {rows}
+    </table>
+
+</div>
+"""    
     
 @app.route("/commercial/<int:user_id>")
 @login_required
