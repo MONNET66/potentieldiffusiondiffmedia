@@ -2074,35 +2074,160 @@ def mon_equipe():
 
     conn.close()
 
-    rows = ""
-    for member in members:
-        manager_name = member["manager_username"] or session.get("username", "")
-        display_name = member["display_name"] or ""
-        rows += f"""
-            <tr>
-                <td>{manager_name}</td>
-                <td><a href="/commercial/{member['id']}">{member['username']}</a></td>
-                <td>
-                    <form method="POST" style="display:flex; gap:8px;">
-                        <input type="hidden" name="member_id" value="{member['id']}">
-                        <input type="text" name="display_name" value="{display_name}">
-                        <button type="submit">Enregistrer</button>
-                    </form>
-                </td>
-            </tr>
-        """
+    rows += f"""
+        <tr>
+            <td><span class="manager-badge">👤 {manager_name}</span></td>
+            <td>
+                <a class="commercial-link" href="/commercial/{member['id']}">
+                    {member['username']}
+                </a>
+            </td>
+            <td>
+                <form method="POST" class="edit-form">
+                    <input type="hidden" name="member_id" value="{member['id']}">
+                    <input type="text" name="display_name" value="{display_name}">
+                    <button type="submit">💾 Enregistrer</button>
+                </form>
+            </td>
+        </tr>
+    """
 
     return f"""
-    <h2>Mon équipe</h2>
-    <p><a href="/">← Retour</a></p>
-    <table border="1" cellpadding="8" cellspacing="0">
-        <tr>
-            <th>Manager</th>
-            <th>Identifiant commercial</th>
-            <th>Nom affiché</th>
-        </tr>
-        {rows}
-    </table>
+    <style>
+        body {{
+            background: #f4f6f8;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }}
+
+        .team-container {{
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 30px;
+        }}
+
+        .team-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }}
+
+        .team-title {{
+            font-size: 32px;
+            font-weight: bold;
+            color: #111827;
+        }}
+
+        .back-btn {{
+            background: #f58220;
+            color: white;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+        }}
+
+        .back-btn:hover {{
+            background: #e36d0a;
+        }}
+
+        .team-card {{
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }}
+
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+        }}
+
+        th {{
+            text-align: left;
+            padding: 18px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 14px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e5e7eb;
+        }}
+
+        td {{
+            padding: 18px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }}
+
+        tr:hover {{
+            background: #fff7ed;
+        }}
+
+        .manager-badge {{
+            background: #fff7ed;
+            color: #f58220;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-weight: bold;
+        }}
+
+        .commercial-link {{
+            text-decoration: none;
+            color: #111827;
+            font-weight: bold;
+        }}
+
+        .commercial-link:hover {{
+            color: #f58220;
+        }}
+
+        .edit-form {{
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }}
+
+        .edit-form input {{
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            min-width: 220px;
+        }}
+
+        .edit-form button {{
+            background: #f58220;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }}
+
+        .edit-form button:hover {{
+            background: #e36d0a;
+        }}
+    </style>
+
+    <div class="team-container">
+        <div class="team-header">
+            <div class="team-title">Mon équipe</div>
+            <a href="/" class="back-btn">← Retour</a>
+        </div>
+
+        <div class="team-card">
+            <table>
+                <tr>
+                    <th>Manager</th>
+                    <th>Commercial</th>
+                    <th>Nom affiché</th>
+                </tr>
+                {rows}
+            </table>
+        </div>
+    </div>
     """
 @app.route("/dashboard_equipe")
 @login_required
@@ -2202,22 +2327,28 @@ def dashboard_equipe():
             support_totals[support_key] = support_totals.get(support_key, 0) + 1
 
             rows += f"""
-                <tr>
-                    <td>{annee}</td>
-                    <td>{mois}</td>
-                    <td>{display_name}</td>
+                <tr class="dashboard-row">
+                    <td><span class="year-pill">{annee}</span></td>
+                    <td><span class="month-pill">{mois}</span></td>
                     <td>
-                        <a href="/campaign/{item['token']}{'/export' if item['notes'] == 'Campagne massive' else ''}">
+                        <span class="commercial-badge">👤 {display_name}</span>
+                    </td>
+                    <td>
+                        <a class="campaign-link" href="/campaign/{item['token']}{'/export' if item['notes'] == 'Campagne massive' else ''}">
                             {item['name']}
                         </a>
                     </td>
-                    <td>{item['support'] or ''}</td>
+                    <td>
+                        <span class="support-badge">{item['support'] or '-'}</span>
+                    </td>
                     <td>
                         {"<span class='type-badge type-massive'>Massive</span>" if item["notes"] == "Campagne massive" else "<span class='type-badge type-ciblee'>Ciblée</span>"}
                     </td>
-                    <td>{item['nb_commerces']}</td>
-                    <td>{item['quantite_totale'] or 0}</td>
-                    <td>{potentiel_quantite}</td>
+                    <td><strong>{item['nb_commerces']}</strong></td>
+                    <td><strong>{item['quantite_totale'] or 0}</strong></td>
+                    <td>
+                        <span class="potentiel-pill">{potentiel_quantite}</span>
+                    </td>
                 </tr>
             """
 
