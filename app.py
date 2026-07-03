@@ -2502,103 +2502,164 @@ def dashboard_equipe():
     return f"""
     <style>
         body {{
-            background: #f5f5f5;
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            background: #f4f6f8;
+            font-family: Arial, sans-serif;
+            color: #111827;
+        }}
+
+        .top-nav {{
+            height: 78px;
+            background: white;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 14px;
+            padding: 0 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }}
+
+        .user-pill {{
+            font-size: 18px;
+            margin-right: 20px;
+        }}
+
+        .nav-btn {{
+            background: #ff5a00;
+            color: white;
+            text-decoration: none;
+            padding: 13px 18px;
+            border-radius: 8px;
+            font-weight: bold;
         }}
 
         .dashboard-container {{
-            max-width: 1400px;
-            margin: 30px auto;
+            margin: 24px;
             background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 14px;
+            padding: 34px 28px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
         }}
 
-        .dashboard-header {{
+        .dashboard-title-row {{
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            gap: 18px;
+            margin-bottom: 8px;
+        }}
+
+        .dashboard-icon {{
+            font-size: 42px;
+            color: #5b2aa0;
         }}
 
         .dashboard-title {{
-            color: #f28c28;
-            font-size: 28px;
+            font-size: 32px;
             font-weight: bold;
+        }}
+
+        .dashboard-subtitle {{
+            margin: 0 0 28px 64px;
+            color: #4b5563;
+            font-size: 16px;
+        }}
+
+        .summary-cards {{
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+            margin-bottom: 28px;
+        }}
+
+        .summary-card {{
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            min-height: 100px;
+        }}
+
+        .summary-icon {{
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            background: #fff1e6;
+        }}
+
+        .summary-card-title {{
+            font-size: 16px;
+            color: #111827;
+            margin-bottom: 8px;
+        }}
+
+        .summary-card-value {{
+            font-size: 30px;
+            font-weight: bold;
+            color: #111827;
+        }}
+
+        .summary-card-help {{
+            color: #4b5563;
+            font-size: 14px;
+            margin-top: 4px;
         }}
 
         .filters {{
-            display: flex;
-            gap: 12px;
-            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 28px;
+            align-items: end;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+        }}
+
+        .filter-group label {{
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
         }}
 
         .filters input,
-        .filters select,
-        .filters button {{
-            padding: 10px 14px;
+        .filters select {{
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 14px;
-        }}
-
-        .filters input[type="month"] {{
-            border: 2px solid #f28c28;
-            background: #fff7ed;
-            font-weight: bold;
-            min-width: 210px;
-            padding: 12px;
-           border-radius: 12px;
+            font-size: 15px;
+            box-sizing: border-box;
+            background: white;
         }}
 
         .filters button {{
-            background: #f28c28;
+            background: #ff5a00;
             color: white;
             border: none;
-            cursor: pointer;
+            border-radius: 8px;
+            padding: 14px 26px;
             font-weight: bold;
-        }}
-
-        .filters button:hover {{
-            background: #d97414;
+            cursor: pointer;
+            font-size: 15px;
         }}
 
         .back-link {{
             display: inline-block;
             margin-bottom: 20px;
-            color: #333;
+            color: #111827;
             text-decoration: none;
             font-weight: bold;
         }}
-    .summary-cards {{
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 18px;
-        margin-bottom: 28px;
-    }}
 
-    .summary-card {{
-        background: #fff7ed;
-        border-left: 6px solid #f28c28;
-        border-radius: 14px;
-        padding: 18px;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-    }}
-
-    .summary-card-title {{
-        color: #666;
-        font-size: 14px;
-        margin-bottom: 8px;
-    }}
-
-    .summary-card-value {{
-        color: #333;
-        font-size: 26px;
-        font-weight: bold;
-    }}
         .dashboard-table {{
             width: 100%;
             border-collapse: collapse;
@@ -2607,8 +2668,8 @@ def dashboard_equipe():
         }}
 
         .dashboard-table th {{
-            background: #f28c28;
-            color: white;
+            background: #fff4e8;
+            color: #111827;
             padding: 14px;
             text-align: left;
         }}
@@ -2626,24 +2687,15 @@ def dashboard_equipe():
             background: #fff4e8;
         }}
 
-        .badge {{
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }}
-
-         .type-badge {{
+        .type-badge {{
             display: inline-block;
             padding: 6px 12px;
             border-radius: 999px;
             font-size: 12px;
             font-weight: bold;
-         }}
+        }}
 
-         .type-ciblee {{
+        .type-ciblee {{
             background: #e8f5e9;
             color: #2e7d32;
         }}
@@ -2651,54 +2703,82 @@ def dashboard_equipe():
         .type-massive {{
             background: #e3f2fd;
             color: #1565c0;
-        }}   
-        
+        }}
     </style>
+
+    <div class="top-nav">
+        <span class="user-pill">👤 {session.get("username", "")}</span>
+        <a class="nav-btn" href="/campaigns">Mes campagnes</a>
+        <a class="nav-btn" href="/mon_equipe">Mon équipe</a>
+        <a class="nav-btn" href="/dashboard_equipe">Dashboard équipe</a>
+        <a class="nav-btn" href="/logout">Déconnexion</a>
+    </div>
 
     <div class="dashboard-container">
 
-        <div class="dashboard-header">
+        <div class="dashboard-title-row">
+            <div class="dashboard-icon">📊</div>
             <div class="dashboard-title">Dashboard équipe</div>
         </div>
 
-        <form method="GET" class="filters">
-            <input type="month" name="month" value="{selected_month}">
+        <p class="dashboard-subtitle">Vue d'ensemble des performances de votre équipe</p>
 
-            <select name="commercial">
-                <option value="">Tous les commerciaux</option>
-                {commercial_options}
-            </select>
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-icon">📋</div>
+                <div>
+                    <div class="summary-card-title">Total campagnes</div>
+                    <div class="summary-card-value">{total_campaigns}</div>
+                    <div class="summary-card-help">Campagnes créées</div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon">🏪</div>
+                <div>
+                    <div class="summary-card-title">Total commerces</div>
+                    <div class="summary-card-value">{total_commerces}</div>
+                    <div class="summary-card-help">Commerces ciblés</div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon">📦</div>
+                <div>
+                    <div class="summary-card-title">Quantités distribuées</div>
+                    <div class="summary-card-value">{total_quantite}</div>
+                    <div class="summary-card-help">Supports distribués</div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon">👥</div>
+                <div>
+                    <div class="summary-card-title">Commerciaux actifs</div>
+                    <div class="summary-card-value">{len(active_commerciaux)}</div>
+                    <div class="summary-card-help">Sur la période filtrée</div>
+                </div>
+            </div>
+        </div>
+
+        <form method="GET" class="filters">
+            <div class="filter-group">
+                <label>Période</label>
+                <input type="month" name="month" value="{selected_month}">
+            </div>
+
+            <div class="filter-group">
+                <label>Commercial</label>
+                <select name="commercial">
+                    <option value="">Tous les commerciaux</option>
+                    {commercial_options}
+                </select>
+            </div>
 
             <button type="submit">Filtrer</button>
         </form>
 
-        <div class="summary-cards">
-            <div class="summary-card">
-                <div class="summary-card-title">Campagnes</div>
-                <div class="summary-card-value">{total_campaigns}</div>
-            </div>
-
-        <div class="summary-card">
-            <div class="summary-card-title">Commerces</div>
-            <div class="summary-card-value">{total_commerces}</div>
-        </div>
-
-        <div class="summary-card">
-            <div class="summary-card-title">Quantité totale</div>
-            <div class="summary-card-value">{total_quantite}</div>
-        </div>
-
-        <div class="summary-card">
-            <div class="summary-card-title">Commerciaux actifs</div>
-            <div class="summary-card-value">{len(active_commerciaux)}</div>
-        </div>
-    </div>
-
-    <div class="summary-cards" style="margin-top:20px;">
-        {support_summary}
-    </div>
-
-    <a href="/" class="back-link">← Retour</a>
+        <a href="/" class="back-link">← Retour</a>
 
         <table class="dashboard-table">
             <tr>
