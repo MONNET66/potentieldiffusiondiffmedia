@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>{{ campaign["name"] }}</title>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
     <style>
         * {
             box-sizing: border-box;
@@ -42,12 +44,13 @@
         }
 
         .back-btn {
-            background: #ff5a00;
+            background: linear-gradient(135deg, #ff5a00, #ff7a1a);
             color: white;
             text-decoration: none;
             padding: 13px 18px;
             border-radius: 10px;
             font-weight: bold;
+            box-shadow: 0 4px 12px rgba(255,90,0,0.25);
         }
 
         .page {
@@ -66,6 +69,7 @@
         h1 {
             margin: 0;
             font-size: 40px;
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
@@ -73,10 +77,261 @@
             color: #4b5563;
             font-size: 18px;
         }
+
+        .section {
+            margin-top: 26px;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 22px;
+            background: white;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-top: 32px;
+        }
+
+        .info-card,
+        .metric-card,
+        .action-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            background: white;
+            padding: 20px;
+        }
+
+        .info-card {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            min-height: 118px;
+        }
+
+        .info-icon,
+        .metric-icon,
+        .action-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            background: #fff3e8;
+            color: #ff5a00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .info-label,
+        .metric-help,
+        .action-help {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .info-value {
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .csv-link {
+            display: inline-block;
+            margin-top: 6px;
+            color: #ff5a00;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .notes-box {
+            margin-top: 24px;
+            border: 1px solid #ffd28a;
+            background: #fffaf0;
+            border-radius: 16px;
+            padding: 22px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .notes-icon {
+            color: #ff5a00;
+            font-size: 28px;
+        }
+
+        .notes-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .notes-text {
+            color: #111827;
+            line-height: 1.5;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .metric-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            min-height: 130px;
+        }
+
+        .metric-value {
+            font-size: 34px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .metric-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .map-wrap {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            background: #eef2f7;
+        }
+
+        #campaign-map {
+            height: 520px;
+            width: 100%;
+        }
+
+        .map-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 14px;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .action-card {
+            min-height: 190px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .action-head {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .action-title {
+            font-weight: bold;
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .orange-btn {
+            display: inline-block;
+            align-self: flex-start;
+            background: linear-gradient(135deg, #ff5a00, #ff7a1a);
+            color: white;
+            text-decoration: none;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .upload-box {
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            color: #64748b;
+            margin-top: 14px;
+        }
+
+        .small-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 9px 14px;
+            border-radius: 8px;
+            border: 1px solid #ffb267;
+            color: #ff5a00;
+            background: #fff8f1;
+            font-weight: bold;
+        }
+
+        @media print {
+            .topbar,
+            .actions-section,
+            .back-btn {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            .page {
+                margin: 0;
+                max-width: none;
+            }
+
+            .main-card {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .info-grid,
+            .metrics-grid,
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            .topbar {
+                height: auto;
+                gap: 16px;
+                padding: 18px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
+
 <body>
 
+<!-- HEADER -->
 <div class="topbar">
     <div class="brand">
         <img src="/static/logo.png" alt="Diffmedia">
@@ -92,10 +347,201 @@
 
 <div class="page">
     <div class="main-card">
+
+        <!-- TITRE -->
         <h1>{{ campaign["name"] }}</h1>
         <div class="subtitle">Vue d'ensemble et récapitulatif de la campagne massive</div>
+
+        <!-- CARTES INFOS -->
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon">📅</div>
+                <div>
+                    <div class="info-label">Date de création</div>
+                    <div class="info-value">{{ campaign["created_at"][:10] }}</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">👤</div>
+                <div>
+                    <div class="info-label">Créée par</div>
+                    <div class="info-value">{{ campaign["created_by"] }}</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">📄</div>
+                <div>
+                    <div class="info-label">Référence</div>
+                    <div class="info-value">Fichier CSV</div>
+                    <a class="csv-link" href="/massive_export/{{ campaign['id'] }}/download">Télécharger le fichier</a>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">🎯</div>
+                <div>
+                    <div class="info-label">Type de campagne</div>
+                    <div class="info-value">Massive</div>
+                    <div class="info-label">Diffusion large</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTES -->
+        <div class="notes-box">
+            <div class="notes-icon">📝</div>
+            <div>
+                <div class="notes-title">Notes</div>
+                <div class="notes-text">
+                    {% if campaign["notes"] and campaign["notes"] != "Campagne massive" %}
+                        {{ campaign["notes"] }}
+                    {% else %}
+                        Aucune note renseignée.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- CHIFFRES CLÉS -->
+        <div class="section">
+            <div class="section-title">📌 Chiffres clés</div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">🏪</div>
+                    <div>
+                        <div class="metric-value">{{ total_commerces }}</div>
+                        <div class="metric-title">Commerces ciblés</div>
+                        <div class="metric-help">Sélectionnés pour la campagne</div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">👥</div>
+                    <div>
+                        <div class="metric-value">{{ total_commerces }}</div>
+                        <div class="metric-title">Commerces potentiels</div>
+                        <div class="metric-help">Potentiels actuels</div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">📦</div>
+                    <div>
+                        <div class="metric-value">{{ total_quantite }}</div>
+                        <div class="metric-title">Supports potentiels</div>
+                        <div class="metric-help">Concernés par la campagne</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARTE -->
+        <div class="section">
+            <div class="section-title">📍 Carte des commerces potentiels</div>
+
+            <div class="map-wrap">
+                <div id="campaign-map"></div>
+            </div>
+
+            <div class="map-note">
+                ℹ️ Carte basée sur les commerces enregistrés dans la campagne massive.
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="section actions-section">
+            <div class="section-title">⚙️ Actions</div>
+
+            <div class="actions-grid">
+                <div class="action-card">
+                    <div class="action-head">
+                        <div class="action-icon">⬇️</div>
+                        <div>
+                            <div class="action-title">Exporter la liste complète</div>
+                            <div class="action-help">Télécharger les commerces ciblés</div>
+                        </div>
+                    </div>
+                    <a class="orange-btn" href="/massive_export/{{ campaign['id'] }}/download">Exporter</a>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-head">
+                        <div class="action-icon">🖨️</div>
+                        <div>
+                            <div class="action-title">Imprimer la fiche</div>
+                            <div class="action-help">Vue d'ensemble récapitulative</div>
+                        </div>
+                    </div>
+                    <button class="orange-btn" type="button" onclick="window.print()">Imprimer</button>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-head">
+                        <div class="action-icon">☁️</div>
+                        <div>
+                            <div class="action-title">Rapport de diffusion</div>
+                            <div class="action-help">Emplacement prévu pour déposer le rapport de campagne</div>
+                        </div>
+                    </div>
+
+                    <div class="upload-box">
+                        Glisser-déposer un fichier ici<br>
+                        <span class="small-btn">Bientôt disponible</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    const items = [
+        {% for item in items %}
+            {% if item["lat"] and item["lon"] %}
+                {
+                    name: {{ (item["name"] or "")|tojson }},
+                    ville: {{ (item["ville"] or "")|tojson }},
+                    lat: {{ item["lat"] }},
+                    lon: {{ item["lon"] }}
+                },
+            {% endif %}
+        {% endfor %}
+    ];
+
+    const map = L.map("campaign-map");
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap"
+    }).addTo(map);
+
+    const orangeIcon = L.divIcon({
+        className: "",
+        html: '<div style="width:16px;height:16px;background:#ff5a00;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.35);"></div>',
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+    });
+
+    const bounds = [];
+
+    items.forEach(function(item) {
+        const marker = L.marker([item.lat, item.lon], {icon: orangeIcon}).addTo(map);
+        marker.bindPopup("<b>" + item.name + "</b><br>" + item.ville);
+        bounds.push([item.lat, item.lon]);
+    });
+
+    if (bounds.length > 0) {
+        map.fitBounds(bounds, {padding: [35, 35]});
+    } else {
+        map.setView([46.6, 2.4], 6);
+    }
+</script>
 
 </body>
 </html>
