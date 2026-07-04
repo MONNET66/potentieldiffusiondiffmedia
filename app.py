@@ -1461,10 +1461,19 @@ def massive_campaign_detail(campaign_id):
     else:
         supports_potentiels = totals_by_label.get(support_label, 0)
 
-    commerces_potentiels = sum(
-        1 for item in items
-        if item["type"] == support_label
-    )
+    quantite_par_commerce = {
+        "sac_pain": 1000,
+        "set_table": 1000,
+        "sous_bock": 250,
+        "flyer": 50,
+        "affiche": 1,
+        "sac_pharmacie": 1000,
+        "sac_galette": 1000,
+    }
+
+    qte_unitaire = quantite_par_commerce.get(campaign["support"], 1)
+
+    commerces_potentiels = int(supports_potentiels / qte_unitaire) if qte_unitaire else 0
 
     support_display = support_label or "Supports concernés"
 
