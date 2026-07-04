@@ -1427,6 +1427,42 @@ def export_campaign(token):
     csv_content = "\ufeff" + output.getvalue()
     return Response(csv_content, mimetype="text/csv; charset=utf-8", headers={"Content-Disposition": f"attachment; filename=campagne_{campaign['name']}.csv"})
 
+@app.route("/massive_campaign/<int:campaign_id>")
+@login_required
+def massive_campaign_detail(campaign_id):
+    conn = get_campaign_connection()
+    cur = conn.cursor()
+
+    campaign = cur.execute("""
+        SELECT *
+        FROM campaigns
+        WHERE id = ? AND notes = 'Campagne massive'
+    """, (campaign_id,)).fetchone()
+
+    if not campaign:
+        conn.close()
+        return "Campagne massive introuvable", 404
+
+    items = cur.execute("""
+        SELECT *
+        FROM campaign_items
+        WHERE campaign_id = ?
+        ORDER BY name
+    """, (campaign_id,)).fetchall()
+
+    conn.close()
+
+    total_commerces = len(items)
+    total_quantite = sum((item["quantite"] or 0) for item in items)
+
+    return render_template(
+        "massive_campaign.html",
+        campaign=campaign,
+        items=items,
+        total_commerces=total_commerces,
+        total_quantite=total_quantite
+    )
+
 @app.route("/massive_export/<int:campaign_id>/download")
 @login_required
 def massive_export_download(campaign_id):
