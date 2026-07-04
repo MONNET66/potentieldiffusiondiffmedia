@@ -1491,6 +1491,72 @@ def massive_campaign_detail(campaign_id):
         commerces_potentiels=commerces_potentiels,
         supports_potentiels=supports_potentiels,
         support_display=support_display
+        is_public=False
+    )
+
+@app.route("/massive_campaign_client/<token>")
+def massive_campaign_client(token):
+    conn = get_campaign_connection()
+    cur = conn.cursor()
+
+    campaign = cur.execute("""
+        SELECT *
+        FROM campaigns
+        WHERE token = ? AND notes = 'Campagne massive'
+    """, (token,)).fetchone()
+
+    if not campaign:
+        conn.close()
+        return "Campagne massive introuvable", 404
+
+    items = cur.execute("""
+        SELECT *
+        FROM campaign_items
+        WHERE campaign_id = ?
+        ORDER BY name
+    """, (campaign["id"],)).fetchall()
+
+    potential_data = [dict(row) for row in items]
+
+    _, totals_by_label = compute_potentiel_and_supports(potential_data)
+
+    support_label = SUPPORT_LABELS.get(campaign["support"], "")
+
+    if campaign["support"] == "all":
+        supports_potentiels = sum(totals_by_label.values())
+    else:
+        supports_potentiels = totals_by_label.get(support_label, 0)
+
+    quantite_par_commerce = {
+        "sac_pain": 1000,
+        "set_table": 1000,
+        "sous_bock": 250,
+        "flyer": 50,
+        "affiche": 1,
+        "sac_pharmacie": 1000,
+        "sac_galette": 1000,
+    }
+
+    qte_unitaire = quantite_par_commerce.get(campaign["support"], 1)
+    commerces_potentiels = int(supports_potentiels / qte_unitaire) if qte_unitaire else 0
+
+    support_display = support_label or "Supports concernés"
+
+    conn.close()
+
+    total_commerces = len(items)
+    total_quantite = sum((item["quantite"] or 0) for item in items)
+
+    return render_template(
+        "massive_campaign.html",
+        campaign=campaign,
+        items=items,
+        total_commerces=total_commerces,
+        total_quantite=total_quantite,
+        commerces_potentiels=commerces_potentiels,
+        supports_potentiels=supports_potentiels,
+        support_display=support_display,
+        is_public=True
     )
 
 @app.route("/massive_export/<int:campaign_id>/download")
