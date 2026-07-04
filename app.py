@@ -3332,7 +3332,7 @@ def mon_dashboard():
         <div class="summary-card">
             <div class="summary-icon">🎯</div>
             <div>
-                <div class="summary-card-title">Campagnes ciblées</div>
+                <div class="summary-card-title">Campagnes</div>
                 <div class="summary-card-value">{total_ciblees}</div>
                 <div class="summary-card-help">Campagnes enregistrées</div>
             </div>
