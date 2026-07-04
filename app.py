@@ -1490,7 +1490,7 @@ def massive_campaign_detail(campaign_id):
         total_quantite=total_quantite,
         commerces_potentiels=commerces_potentiels,
         supports_potentiels=supports_potentiels,
-        support_display=support_display
+        support_display=support_display,
         is_public=False
     )
 
