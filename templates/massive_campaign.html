@@ -346,8 +346,17 @@
 <div class="page">
     <div class="main-card">
 
-        <h1>{{ campaign["name"] }}</h1>
-        <div class="subtitle">Vue d'ensemble et récapitulatif de la campagne massive</div>
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:8px;">
+            <div style="font-size:38px;">📊</div>
+            <div>
+                <div style="color:#ff5a00; font-weight:bold; margin-bottom:4px;">
+                    Campagne massive
+                </div>
+                <h1>{{ campaign["name"] }}</h1>
+            </div>
+        </div>
+
+        <div class="subtitle">Vue d'ensemble et récapitulatif de la campagne</div>
 
         <div class="info-grid">
             <div class="info-card">
