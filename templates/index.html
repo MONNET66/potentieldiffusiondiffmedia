@@ -1539,7 +1539,15 @@ const supportLabels = {
     all: "Tous supports"
 };
 
-const campaignName = `${supportLabels[support] || support}${zoneLabel ? " – " + zoneLabel : ""}`;
+let campaignName = `${supportLabels[support] || support}${zoneLabel ? " – " + zoneLabel : ""}`;
+
+const customCampaignName = prompt("Nom de la campagne massive :", campaignName);
+
+if (customCampaignName && customCampaignName.trim() !== "") {
+    campaignName = customCampaignName.trim();
+}
+
+link.download = campaignName + ".csv";
 
 fetch("/log_massive_export", {
     method: "POST",
