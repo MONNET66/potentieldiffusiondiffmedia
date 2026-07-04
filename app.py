@@ -1450,6 +1450,24 @@ def massive_campaign_detail(campaign_id):
         ORDER BY name
     """, (campaign_id,)).fetchall()
 
+    potential_data = [dict(row) for row in items]
+
+    _, totals_by_label = compute_potentiel_and_supports(potential_data)
+
+    support_label = SUPPORT_LABELS.get(campaign["support"], "")
+
+    if campaign["support"] == "all":
+        supports_potentiels = sum(totals_by_label.values())
+    else:
+        supports_potentiels = totals_by_label.get(support_label, 0)
+
+    commerces_potentiels = sum(
+        1 for item in items
+        if item["type"] == support_label
+    )
+
+    support_display = support_label or "Supports concernés"
+
     conn.close()
 
     total_commerces = len(items)
@@ -1460,7 +1478,10 @@ def massive_campaign_detail(campaign_id):
         campaign=campaign,
         items=items,
         total_commerces=total_commerces,
-        total_quantite=total_quantite
+        total_quantite=total_quantite,
+        commerces_potentiels=commerces_potentiels,
+        supports_potentiels=supports_potentiels,
+        support_display=support_display
     )
 
 @app.route("/massive_export/<int:campaign_id>/download")
