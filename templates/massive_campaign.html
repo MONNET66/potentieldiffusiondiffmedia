@@ -331,7 +331,6 @@
 
 <body>
 
-<!-- HEADER -->
 <div class="topbar">
     <div class="brand">
         <img src="/static/logo.png" alt="Diffmedia">
@@ -348,11 +347,9 @@
 <div class="page">
     <div class="main-card">
 
-        <!-- TITRE -->
         <h1>{{ campaign["name"] }}</h1>
         <div class="subtitle">Vue d'ensemble et récapitulatif de la campagne massive</div>
 
-        <!-- CARTES INFOS -->
         <div class="info-grid">
             <div class="info-card">
                 <div class="info-icon">📅</div>
@@ -389,7 +386,6 @@
             </div>
         </div>
 
-        <!-- NOTES -->
         <div class="notes-box">
             <div class="notes-icon">📝</div>
             <div>
@@ -404,7 +400,6 @@
             </div>
         </div>
 
-        <!-- CHIFFRES CLÉS -->
         <div class="section">
             <div class="section-title">📌 Chiffres clés</div>
 
@@ -413,32 +408,31 @@
                     <div class="metric-icon">🏪</div>
                     <div>
                         <div class="metric-value">{{ total_commerces }}</div>
-                        <div class="metric-title">Commerces ciblés</div>
-                        <div class="metric-help">Sélectionnés pour la campagne</div>
+                        <div class="metric-title">Commerces identifiés</div>
+                        <div class="metric-help">Commerces présents dans la campagne</div>
                     </div>
                 </div>
 
                 <div class="metric-card">
                     <div class="metric-icon">👥</div>
                     <div>
-                        <div class="metric-value">{{ total_commerces }}</div>
+                        <div class="metric-value">{{ commerces_potentiels }}</div>
                         <div class="metric-title">Commerces potentiels</div>
-                        <div class="metric-help">Potentiels actuels</div>
+                        <div class="metric-help">Selon le calcul des potentiels actuels</div>
                     </div>
                 </div>
 
                 <div class="metric-card">
                     <div class="metric-icon">📦</div>
                     <div>
-                        <div class="metric-value">{{ total_quantite }}</div>
-                        <div class="metric-title">Supports potentiels</div>
-                        <div class="metric-help">Concernés par la campagne</div>
+                        <div class="metric-value">{{ supports_potentiels }}</div>
+                        <div class="metric-title">{{ support_display }}</div>
+                        <div class="metric-help">Supports concernés par la campagne</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- CARTE -->
         <div class="section">
             <div class="section-title">📍 Carte des commerces potentiels</div>
 
@@ -451,7 +445,6 @@
             </div>
         </div>
 
-        <!-- ACTIONS -->
         <div class="section actions-section">
             <div class="section-title">⚙️ Actions</div>
 
