@@ -1,1 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ campaign["name"] }}</title>
 
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f6f8;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #111827;
+        }
+
+        .topbar {
+            height: 78px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .brand img {
+            height: 52px;
+        }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: #ff5a00;
+            color: white;
+            text-decoration: none;
+            padding: 13px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .page {
+            max-width: 1280px;
+            margin: 28px auto;
+            padding: 0 22px;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 40px;
+        }
+
+        .subtitle {
+            margin-top: 10px;
+            color: #4b5563;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="brand">
+        <img src="/static/logo.png" alt="Diffmedia">
+        <div class="brand-title">{{ campaign["name"] }}</div>
+    </div>
+
+    {% if session.role == "user" %}
+        <a class="back-btn" href="/mon_dashboard">← Retour au dashboard</a>
+    {% else %}
+        <a class="back-btn" href="/dashboard_equipe">← Retour au dashboard</a>
+    {% endif %}
+</div>
+
+<div class="page">
+    <div class="main-card">
+        <h1>{{ campaign["name"] }}</h1>
+        <div class="subtitle">Vue d'ensemble et récapitulatif de la campagne massive</div>
+    </div>
+</div>
+
+</body>
+</html>
