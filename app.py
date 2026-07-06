@@ -1220,6 +1220,7 @@ def index():
             potentiel = supports
     
     available_supports = get_available_supports(selected_types)
+    temp_searches = session.get("temp_searches", [])
 
     return render_template(
         "index.html", data=data, lat=lat, lon=lon, nb=nb_commerces,
