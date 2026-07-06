@@ -524,20 +524,34 @@ def get_results_for_city(city_value, selected_types):
     type_filter = get_type_filter(selected_types)
     placeholders = ",".join("?" for _ in type_filter)
 
+    params = list(type_filter)
+    extra_sql = ""
+
+    if requested_cp:
+        extra_sql = " AND code_postal = ?"
+        params.append(requested_cp)
+    elif requested_city_clean:
+        words = [w for w in requested_city_clean.split() if len(w) >= 3]
+
+        if words:
+            extra_sql = " AND " + " AND ".join(["LOWER(ville) LIKE ?" for _ in words])
+            params.extend([f"%{word}%" for word in words])
+
     conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute(f"""
         SELECT rowid AS id, nom, latitude, longitude, type, ville, code_postal, adresse, telephone,
-       accepte_support, commentaire_support, quantite_support, etoiles
+               accepte_support, commentaire_support, quantite_support, etoiles
         FROM commerces
         WHERE is_active = 1
           AND COALESCE(exclude_from_results, 0) = 0
           AND latitude IS NOT NULL
           AND longitude IS NOT NULL
           AND type IN ({placeholders})
+          {extra_sql}
         ORDER BY nom
-    """, type_filter)
+    """, params)
 
     rows = cursor.fetchall()
     conn.close()
