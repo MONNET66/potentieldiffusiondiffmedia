@@ -1023,12 +1023,42 @@ def autocomplete():
             nom = c.get("nom", "")
             cps = c.get("codesPostaux", [])
 
-            if len(cps) > 1:
+            ville_clean = normalize_search_text(nom)
+
+            if ville_clean == "paris":
+                for i in range(1, 21):
+                    cp = f"750{i:02d}"
+                    results.append({
+                        "nom": "Paris",
+                        "code_postal": cp,
+                        "label": f"Paris {i}e ({cp})"
+                    })
+
+            elif ville_clean == "lyon":
+                for i in range(1, 10):
+                    cp = f"690{i:02d}"
+                    results.append({
+                        "nom": "Lyon",
+                        "code_postal": cp,
+                        "label": f"Lyon {i}e ({cp})"
+                    })
+
+            elif ville_clean == "marseille":
+                for i in range(1, 17):
+                    cp = f"130{i:02d}"
+                    results.append({
+                        "nom": "Marseille",
+                        "code_postal": cp,
+                        "label": f"Marseille {i}e ({cp})"
+                    })
+
+            elif len(cps) > 1:
                 results.append({
                     "nom": nom,
                     "code_postal": "",
                     "label": nom
                 })
+
             else:
                 cp = cps[0] if cps else ""
                 label = f"{nom} ({cp})" if cp else nom
