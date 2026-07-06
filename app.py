@@ -1031,7 +1031,7 @@ def autocomplete():
                     results.append({
                         "nom": "Paris",
                         "code_postal": cp,
-                        "label": f"Paris {i}e ({cp})"
+                        "label": f"Paris ({cp})"
                     })
 
             elif ville_clean == "lyon":
@@ -1040,7 +1040,7 @@ def autocomplete():
                     results.append({
                         "nom": "Lyon",
                         "code_postal": cp,
-                        "label": f"Lyon {i}e ({cp})"
+                        "label": f"Lyon ({cp})"
                     })
 
             elif ville_clean == "marseille":
@@ -1049,7 +1049,7 @@ def autocomplete():
                     results.append({
                         "nom": "Marseille",
                         "code_postal": cp,
-                        "label": f"Marseille {i}e ({cp})"
+                        "label": f"Marseille ({cp})"
                     })
 
             elif len(cps) > 1:
