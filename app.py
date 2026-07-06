@@ -1008,9 +1008,22 @@ def autocomplete():
         for c in communes:
             nom = c.get("nom", "")
             cps = c.get("codesPostaux", [])
-            cp = cps[0] if cps else ""
-            label = f"{nom} ({cp})" if cp else nom
-            results.append({"nom": nom, "code_postal": cp, "label": label})
+
+            if len(cps) > 1:
+                results.append({
+                    "nom": nom,
+                    "code_postal": "",
+                    "label": nom
+                })
+            else:
+                cp = cps[0] if cps else ""
+                label = f"{nom} ({cp})" if cp else nom
+
+                results.append({
+                    "nom": nom,
+                    "code_postal": cp,
+                    "label": label
+                })
         return jsonify(results)
     except Exception:
         return jsonify([])
