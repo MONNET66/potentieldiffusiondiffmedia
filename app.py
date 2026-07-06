@@ -616,6 +616,7 @@ def get_results_in_radius(city_value, radius_km, selected_types):
             "code_postal": row["code_postal"] or "",
             "adresse": row["adresse"] or "",
             "telephone": row["telephone"] or "",
+            "etoiles": row["etoiles"] if "etoiles" in row.keys() else "",
             "accepte_support": row["accepte_support"] if "accepte_support" in row.keys() else "",
             "commentaire_support": row["commentaire_support"] if "commentaire_support" in row.keys() else "",
             "quantite_support": row["quantite_support"] if "quantite_support" in row.keys() else 0,
