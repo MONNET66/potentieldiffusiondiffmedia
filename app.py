@@ -133,6 +133,52 @@ ALL_TYPES = [
     "tourism_office", "hotel", "tobacco", "hair_salon",
 ]
 
+RESTRICTED_HIDDEN_TYPES = {"pharmacy"}
+
+RESTRICTED_HIDDEN_SUPPORTS = {
+    "sac_pharmacie",
+    "sac_pain",
+    "sac_galette",
+}
+
+RESTRICTED_HIDDEN_SUPPORT_LABELS = {
+    "Sacs pharmacie",
+    "Sacs à pain",
+    "Sacs galettes",
+}
+
+
+def is_restricted_user():
+    return session.get("role") in ["manager", "user"]
+
+
+def filter_types_for_current_user(types):
+    if not is_restricted_user():
+        return types
+
+    filtered = [t for t in types if t not in RESTRICTED_HIDDEN_TYPES]
+
+    if not filtered:
+        return ["__blocked__"]
+
+    return filtered
+
+
+def filter_support_keys_for_current_user(support_keys):
+    if not is_restricted_user():
+        return support_keys
+
+    return [
+        key for key in support_keys
+        if key not in RESTRICTED_HIDDEN_SUPPORTS
+    ]
+
+
+def normalize_support_for_current_user(support_key):
+    if is_restricted_user() and support_key in RESTRICTED_HIDDEN_SUPPORTS:
+        return "all"
+
+    return support_key
 
 def get_db_connection():
     conn = sqlite3.connect(DB_FILE)
@@ -386,25 +432,42 @@ def get_selected_types_from_form(form):
 
 def get_type_filter(selected_types):
     if not selected_types or "all" in selected_types:
-        return ALL_TYPES
-    return [t for t in selected_types if t in ALL_TYPES]
+        return filter_types_for_current_user(ALL_TYPES)
+
+    selected = [t for t in selected_types if t in ALL_TYPES]
+    return filter_types_for_current_user(selected)
 
 
 def get_supports_for_type(commerce_type):
-    return SUPPORTS_DISPLAY_BY_TYPE.get(commerce_type, [])
+    supports = SUPPORTS_DISPLAY_BY_TYPE.get(commerce_type, [])
+
+    if not is_restricted_user():
+        return supports
+
+    return [
+        support for support in supports
+        if support not in RESTRICTED_HIDDEN_SUPPORT_LABELS
+    ]
 
 
 def get_available_supports(selected_types):
     if not selected_types or "all" in selected_types:
         return ["all"]
+
     merged = {"all"}
+
     for commerce_type in selected_types:
         for support in SUPPORTS_BY_TYPE.get(commerce_type, []):
             merged.add(support)
+
+    merged = set(filter_support_keys_for_current_user(merged))
+
     ordered = ["all"]
+
     for key in ["sac_pharmacie", "sac_pain", "sac_galette", "set_table", "sous_bock", "flyer", "affiche"]:
         if key in merged:
             ordered.append(key)
+
     return ordered
 
 
