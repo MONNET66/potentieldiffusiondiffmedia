@@ -1204,8 +1204,9 @@ def index():
     print("Nombre visible_data :", len(visible_data))
 
     LAST_RESULTS = visible_data
-    session["last_results"] = visible_data
+    session["last_results_count"] = len(visible_data)
     nb_commerces = len(visible_data)
+    
     potentiel, totals_by_label = compute_potentiel_and_supports(visible_data)
     if selected_support == "all":
         supports = sum(totals_by_label.values())
@@ -1386,7 +1387,7 @@ def export_csv():
     output = io.StringIO()
     writer = csv.writer(output, delimiter=";")
     writer.writerow(["Nom", "Type", "Adresse", "Ville", "Code postal", "Téléphone", "Distance (km)"])
-    for item in session.get("last_results", LAST_RESULTS):
+    for item in LAST_RESULTS:
         writer.writerow([
             item["name"], item["type"], item.get("adresse", ""), item.get("ville", ""),
             item.get("code_postal", ""), item.get("telephone", ""),
@@ -1802,7 +1803,7 @@ def log_massive_export():
 
     campaign_id = cur.lastrowid
 
-    for item in session.get("last_results", []):
+    for item in LAST_RESULTS:
         cur.execute("""
             INSERT INTO campaign_items (
                 campaign_id, name, type, ville, code_postal,
