@@ -1844,14 +1844,17 @@ def delete_campaign(token):
         can_delete = campaign["created_by"] == session.get("username")
 
     elif session.get("role") == "manager":
-        conn_auth = get_auth_connection()
-        cur_auth = conn_auth.cursor()
-        commercial = cur_auth.execute(
-            "SELECT id FROM users WHERE username = ? AND manager_id = ?",
-            (campaign["created_by"], session.get("user_id"))
-        ).fetchone()
-        conn_auth.close()
-        can_delete = commercial is not None
+        if campaign["created_by"] == session.get("username"):
+            can_delete = True
+        else:
+            conn_auth = get_auth_connection()
+            cur_auth = conn_auth.cursor()
+            commercial = cur_auth.execute(
+                "SELECT id FROM users WHERE username = ? AND manager_id = ?",
+                (campaign["created_by"], session.get("user_id"))
+            ).fetchone()
+            conn_auth.close()
+            can_delete = commercial is not None
 
     if not can_delete:
         conn.close()
