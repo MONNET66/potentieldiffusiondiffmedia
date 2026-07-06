@@ -1078,6 +1078,9 @@ def index():
         if not item.get("is_hidden")
     ]
 
+    print("Nombre data :", len(data))
+    print("Nombre visible_data :", len(visible_data))
+
     LAST_RESULTS = visible_data
     nb_commerces = len(visible_data)
     potentiel, totals_by_label = compute_potentiel_and_supports(visible_data)
