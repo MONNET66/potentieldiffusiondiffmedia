@@ -16,51 +16,77 @@
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 18px;
-            background: #f4f4f4;
-            border-bottom: 1px solid #ddd;
-        }
+    		display: flex;
+    		justify-content: space-between;
+    		align-items: center;
+    		padding: 18px 26px;
+    		background: #ffffff;
+    		border-bottom: 1px solid #e5e7eb;
+    		box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+		}
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+		.header-left {
+    		display: flex;
+    		align-items: center;
+    		gap: 22px;
+		}
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
+		.header-title-block {
+    		display: flex;
+    		flex-direction: column;
+    		gap: 6px;
+		}
 
-        .logout-btn {
-            background: #f97316;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
+		.header-subtitle {
+    		margin: 0;
+    		font-size: 15px;
+    		color: #64748b;
+		}
 
-        .logout-btn:hover {
-            background: #ea580c;
-        }
+		.header-right {
+    		display: flex;
+    		align-items: center;
+    		gap: 12px;
+    		flex-wrap: wrap;
+    		justify-content: flex-end;
+		}
 
-        .header img {
-            height: 60px;
-        }
+		.user-badge {
+    		display: inline-flex;
+    		align-items: center;
+    		gap: 8px;
+    		color: #111827;
+    		font-size: 14px;
+    		font-weight: 600;
+		}
 
-        .header h2 {
-            margin: 0;
-            font-size: 24px;
-        }
+		.logout-btn {
+    		background: linear-gradient(135deg, #ff8a00, #f97316);
+    		color: white;
+    		padding: 10px 16px;
+    		border-radius: 9px;
+    		text-decoration: none;
+    		border: none;
+    		cursor: pointer;
+    		font-size: 14px;
+    		font-weight: 700;
+    		box-shadow: 0 6px 14px rgba(249, 115, 22, 0.25);
+		}
+
+		.logout-btn:hover {
+    		background: linear-gradient(135deg, #f97316, #ea580c);
+		}
+
+		.header img {
+    		height: 68px;
+		}
+
+		.header h2 {
+    		margin: 0;
+    		font-size: 28px;
+    		font-weight: 800;
+    		color: #111827;
+		}
 
         .page {
             padding: 16px;
@@ -557,14 +583,21 @@
 
 <body>
 
-<div class="header">
-    <div class="header-left">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+<div class="header-left">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+
+    <div class="header-title-block">
         <h2>Etude de potentiel</h2>
+        <p class="header-subtitle">
+            Analysez le potentiel de diffusion de vos campagnes
+        </p>
     </div>
+</div>
 
     <div class="header-right">
-        <span>👤 {{ current_user }}</span>
+        <span class="user-badge">
+    		👤 {{ current_user }}
+		</span>
 
         {% if session.role == "admin" %}
             <button type="button" class="logout-btn" onclick="openAddCommerceModal()">Ajouter un commerce</button>
