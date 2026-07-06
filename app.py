@@ -1044,6 +1044,7 @@ def index():
                 selected_types = last_search_criteria.get("selected_types", ["all"])
                 selected_type = selected_types[0] if len(selected_types) == 1 and selected_types[0] != "all" else "all"
                 selected_support = last_search_criteria.get("selected_support", "all")
+                camping_stars = last_search_criteria.get("camping_stars", "all")
                 search_value = last_search_criteria.get("search_value", "")
                 mode = last_search_criteria.get("mode", "ville")
                 departement_value = last_search_criteria.get("departement_value", "")
