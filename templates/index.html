@@ -115,14 +115,15 @@
         }
 
         .search-bar {
-            display: grid;
-            grid-template-columns: 1.4fr 1fr 1fr 1fr auto;
-            background: white;
-            border-radius: 12px;
-            overflow: visible;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 18px;
-        }
+    		display: grid;
+    		grid-template-columns: 1.35fr 1fr 1fr 1fr auto;
+    		gap: 10px;
+    		background: #ffffff;
+    		border-radius: 16px;
+    		padding: 16px;
+    		box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
+    		margin-bottom: 22px;
+		}
 
         .search-bar select,
         .search-bar input {
@@ -136,26 +137,32 @@
         }
 
         .search-cell {
-            position: relative;
-            border-right: 1px solid #e6e6e6;
-            min-height: 56px;
-            display: flex;
-            align-items: center;
-        }
+    		position: relative;
+    		min-height: 62px;
+    		display: flex;
+    		align-items: center;
+    		background: #ffffff;
+    		border: 1px solid #e5e7eb;
+    		border-radius: 12px;
+    		overflow: visible;
+		}
 
         .search-cell:last-child {
             border-right: none;
         }
 
         .search-button {
-            background: orange;
-            border: none;
-            color: white;
-            padding: 0 24px;
-            font-size: 22px;
-            cursor: pointer;
-            min-height: 56px;
-        }
+    		background: linear-gradient(135deg, #ff8a00, #f97316);
+    		border: none;
+    		color: white;
+    		padding: 0 26px;
+    		font-size: 16px;
+    		font-weight: 800;
+    		cursor: pointer;
+    		min-height: 62px;
+    		border-radius: 12px;
+    		box-shadow: 0 8px 18px rgba(249, 115, 22, 0.25);
+		}
 
         .hidden {
             display: none !important;
@@ -760,7 +767,7 @@
                 <input type="number" name="rayon" id="rayonInput" placeholder="Rayon km" value="{{ rayon_value }}" min="1">
             </div>
 
-            <button class="search-button" type="submit">🔍</button>
+            <button class="search-button" type="submit">🔍 Lancer l'étude</button>
         </div>
     </form>
 
