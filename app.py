@@ -1083,6 +1083,7 @@ def index():
     print("Nombre visible_data :", len(visible_data))
 
     LAST_RESULTS = visible_data
+    session["last_results"] = visible_data
     nb_commerces = len(visible_data)
     potentiel, totals_by_label = compute_potentiel_and_supports(visible_data)
     if selected_support == "all":
@@ -1679,7 +1680,7 @@ def log_massive_export():
 
     campaign_id = cur.lastrowid
 
-    for item in LAST_RESULTS:
+    for item in session.get("last_results", []):
         cur.execute("""
             INSERT INTO campaign_items (
                 campaign_id, name, type, ville, code_postal,
