@@ -1264,7 +1264,7 @@ def export_csv():
     output = io.StringIO()
     writer = csv.writer(output, delimiter=";")
     writer.writerow(["Nom", "Type", "Adresse", "Ville", "Code postal", "Téléphone", "Distance (km)"])
-    for item in LAST_RESULTS:
+    for item in session.get("last_results", LAST_RESULTS):
         writer.writerow([
             item["name"], item["type"], item.get("adresse", ""), item.get("ville", ""),
             item.get("code_postal", ""), item.get("telephone", ""),
