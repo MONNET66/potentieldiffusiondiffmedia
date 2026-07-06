@@ -78,12 +78,13 @@
     		background: linear-gradient(135deg, #f97316, #ea580c);
 		}
 
-		.header img {
-    		height: 60px;
-    		width: auto;
-    		max-width: 260px;
+		.header-logo {
+    		width: 220px;
+    		height: auto;
+    		max-height: 62px;
     		object-fit: contain;
     		display: block;
+    		flex-shrink: 0;
 		}
 
 		.header h2 {
@@ -589,7 +590,7 @@
 <body>
 
 <div class="header-left">
-    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+    <img class="header-logo" src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
 
     <div class="header-title-block">
         <h2>Etude de potentiel</h2>
