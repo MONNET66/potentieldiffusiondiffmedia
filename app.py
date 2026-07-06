@@ -1155,6 +1155,7 @@ def index():
             show_circle = False
         else:
             data, lat, lon, show_circle = execute_search_criteria(current_criteria)
+            temp_searches = session.get("temp_searches", [])
     else:
         if temp_searches:
             data, lat, lon = rebuild_cumulative_results(temp_searches)
