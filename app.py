@@ -2598,7 +2598,13 @@ def dashboard_equipe():
             SELECT id, username, display_name
             FROM users
             WHERE role = 'user' AND manager_id = ?
-        """, (session.get("user_id"),)).fetchall()
+
+            UNION ALL
+
+            SELECT id, username, username AS display_name
+            FROM users
+            WHERE id = ?
+        """, (session.get("user_id"), session.get("user_id"))).fetchall()
 
     conn_auth.close()
 
