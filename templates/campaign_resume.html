@@ -20,40 +20,99 @@ body{
     padding:0 18px;
 }
 
-.header,.section{
+.resume-hero,.section{
     background:white;
-    border-radius:16px;
-    padding:26px;
-    box-shadow:0 8px 22px rgba(15,23,42,.08);
-    margin-bottom:22px;
+    border-radius:20px;
+    padding:34px 36px;
+    box-shadow:0 10px 28px rgba(15,23,42,.08);
+    margin-bottom:24px;
     border:1px solid #e5e7eb;
 }
 
-.badge{
-    display:inline-block;
-    background:linear-gradient(135deg,#ff8a00,#f97316);
-    color:white;
-    padding:8px 16px;
-    border-radius:999px;
-    font-weight:800;
-    margin-bottom:14px;
-}
-
-h1{
-    margin:0;
-    font-size:34px;
-}
-
-.subtitle{
-    color:#64748b;
-    margin-top:8px;
-    font-size:16px;
-}
-
-.actions{
-    margin-top:22px;
+.resume-title-row{
     display:flex;
-    gap:10px;
+    align-items:center;
+    gap:22px;
+    margin-bottom:28px;
+}
+
+.resume-icon{
+    width:58px;
+    height:58px;
+    border-radius:16px;
+    background:#fff7ed;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    flex-shrink:0;
+}
+
+.resume-type{
+    color:#ff5a00;
+    font-weight:900;
+    font-size:20px;
+    margin-bottom:6px;
+}
+
+.resume-hero h1{
+    margin:0;
+    font-size:42px;
+    line-height:1.1;
+    color:#111827;
+}
+
+.resume-subtitle{
+    font-size:20px;
+    color:#374151;
+    margin-top:14px;
+}
+
+.resume-info-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin-top:26px;
+}
+
+.resume-info-card{
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    padding:22px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    box-shadow:0 3px 10px rgba(15,23,42,.04);
+}
+
+.resume-info-icon{
+    width:54px;
+    height:54px;
+    border-radius:16px;
+    background:#fff7ed;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    flex-shrink:0;
+}
+
+.resume-info-label{
+    color:#64748b;
+    font-size:15px;
+}
+
+.resume-info-value{
+    font-size:20px;
+    font-weight:900;
+    margin-top:4px;
+}
+
+.resume-actions{
+    margin-top:26px;
+    display:flex;
+    gap:12px;
     flex-wrap:wrap;
 }
 
@@ -79,32 +138,6 @@ h1{
 .btn-light{
     background:#e5e7eb;
     color:#111827;
-}
-
-.info-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:14px;
-    margin-top:24px;
-}
-
-.info-card{
-    background:#f8fafc;
-    border-radius:12px;
-    padding:16px;
-    border:1px solid #e5e7eb;
-}
-
-.label{
-    color:#64748b;
-    font-size:13px;
-    font-weight:700;
-}
-
-.value{
-    font-size:17px;
-    font-weight:800;
-    margin-top:6px;
 }
 
 .kpi-grid{
@@ -134,10 +167,11 @@ h1{
     align-items:center;
     justify-content:center;
     font-size:26px;
+    flex-shrink:0;
 }
 
 .kpi-value{
-    font-size:28px;
+    font-size:34px;
     font-weight:900;
 }
 
@@ -226,8 +260,19 @@ h1{
 }
 
 @media(max-width:900px){
-    .info-grid,.kpi-grid,.stats-grid,.commerce-list{
+    .resume-title-row{
+        align-items:flex-start;
+    }
+
+    .resume-info-grid,
+    .kpi-grid,
+    .stats-grid,
+    .commerce-list{
         grid-template-columns:1fr;
+    }
+
+    .resume-hero h1{
+        font-size:32px;
     }
 }
 </style>
@@ -237,44 +282,63 @@ h1{
 
 <div class="container">
 
-    <div class="header">
-        <div class="badge">📊 Campagne ciblée</div>
+    <div class="resume-hero">
 
-        <h1>{{ campaign["name"] }}</h1>
-        <div class="subtitle">Fiche récapitulative de campagne</div>
+        <div class="resume-title-row">
+            <div class="resume-icon">📊</div>
 
-        <div class="actions">
+            <div>
+                <div class="resume-type">Campagne ciblée</div>
+                <h1>{{ campaign["name"] }}</h1>
+                <div class="resume-subtitle">Vue d'ensemble et récapitulatif de la campagne</div>
+            </div>
+        </div>
+
+        <div class="resume-info-grid">
+            <div class="resume-info-card">
+                <div class="resume-info-icon">📅</div>
+                <div>
+                    <div class="resume-info-label">Date de création</div>
+                    <div class="resume-info-value">{{ campaign["created_at"][:10] }}</div>
+                </div>
+            </div>
+
+            <div class="resume-info-card">
+                <div class="resume-info-icon">👤</div>
+                <div>
+                    <div class="resume-info-label">Créée par</div>
+                    <div class="resume-info-value">{{ campaign["created_by"] }}</div>
+                </div>
+            </div>
+
+            <div class="resume-info-card">
+                <div class="resume-info-icon">🎯</div>
+                <div>
+                    <div class="resume-info-label">Support</div>
+                    <div class="resume-info-value">{{ support_label }}</div>
+                </div>
+            </div>
+
+            <div class="resume-info-card">
+                <div class="resume-info-icon">📄</div>
+                <div>
+                    <div class="resume-info-label">Type de campagne</div>
+                    <div class="resume-info-value">Ciblée</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="resume-actions">
             {% if session.role == "user" %}
-                <a class="btn btn-dark" href="/mon_dashboard">← Retour dashboard</a>
+                <a class="btn btn-dark" href="/mon_dashboard">← Dashboard</a>
             {% else %}
-                <a class="btn btn-dark" href="/dashboard_equipe">← Retour dashboard</a>
+                <a class="btn btn-dark" href="/dashboard_equipe">← Dashboard</a>
             {% endif %}
 
             <a class="btn btn-primary" href="/campaign/{{ campaign['token'] }}">⚙️ Détail / Priorités</a>
             <a class="btn btn-light" href="/campaign/{{ campaign['token'] }}/export?filter=all_sorted">📄 Export Excel</a>
         </div>
 
-        <div class="info-grid">
-            <div class="info-card">
-                <div class="label">Créée par</div>
-                <div class="value">{{ campaign["created_by"] }}</div>
-            </div>
-
-            <div class="info-card">
-                <div class="label">Date</div>
-                <div class="value">{{ campaign["created_at"] }}</div>
-            </div>
-
-            <div class="info-card">
-                <div class="label">Support</div>
-                <div class="value">{{ support_label }}</div>
-            </div>
-
-            <div class="info-card">
-                <div class="label">Référence</div>
-                <div class="value">{{ campaign["token"][:8] }}...</div>
-            </div>
-        </div>
     </div>
 
     <div class="kpi-grid">
@@ -444,9 +508,6 @@ if (markers.length > 0) {
     map.fitBounds(group.getBounds(), { padding: [30, 30] });
 }
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
