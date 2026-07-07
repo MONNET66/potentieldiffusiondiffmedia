@@ -222,6 +222,7 @@ def init_campaign_items_table():
         "ALTER TABLE campaign_items ADD COLUMN accepte TEXT DEFAULT ''",
         "ALTER TABLE campaign_items ADD COLUMN commentaire TEXT DEFAULT ''",
         "ALTER TABLE campaign_items ADD COLUMN quantite INTEGER DEFAULT 0"
+        "ALTER TABLE campaign_items ADD COLUMN potentiel_support INTEGER DEFAULT 0",
     ]:
         try:
             cur.execute(column_sql)
@@ -1378,9 +1379,9 @@ def create_campaign():
                 cur.execute("""
                     INSERT INTO campaign_items (
                         campaign_id, name, type, ville, code_postal,
-                        adresse, telephone, lat, lon, quantite
+                        adresse, telephone, lat, lon, quantite, potentiel_support
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
                     campaign_id,
                     item.get("name"),
@@ -1391,7 +1392,8 @@ def create_campaign():
                     item.get("telephone"),
                     item.get("lat"),
                     item.get("lon"),
-                    quantite_par_commerce
+                    quantite_par_commerce,
+                    item.get("nb_supports", 0)
                 ))
 
             conn.commit()
