@@ -470,7 +470,21 @@ def get_available_supports(selected_types):
 
     return ordered
 
+def get_types_for_support(selected_support):
+    if not selected_support or selected_support == "all":
+        return filter_types_for_current_user(ALL_TYPES)
 
+    matched_types = []
+
+    for commerce_type, supports in SUPPORTS_BY_TYPE.items():
+        if commerce_type == "all":
+            continue
+
+        if selected_support in supports:
+            matched_types.append(commerce_type)
+
+    return filter_types_for_current_user(matched_types)
+    
 def build_results_from_rows(rows):
     results = []
     seen_keys = set()
