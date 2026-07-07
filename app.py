@@ -1436,7 +1436,7 @@ def create_campaign():
                     item.get("lat"),
                     item.get("lon"),
                     quantite_par_commerce,
-                    quantite_par_commerce if SUPPORT_LABELS.get(selected_support, selected_support) in item.get("supports", []) else 0
+                    compute_item_potentiel_for_support(item, selected_support)
                 ))
 
             conn.commit()
