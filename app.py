@@ -100,6 +100,35 @@ SUPPORTS_DISPLAY_BY_TYPE = {
     "hair_salon": ["Flyers", "Affiches"],
 }
 
+QUANTITE_PAR_SUPPORT = {
+    "sac_pain": 1000,
+    "set_table": 1000,
+    "sous_bock": 250,
+    "flyer": 50,
+    "affiche": 1,
+    "sac_pharmacie": 1000,
+    "sac_galette": 1000,
+}
+
+def compute_item_potentiel_for_support(item, selected_support):
+    supports = item.get("supports", [])
+
+    if selected_support == "all":
+        total = 0
+        for support_key, support_label in SUPPORT_LABELS.items():
+            if support_key == "all":
+                continue
+            if support_label in supports:
+                total += QUANTITE_PAR_SUPPORT.get(support_key, 0)
+        return total
+
+    support_label = SUPPORT_LABELS.get(selected_support, selected_support)
+
+    if support_label in supports:
+        return QUANTITE_PAR_SUPPORT.get(selected_support, 0)
+
+    return 0
+
 DEPARTEMENTS = [
     ("01", "Ain"), ("02", "Aisne"), ("03", "Allier"), ("04", "Alpes-de-Haute-Provence"),
     ("05", "Hautes-Alpes"), ("06", "Alpes-Maritimes"), ("07", "Ardèche"), ("08", "Ardennes"),
@@ -513,6 +542,19 @@ def build_results_from_rows(rows):
             continue
         seen_keys.add(key)
         supports_list = get_supports_for_type(commerce_type)
+        potentiel_supports = 0
+        for support_label in supports_list:
+            for support_key, label in SUPPORT_LABELS.items():
+                if label == support_label:
+                    potentiel_supports += {
+                        "sac_pain": 1000,
+                        "set_table": 1000,
+                        "sous_bock": 250,
+                        "flyer": 50,
+                        "affiche": 1,
+                        "sac_pharmacie": 1000,
+                        "sac_galette": 1000,
+                    }.get(support_key, 0)
         results.append({
             "id": row["id"], "name": nom, "lat": lat, "lon": lon, "type": commerce_type,
             "ville": row["ville"] or "", "code_postal": row["code_postal"] or "", "adresse": row["adresse"] or "",
@@ -524,6 +566,7 @@ def build_results_from_rows(rows):
             "source": "sqlite",
             "supports": supports_list,
             "nb_supports": len(supports_list),
+            "potentiel_support": potentiel_supports,
         })
     return results
 
