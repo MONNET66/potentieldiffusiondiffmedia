@@ -846,18 +846,18 @@
     <form method="POST" id="searchForm">
 
     	<div class="search-mode-box">
-        	<div class="search-mode-title">Mode de recherche</div>
+    		<div class="search-mode-title">Mode de recherche</div>
 
-        	<label class="search-mode-option">
-            	<input type="radio" name="search_mode" value="commerce" checked>
-            	Recherche par commerce
-        	</label>
+    		<label class="search-mode-option">
+        		<input type="radio" name="search_mode" value="commerce" {% if search_mode != "support" %}checked{% endif %}>
+        		Recherche par commerce
+    		</label>
 
-        	<label class="search-mode-option">
-            	<input type="radio" name="search_mode" value="support">
-            	Recherche par support
-        	</label>
-    	</div>
+    		<label class="search-mode-option">
+        		<input type="radio" name="search_mode" value="support" {% if search_mode == "support" %}checked{% endif %}>
+        		Recherche par support
+    		</label>
+		</div>
 
     <div class="search-bar">
 
