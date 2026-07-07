@@ -1418,7 +1418,37 @@ def view_campaign(token):
     conn.close()
     return render_template("view_campaign.html", campaign=campaign, items=items, last_update=last_update_row["last_update"])
 
+@app.route("/campaign_resume/<token>")
+@login_required
+def campaign_resume(token):
+    conn = get_campaign_connection()
+    cur = conn.cursor()
 
+    campaign = cur.execute(
+        "SELECT * FROM campaigns WHERE token = ?",
+        (token,)
+    ).fetchone()
+
+    if not campaign:
+        conn.close()
+        return "Campagne introuvable", 404
+
+    items = cur.execute("""
+        SELECT *
+        FROM campaign_items
+        WHERE campaign_id = ?
+        ORDER BY name
+    """, (campaign["id"],)).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "campaign_resume.html",
+        campaign=campaign,
+        items=items
+    )
+
+    
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
 def set_campaign_priority(token):
     item_id = request.form.get("item_id")
