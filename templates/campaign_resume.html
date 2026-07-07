@@ -1,30 +1,193 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <title>Récapitulatif campagne</title>
+<meta charset="utf-8">
+
+<title>Récapitulatif campagne</title>
+
+<style>
+
+body{
+    margin:0;
+    background:#eef2f7;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.container{
+    width:1200px;
+    margin:30px auto;
+}
+
+.header{
+    background:white;
+    border-radius:14px;
+    padding:30px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    margin-bottom:25px;
+}
+
+.badge{
+    display:inline-block;
+    background:#2563eb;
+    color:white;
+    padding:8px 16px;
+    border-radius:25px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+h1{
+    margin:0;
+    font-size:34px;
+}
+
+.subtitle{
+    color:#6b7280;
+    margin-top:8px;
+    font-size:17px;
+}
+
+.info-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:15px;
+
+    margin-top:30px;
+
+}
+
+.card{
+
+    background:#f8fafc;
+
+    border-radius:10px;
+
+    padding:18px;
+
+    border:1px solid #dbe3ee;
+
+}
+
+.label{
+
+    color:#64748b;
+
+    font-size:14px;
+
+}
+
+.value{
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    margin-top:6px;
+
+}
+
+</style>
+
 </head>
+
 <body>
 
-<h1>{{ campaign["name"] }}</h1>
+<div class="container">
 
-<p><b>Créée par :</b> {{ campaign["created_by"] }}</p>
+<div class="header">
 
-<p><b>Date :</b> {{ campaign["created_at"] }}</p>
+<div class="badge">
 
-<p><b>Support :</b> {{ campaign["support"] }}</p>
+📊 Campagne ciblée
 
-<p><b>Nombre de commerces :</b> {{ items|length }}</p>
+</div>
 
-<hr>
+<h1>
 
-<h2>Liste des commerces</h2>
+{{ campaign["name"] }}
 
-<ul>
-{% for item in items %}
-    <li>{{ item["name"] }} - {{ item["ville"] }}</li>
-{% endfor %}
-</ul>
+</h1>
+
+<div class="subtitle">
+
+Fiche récapitulative
+
+</div>
+
+<div class="info-grid">
+
+<div class="card">
+
+<div class="label">
+
+Créée par
+
+</div>
+
+<div class="value">
+
+{{ campaign["created_by"] }}
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="label">
+
+Date
+
+</div>
+
+<div class="value">
+
+{{ campaign["created_at"] }}
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="label">
+
+Support
+
+</div>
+
+<div class="value">
+
+{{ campaign["support"] }}
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="label">
+
+Nombre de commerces
+
+</div>
+
+<div class="value">
+
+{{ items|length }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 </body>
 </html>
