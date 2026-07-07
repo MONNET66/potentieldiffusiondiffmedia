@@ -2,38 +2,41 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-
 <title>Récapitulatif campagne</title>
 
-<style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
+<style>
 body{
     margin:0;
     background:#eef2f7;
     font-family:Arial,Helvetica,sans-serif;
+    color:#111827;
 }
 
 .container{
-    width:1200px;
+    max-width:1200px;
     margin:30px auto;
+    padding:0 18px;
 }
 
-.header{
+.header,.section{
     background:white;
-    border-radius:14px;
-    padding:30px;
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
-    margin-bottom:25px;
+    border-radius:16px;
+    padding:26px;
+    box-shadow:0 8px 22px rgba(15,23,42,.08);
+    margin-bottom:22px;
+    border:1px solid #e5e7eb;
 }
 
 .badge{
     display:inline-block;
-    background:#2563eb;
+    background:linear-gradient(135deg,#ff8a00,#f97316);
     color:white;
     padding:8px 16px;
-    border-radius:25px;
-    font-weight:bold;
-    margin-bottom:15px;
+    border-radius:999px;
+    font-weight:800;
+    margin-bottom:14px;
 }
 
 h1{
@@ -42,75 +45,91 @@ h1{
 }
 
 .subtitle{
-    color:#6b7280;
+    color:#64748b;
     margin-top:8px;
-    font-size:17px;
+    font-size:16px;
+}
+
+.actions{
+    margin-top:22px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    display:inline-block;
+    text-decoration:none;
+    border-radius:10px;
+    padding:10px 14px;
+    font-weight:800;
+    font-size:14px;
+}
+
+.btn-primary{
+    background:#f97316;
+    color:white;
+}
+
+.btn-dark{
+    background:#374151;
+    color:white;
+}
+
+.btn-light{
+    background:#e5e7eb;
+    color:#111827;
 }
 
 .info-grid{
-
     display:grid;
-
-    grid-template-columns:repeat(2,1fr);
-
-    gap:15px;
-
-    margin-top:30px;
-
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-top:24px;
 }
 
-.card{
-
+.info-card{
     background:#f8fafc;
-
-    border-radius:10px;
-
-    padding:18px;
-
-    border:1px solid #dbe3ee;
-
+    border-radius:12px;
+    padding:16px;
+    border:1px solid #e5e7eb;
 }
 
 .label{
-
     color:#64748b;
-
-    font-size:14px;
-
+    font-size:13px;
+    font-weight:700;
 }
 
 .value{
-
-    font-size:18px;
-
-    font-weight:bold;
-
+    font-size:17px;
+    font-weight:800;
     margin-top:6px;
-
 }
 
 .kpi-grid{
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:18px;
-    margin-bottom:25px;
+    margin-bottom:22px;
 }
 
 .kpi-card{
     background:white;
-    border-radius:14px;
+    border-radius:16px;
     padding:22px;
-    box-shadow:0 3px 10px rgba(0,0,0,.08);
+    box-shadow:0 8px 22px rgba(15,23,42,.08);
     display:flex;
     gap:16px;
     align-items:center;
+    border:1px solid #e5e7eb;
 }
 
 .kpi-icon{
     width:52px;
     height:52px;
     border-radius:16px;
-    background:#fff3e8;
+    background:#fff7ed;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -119,149 +138,315 @@ h1{
 
 .kpi-value{
     font-size:28px;
-    font-weight:800;
+    font-weight:900;
 }
 
 .kpi-label{
     color:#64748b;
     margin-top:4px;
-}    
+    font-size:14px;
+}
 
+.section-title{
+    margin:0 0 18px 0;
+    font-size:22px;
+}
+
+.notes-box{
+    background:#fff7ed;
+    border:1px solid #fed7aa;
+    border-radius:12px;
+    padding:16px;
+    line-height:1.5;
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+}
+
+.stat-card{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:16px;
+}
+
+.stat-number{
+    font-size:26px;
+    font-weight:900;
+}
+
+.stat-label{
+    color:#64748b;
+    margin-top:4px;
+    font-size:14px;
+}
+
+#map{
+    height:420px;
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid #e5e7eb;
+}
+
+.commerce-list{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+}
+
+.commerce-card{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:15px;
+}
+
+.commerce-name{
+    font-weight:900;
+    margin-bottom:8px;
+}
+
+.commerce-line{
+    color:#374151;
+    font-size:14px;
+    margin-top:4px;
+}
+
+.priority-pill{
+    display:inline-block;
+    margin-top:10px;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#e5e7eb;
+    font-weight:800;
+    font-size:13px;
+}
+
+@media(max-width:900px){
+    .info-grid,.kpi-grid,.stats-grid,.commerce-list{
+        grid-template-columns:1fr;
+    }
+}
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-<div class="header">
+    <div class="header">
+        <div class="badge">📊 Campagne ciblée</div>
 
-<div class="badge">
+        <h1>{{ campaign["name"] }}</h1>
+        <div class="subtitle">Fiche récapitulative de campagne</div>
 
-📊 Campagne ciblée
+        <div class="actions">
+            {% if session.role == "user" %}
+                <a class="btn btn-dark" href="/mon_dashboard">← Retour dashboard</a>
+            {% else %}
+                <a class="btn btn-dark" href="/dashboard_equipe">← Retour dashboard</a>
+            {% endif %}
 
-</div>
+            <a class="btn btn-primary" href="/campaign/{{ campaign['token'] }}">⚙️ Détail / Priorités</a>
+            <a class="btn btn-light" href="/campaign/{{ campaign['token'] }}/export?filter=all_sorted">📄 Export Excel</a>
+        </div>
 
-<h1>
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="label">Créée par</div>
+                <div class="value">{{ campaign["created_by"] }}</div>
+            </div>
 
-{{ campaign["name"] }}
+            <div class="info-card">
+                <div class="label">Date</div>
+                <div class="value">{{ campaign["created_at"] }}</div>
+            </div>
 
-</h1>
+            <div class="info-card">
+                <div class="label">Support</div>
+                <div class="value">{{ support_label }}</div>
+            </div>
 
-<div class="subtitle">
-
-Fiche récapitulative
-
-</div>
-
-<div class="info-grid">
-
-<div class="card">
-
-<div class="label">
-
-Créée par
-
-</div>
-
-<div class="value">
-
-{{ campaign["created_by"] }}
-
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="label">
-
-Date
-
-</div>
-
-<div class="value">
-
-{{ campaign["created_at"] }}
-
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="label">
-
-Support
-
-</div>
-
-<div class="value">
-
-{{ support_label }}
-
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="label">
-
-Nombre de commerces
-
-</div>
-
-<div class="value">
-
-{{ items|length }}
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="kpi-grid">
-
-    <div class="kpi-card">
-        <div class="kpi-icon">🏪</div>
-        <div>
-            <div class="kpi-value">{{ total_commerces }}</div>
-            <div class="kpi-label">Commerces</div>
+            <div class="info-card">
+                <div class="label">Référence</div>
+                <div class="value">{{ campaign["token"][:8] }}...</div>
+            </div>
         </div>
     </div>
 
-    <div class="kpi-card">
-        <div class="kpi-icon">📦</div>
-        <div>
-            <div class="kpi-value">{{ total_quantite }}</div>
-            <div class="kpi-label">Quantité totale</div>
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon">🏪</div>
+            <div>
+                <div class="kpi-value">{{ total_commerces }}</div>
+                <div class="kpi-label">Commerces</div>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">📦</div>
+            <div>
+                <div class="kpi-value">{{ total_quantite }}</div>
+                <div class="kpi-label">Quantité totale</div>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">🎯</div>
+            <div>
+                <div class="kpi-value">{{ potentiel_quantite }}</div>
+                <div class="kpi-label">Potentiel</div>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">✅</div>
+            <div>
+                <div class="kpi-value">{{ total_acceptes }}</div>
+                <div class="kpi-label">Acceptés</div>
+            </div>
         </div>
     </div>
 
-    <div class="kpi-card">
-        <div class="kpi-icon">🎯</div>
-        <div>
-            <div class="kpi-value">{{ potentiel_quantite }}</div>
-            <div class="kpi-label">Potentiel</div>
+    <div class="section">
+        <h2 class="section-title">Notes</h2>
+        <div class="notes-box">
+            {% if campaign["notes"] %}
+                {{ campaign["notes"] }}
+            {% else %}
+                Aucune note renseignée.
+            {% endif %}
         </div>
     </div>
 
-    <div class="kpi-card">
-        <div class="kpi-icon">✅</div>
-        <div>
-            <div class="kpi-value">{{ total_acceptes }}</div>
-            <div class="kpi-label">Acceptés</div>
+    {% set ns = namespace(p0=0, p1=0, p2=0, p3=0, oui=0, non=0, jamais=0, vide=0) %}
+
+    {% for item in items %}
+        {% if item["priority"] == 0 %}{% set ns.p0 = ns.p0 + 1 %}{% endif %}
+        {% if item["priority"] == 1 %}{% set ns.p1 = ns.p1 + 1 %}{% endif %}
+        {% if item["priority"] == 2 %}{% set ns.p2 = ns.p2 + 1 %}{% endif %}
+        {% if item["priority"] == 3 %}{% set ns.p3 = ns.p3 + 1 %}{% endif %}
+
+        {% if item["accepte"] == "oui" %}
+            {% set ns.oui = ns.oui + 1 %}
+        {% elif item["accepte"] == "non" %}
+            {% set ns.non = ns.non + 1 %}
+        {% elif item["accepte"] == "jamais" %}
+            {% set ns.jamais = ns.jamais + 1 %}
+        {% else %}
+            {% set ns.vide = ns.vide + 1 %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="section">
+        <h2 class="section-title">Répartition des priorités</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ ns.p3 }}</div>
+                <div class="stat-label">Priorité 3</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ ns.p2 }}</div>
+                <div class="stat-label">Priorité 2</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ ns.p1 }}</div>
+                <div class="stat-label">Priorité 1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ ns.p0 }}</div>
+                <div class="stat-label">Non sélectionnés</div>
+            </div>
         </div>
     </div>
 
-</div>    
+    <div class="section">
+        <h2 class="section-title">État des commerces</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ ns.oui }}</div>
+                <div class="stat-label">Acceptés</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ ns.non }}</div>
+                <div class="stat-label">Refusés</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ ns.jamais }}</div>
+                <div class="stat-label">Jamais</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ ns.vide }}</div>
+                <div class="stat-label">Non renseignés</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Carte des commerces</h2>
+        <div id="map"></div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Commerces de la campagne</h2>
+
+        {% if items %}
+            <div class="commerce-list">
+                {% for item in items %}
+                    <div class="commerce-card">
+                        <div class="commerce-name">{{ item["name"] }}</div>
+
+                        {% if item["adresse"] %}
+                            <div class="commerce-line">📍 {{ item["adresse"] }}</div>
+                        {% endif %}
+
+                        <div class="commerce-line">{{ item["code_postal"] }} {{ item["ville"] }}</div>
+
+                        {% if item["telephone"] %}
+                            <div class="commerce-line">📞 {{ item["telephone"] }}</div>
+                        {% endif %}
+
+                        <span class="priority-pill">Priorité {{ item["priority"] or 0 }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Aucun commerce.</p>
+        {% endif %}
+    </div>
 
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const map = L.map('map').setView([46.6, 2.4], 6);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+}).addTo(map);
+
+const markers = [];
+
+{% for item in items %}
+    {% if item["lat"] and item["lon"] %}
+        var marker = L.marker([{{ item["lat"] }}, {{ item["lon"] }}]).addTo(map);
+        marker.bindPopup("<b>{{ item['name']|e }}</b><br>{{ item['code_postal'] }} {{ item['ville']|e }}");
+        markers.push(marker);
+    {% endif %}
+{% endfor %}
+
+if (markers.length > 0) {
+    const group = L.featureGroup(markers);
+    map.fitBounds(group.getBounds(), { padding: [30, 30] });
+}
+</script>
+
+</body>
+</html>
 
 </body>
 </html>
