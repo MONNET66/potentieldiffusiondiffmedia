@@ -1126,7 +1126,18 @@ def index():
     departement_value = ""
     rayon_value = ""
     show_circle = False
+    search_mode = request.args.get("search_mode", "commerce")
     temp_searches = session.get("temp_searches", [])
+
+    if request.args.get("reset_search") == "1":
+        session.pop("last_search_criteria", None)
+        session["last_results_count"] = 0
+        search_value = ""
+        departement_value = ""
+        rayon_value = ""
+        selected_support = "all"
+        selected_types = ["all"]
+        selected_type = "all"
 
     def rebuild_cumulative_results(saved_searches):
         if not saved_searches:
@@ -1257,7 +1268,8 @@ def index():
         potentiel=potentiel, supports=supports, stats=stats, selected_type=selected_type,
         selected_types=selected_types, selected_support=selected_support, search_value=search_value,
         available_supports=available_supports, support_labels=SUPPORT_LABELS, type_labels=TYPE_LABELS,
-        mode=mode, departement_value=departement_value, rayon_value=rayon_value, show_circle=show_circle,
+        mode=mode, search_mode=search_mode,
+        departement_value=departement_value, rayon_value=rayon_value, show_circle=show_circle,
         departements=DEPARTEMENTS, current_user=session.get("username", ""), temp_searches=temp_searches,
     )
 
