@@ -452,7 +452,16 @@ def get_supports_for_type(commerce_type):
 
 def get_available_supports(selected_types):
     if not selected_types or "all" in selected_types:
-        return ["all"]
+        return filter_support_keys_for_current_user([
+            "all",
+            "sac_pharmacie",
+            "sac_pain",
+            "sac_galette",
+            "set_table",
+            "sous_bock",
+            "flyer",
+            "affiche",
+        ])
 
     merged = {"all"}
 
