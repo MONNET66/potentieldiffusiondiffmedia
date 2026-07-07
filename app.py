@@ -1957,7 +1957,7 @@ def log_massive_export():
             item.get("lat"),
             item.get("lon"),
             quantite_map.get(support, 0),
-            quantite_map.get(support, 0) if SUPPORT_LABELS.get(support, support) in item.get("supports", []) else 0
+            compute_item_potentiel_for_support(item, support)
         ))
         
     conn.commit()
