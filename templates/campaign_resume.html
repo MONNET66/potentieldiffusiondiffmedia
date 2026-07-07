@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Récapitulatif campagne</title>
+</head>
+<body>
+
+<h1>{{ campaign["name"] }}</h1>
+
+<p><b>Créée par :</b> {{ campaign["created_by"] }}</p>
+
+<p><b>Date :</b> {{ campaign["created_at"] }}</p>
+
+<p><b>Support :</b> {{ campaign["support"] }}</p>
+
+<p><b>Nombre de commerces :</b> {{ items|length }}</p>
+
+<hr>
+
+<h2>Liste des commerces</h2>
+
+<ul>
+{% for item in items %}
+    <li>{{ item["name"] }} - {{ item["ville"] }}</li>
+{% endfor %}
+</ul>
+
+</body>
+</html>
