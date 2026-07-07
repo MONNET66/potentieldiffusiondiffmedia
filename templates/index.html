@@ -2163,7 +2163,7 @@ function unhideCommerce(commerceId, button) {
 </script>
 
 <script>
-function updateSearchMode() {
+function updateSearchModeDisplay() {
     const selectedMode = document.querySelector('input[name="search_mode"]:checked')?.value || "commerce";
     const typesCell = document.getElementById("typesSearchCell");
 
@@ -2178,10 +2178,12 @@ function updateSearchMode() {
 
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll('input[name="search_mode"]').forEach(function(radio) {
-        radio.addEventListener("change", updateSearchMode);
+        radio.addEventListener("change", function() {
+            window.location.href = "/?reset_search=1&search_mode=" + encodeURIComponent(this.value);
+        });
     });
 
-    updateSearchMode();
+    updateSearchModeDisplay();
 });
 </script>
 
