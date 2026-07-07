@@ -2792,19 +2792,13 @@ def dashboard_equipe():
             SELECT id, username, display_name
             FROM users
             WHERE role = 'user'
-        """).fetchall()
-    else:
-        commerciaux = cur_auth.execute("""
-            SELECT id, username, display_name
-            FROM users
-            WHERE role = 'user' AND manager_id = ?
 
             UNION ALL
 
             SELECT id, username, username AS display_name
             FROM users
-            WHERE id = ?
-        """, (session.get("user_id"), session.get("user_id"))).fetchall()
+            WHERE username = ?
+        """, (session.get("username"),)).fetchall()
 
     conn_auth.close()
 
