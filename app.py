@@ -1393,7 +1393,7 @@ def create_campaign():
                     item.get("lat"),
                     item.get("lon"),
                     quantite_par_commerce,
-                    item.get("nb_supports", 0)
+                    quantite_par_commerce if SUPPORT_LABELS.get(selected_support, selected_support) in item.get("supports", []) else 0
                 ))
 
             conn.commit()
@@ -1914,7 +1914,7 @@ def log_massive_export():
             item.get("lat"),
             item.get("lon"),
             quantite_map.get(support, 0),
-            item.get("nb_supports", 0)
+            quantite_map.get(support, 0) if SUPPORT_LABELS.get(support, support) in item.get("supports", []) else 0
         ))
         
     conn.commit()
