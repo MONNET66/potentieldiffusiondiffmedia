@@ -2857,13 +2857,22 @@ def dashboard_equipe():
             total_commerces += item["nb_commerces"] or 0
             total_quantite += item["quantite_totale"] or 0
 
-            potentiel_row = cur_campaign.execute("""
-                SELECT SUM(COALESCE(potentiel_support, 0)) AS potentiel_total
+            campaign_items_for_potential = cur_campaign.execute("""
+                SELECT type
                 FROM campaign_items
                 WHERE campaign_id = ?
-            """, (item["id"],)).fetchone()
+            """, (item["id"],)).fetchall()
 
-            potentiel_quantite = potentiel_row["potentiel_total"] or 0
+            potential_data = [dict(row) for row in campaign_items_for_potential]
+
+            _, totals_by_label = compute_potentiel_and_supports(potential_data)
+
+            support_label = SUPPORT_LABELS.get(item["support"], "")
+
+            if item["support"] == "all":
+                potentiel_quantite = sum(totals_by_label.values())
+            else:
+                potentiel_quantite = totals_by_label.get(support_label, 0)
 
             active_commerciaux.add(username)
 
@@ -3285,13 +3294,22 @@ def mon_dashboard():
         if selected_month and mois_key != selected_month:
             continue
             
-        potentiel_row = cur.execute("""
-            SELECT SUM(COALESCE(potentiel_support, 0)) AS potentiel_total
+        campaign_items_for_potential = cur.execute("""
+            SELECT type
             FROM campaign_items
             WHERE campaign_id = ?
-        """, (item["id"],)).fetchone()
+        """, (item["id"],)).fetchall()
 
-        potentiel_quantite = potentiel_row["potentiel_total"] or 0
+        potential_data = [dict(row) for row in campaign_items_for_potential]
+
+        _, totals_by_label = compute_potentiel_and_supports(potential_data)
+
+        support_label = SUPPORT_LABELS.get(item["support"], "")
+
+        if item["support"] == "all":
+            potentiel_quantite = sum(totals_by_label.values())
+        else:
+            potentiel_quantite = totals_by_label.get(support_label, 0)
             
         rows += f"""
             <tr>
