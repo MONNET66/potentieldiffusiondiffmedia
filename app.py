@@ -2800,9 +2800,7 @@ def dashboard_equipe():
                         <span class="commercial-badge">👤 {display_name}</span>
                     </td>
                     <td>
-                        <a class="campaign-link" href="{('/massive_campaign/' + str(item['id'])) if item['notes'] == 'Campagne massive' else ('/campaign/' + item['token'])}">
-                            {item['name']}
-                        </a>
+                        {"<a class='campaign-link' href='/massive_campaign/" + str(item["id"]) + "'>" + item["name"] + "</a>" if item["notes"] == "Campagne massive" else "<strong>" + item["name"] + "</strong><br><a class='campaign-link' href='/campaign_resume/" + item["token"] + "'>📊 Voir le récapitulatif</a><br><a class='campaign-link' href='/campaign/" + item["token"] + "'>⚙️ Détail / Priorités</a>"}
                     </td>
                     <td>
                         <span class="support-badge">{item['support'] or '-'}</span>
@@ -3230,9 +3228,7 @@ def mon_dashboard():
             <tr>
                 <td>{date_label}</td>
                 <td>
-                    <a class="campaign-link" href="{('/massive_campaign/' + str(item['id'])) if item['notes'] == 'Campagne massive' else ('/campaign/' + item['token'])}">
-                        {item['name']}
-                    </a>
+                    {"<a class='campaign-link' href='/massive_campaign/" + str(item["id"]) + "'>" + item["name"] + "</a>" if item["notes"] == "Campagne massive" else "<strong>" + item["name"] + "</strong><br><a class='campaign-link' href='/campaign_resume/" + item["token"] + "'>📊 Voir le récapitulatif</a><br><a class='campaign-link' href='/campaign/" + item["token"] + "'>⚙️ Détail / Priorités</a>"}
                 </td>
                 <td><span class="support-badge">{item['support'] or '-'}</span></td>
                 <td>
