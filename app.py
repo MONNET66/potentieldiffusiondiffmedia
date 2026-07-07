@@ -1900,9 +1900,9 @@ def log_massive_export():
         cur.execute("""
             INSERT INTO campaign_items (
                 campaign_id, name, type, ville, code_postal,
-                adresse, telephone, lat, lon, quantite
+                adresse, telephone, lat, lon, quantite, potentiel_support
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             campaign_id,
             item.get("name"),
@@ -1913,7 +1913,8 @@ def log_massive_export():
             item.get("telephone"),
             item.get("lat"),
             item.get("lon"),
-            quantite_map.get(support, 0)
+            quantite_map.get(support, 0),
+            item.get("nb_supports", 0)
         ))
         
     conn.commit()
