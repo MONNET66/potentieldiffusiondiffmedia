@@ -1134,9 +1134,14 @@ def index():
 
     if request.method == "POST":
         action = request.form.get("action", "search")
-        selected_types = get_selected_types_from_form(request.form)
-        selected_type = selected_types[0] if len(selected_types) == 1 and selected_types[0] != "all" else "all"
+        search_mode = request.form.get("search_mode", "commerce")
         selected_support = request.form.get("support", "all")
+
+        if search_mode == "support":
+            selected_types = get_types_for_support(selected_support)
+        else:
+            selected_types = get_selected_types_from_form(request.form)
+        selected_type = selected_types[0] if len(selected_types) == 1 and selected_types[0] != "all" else "all"
         session["selected_support"] = selected_support
         camping_stars = request.form.get("camping_stars", "all")
         search_value = (request.form.get("ville") or "").strip()
@@ -1144,6 +1149,7 @@ def index():
         departement_value = (request.form.get("departement") or "").strip()
         rayon_value = (request.form.get("rayon") or "").strip()
         current_criteria = {
+            "search_mode": search_mode,
             "selected_types": selected_types,
             "selected_support": selected_support,
             "camping_stars": camping_stars,
