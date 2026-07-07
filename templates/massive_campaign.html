@@ -378,9 +378,14 @@
             <div class="info-card">
                 <div class="info-icon">📄</div>
                 <div>
-                    <div class="info-label">Référence</div>
-                    <div class="info-value">Fichier CSV</div>
-                    <a class="csv-link" href="/massive_export/{{ campaign['id'] }}/download">Télécharger le fichier</a>
+                    <div class="info-label">Partage</div>
+                    <div class="info-value">Lien client</div>
+                    <button class="csv-link" type="button"
+                        data-link="{{ url_for('massive_campaign_client', token=campaign['token'], _external=True) }}"
+                        onclick="copyCampaignLink(this)">
+                        📋 Copier le lien
+                </button>
+                <span class="copy-message" style="display:none;">Lien copié !</span>
                 </div>
             </div>
 
@@ -544,5 +549,21 @@
     }
 </script>
 
+<script>
+function copyCampaignLink(button) {
+    const link = button.getAttribute("data-link");
+
+    navigator.clipboard.writeText(link).then(function() {
+        const message = button.nextElementSibling;
+        if (message) {
+            message.style.display = "inline";
+            setTimeout(function() {
+                message.style.display = "none";
+            }, 2000);
+        }
+    });
+}
+</script>
+    
 </body>
 </html>
