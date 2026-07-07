@@ -761,6 +761,37 @@
                 height: 460px;
             }
         }
+
+			.search-mode-box{
+    			background:#ffffff;
+    			border:1px solid #e5e7eb;
+    			border-radius:18px;
+    			padding:18px 22px;
+    			margin-bottom:18px;
+    			display:flex;
+    			align-items:center;
+    			gap:18px;
+    			box-shadow:0 8px 24px rgba(15,23,42,.06);
+			}
+
+			.search-mode-title{
+    			font-weight:900;
+    			color:#111827;
+    			margin-right:8px;
+		}
+
+		.search-mode-option{
+    		display:flex;
+   			align-items:center;
+    		gap:8px;
+    		font-weight:700;
+    		color:#374151;
+		}
+
+		.search-mode-option input{
+    		accent-color:#f97316;
+		}	
+		
     </style>
 </head>
 
@@ -813,7 +844,22 @@
     {% endwith %}
 
     <form method="POST" id="searchForm">
-        <div class="search-bar">
+
+    	<div class="search-mode-box">
+        	<div class="search-mode-title">Mode de recherche</div>
+
+        	<label class="search-mode-option">
+            	<input type="radio" name="search_mode" value="commerce" checked>
+            	Recherche par commerce
+        	</label>
+
+        	<label class="search-mode-option">
+            	<input type="radio" name="search_mode" value="support">
+            	Recherche par support
+        	</label>
+    	</div>
+
+    <div class="search-bar">
 
             <div class="search-cell">
                 <div class="types-dropdown">
