@@ -861,8 +861,8 @@
 
     <div class="search-bar">
 
-            <div class="search-cell">
-                <div class="types-dropdown">
+            <div class="search-cell" id="typesSearchCell">
+    			<div class="types-dropdown">
                     <button type="button" class="types-button" id="typesButton">
                         Types de commerces
                     </button>
@@ -2159,5 +2159,32 @@ function unhideCommerce(commerceId, button) {
 }
 
 </script>
+
+</script>
+
+<script>
+function updateSearchMode() {
+    const selectedMode = document.querySelector('input[name="search_mode"]:checked')?.value || "commerce";
+    const typesCell = document.getElementById("typesSearchCell");
+
+    if (!typesCell) return;
+
+    if (selectedMode === "support") {
+        typesCell.style.display = "none";
+    } else {
+        typesCell.style.display = "flex";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('input[name="search_mode"]').forEach(function(radio) {
+        radio.addEventListener("change", updateSearchMode);
+    });
+
+    updateSearchMode();
+});
+</script>
+
 </body>
-</html>
+</html>	
+
