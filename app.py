@@ -1442,10 +1442,30 @@ def campaign_resume(token):
 
     conn.close()
 
+    total_commerces = len(items)
+    total_quantite = sum((item["quantite"] or 0) for item in items)
+
+    items_as_dict = [dict(item) for item in items]
+    _, totals_by_label = compute_potentiel_and_supports(items_as_dict)
+
+    support_label = SUPPORT_LABELS.get(campaign["support"], campaign["support"] or "Tous les supports")
+
+    if campaign["support"] == "all":
+        potentiel_quantite = sum(totals_by_label.values())
+    else:
+        potentiel_quantite = totals_by_label.get(support_label, 0)
+
+    total_acceptes = sum(1 for item in items if (item["accepte"] or "") == "oui")
+
     return render_template(
         "campaign_resume.html",
         campaign=campaign,
-        items=items
+        items=items,
+        total_commerces=total_commerces,
+        total_quantite=total_quantite,
+        potentiel_quantite=potentiel_quantite,
+        total_acceptes=total_acceptes,
+        support_label=support_label
     )
 
     
