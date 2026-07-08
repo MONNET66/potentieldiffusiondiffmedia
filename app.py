@@ -1084,6 +1084,11 @@ def login():
                 WHERE id = ?
             """, (user["id"],))
 
+            cur.execute("""
+                INSERT INTO activity_logs (user_id, username, role, action, details)
+                VALUES (?, ?, ?, ?, ?)
+            """, (user["id"], user["username"], user["role"], "Connexion", "Connexion à l'application"))
+            
             conn.commit()
             conn.close()
 
