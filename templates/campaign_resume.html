@@ -150,7 +150,7 @@ body{
 
 .kpi-grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(5,1fr);
     gap:18px;
     margin-bottom:22px;
 }
@@ -630,9 +630,18 @@ body{
             <div class="kpi-icon">✅</div>
             <div>
                 <div class="kpi-value">{{ total_acceptes }}</div>
-                <div class="kpi-label">Acceptés</div>
+                <div class="kpi-label">Commerces validés</div>
             </div>
         </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">📦</div>
+            <div>
+                <div class="kpi-value">{{ quantite_acceptes }}</div>
+                <div class="kpi-label">Quantité validée</div>
+            </div>
+        </div>
+
     </div>
 
     <div class="section">
