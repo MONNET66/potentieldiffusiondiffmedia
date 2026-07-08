@@ -1635,6 +1635,12 @@ def campaign_resume(token):
         potentiel_quantite = totals_by_label.get(support_label, 0)
 
     total_acceptes = sum(1 for item in items if (item["accepte"] or "") == "oui")
+    
+    quantite_acceptes = sum(
+        (item["quantite"] or 0)
+        for item in items
+        if (item["accepte"] or "") == "oui"
+    )
 
     return render_template(
         "campaign_resume.html",
@@ -1644,6 +1650,7 @@ def campaign_resume(token):
         total_quantite=total_quantite,
         potentiel_quantite=potentiel_quantite,
         total_acceptes=total_acceptes,
+        quantite_acceptes=quantite_acceptes,
         support_label=support_label
     )
 
