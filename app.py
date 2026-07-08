@@ -999,7 +999,21 @@ def ensure_databases_exist():
             PRIMARY KEY (user_id, commerce_id)
         )
     """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS activity_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            username TEXT,
+            role TEXT,
+            action TEXT,
+            details TEXT,
+            created_at TEXT DEFAULT (datetime('now', 'localtime'))
+        )
+    """)
+
     conn.commit()
+
     admin_exists = cur.execute(
         "SELECT * FROM users WHERE username = ?",
         ("admin",)
