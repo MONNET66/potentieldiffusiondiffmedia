@@ -1530,6 +1530,13 @@ def export_csv():
             str(item.get("distance_km", "")).replace(".", ",") if item.get("distance_km") not in (None, "") else "",
         ])
     csv_content = "\ufeff" + output.getvalue()
+    conn_auth = get_auth_connection()
+    conn_auth.execute("""
+        INSERT INTO activity_logs (user_id, username, role, action, details)
+        VALUES (?, ?, ?, ?, ?)
+    """, (session.get("user_id"), session.get("username"), session.get("role"), "Export CSV", "Export commerces.csv"))
+    conn_auth.commit()
+    conn_auth.close()
     return Response(csv_content, mimetype="text/csv; charset=utf-8", headers={"Content-Disposition": "attachment; filename=commerces.csv"})
 
 
