@@ -646,7 +646,7 @@ body{
         {% if items %}
             <div class="commerce-list">
                 {% for item in items %}
-                    <div class="commerce-card" id="commerce-{{ item['id'] }}">
+                    <div class="commerce-card {% if item['accepte'] == 'oui' %}commerce-ok{% elif item['accepte'] == 'non' %}commerce-ko{% elif item['accepte'] == 'jamais' %}commerce-never{% else %}commerce-pending{% endif %}" id="commerce-{{ item['id'] }}">
                         <div class="commerce-name">{{ item["name"] }}</div>
 
                         {% if item["adresse"] %}
