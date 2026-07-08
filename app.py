@@ -986,6 +986,11 @@ def ensure_databases_exist():
 
     conn = sqlite3.connect(AUTH_DB_FILE)
     cur = conn.cursor()
+
+    try:
+        cur.execute("ALTER TABLE users ADD COLUMN last_login_at TEXT")
+    except Exception:
+        pass
     
     cur.execute("""
         CREATE TABLE IF NOT EXISTS user_hidden_commerces (
@@ -1044,7 +1049,6 @@ def login():
             FROM users
             WHERE username = ?
         """, (username,)).fetchone()
-        conn.close()
         if not user:
             error = "Identifiant ou mot de passe invalide."
         elif int(user["is_active"]) != 1:
@@ -1052,10 +1056,18 @@ def login():
         elif not check_password_hash(user["password_hash"], password):
             error = "Identifiant ou mot de passe invalide."
         else:
-            session["user_id"] = user["id"]
-            session["username"] = user["username"]
-            session["role"] = user["role"]
-            return redirect(url_for("index"))
+            cur.execute("""
+                UPDATE users
+                SET last_login_at = datetime('now', 'localtime')
+                WHERE id = ?
+            """, (user["id"],))
+            conn.commit()
+            conn.close()
+
+    session["user_id"] = user["id"]
+    session["username"] = user["username"]
+    session["role"] = user["role"]
+    return redirect(url_for("index"))
     return render_template("login.html", error=error)
 
 
