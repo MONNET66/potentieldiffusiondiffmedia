@@ -2859,6 +2859,7 @@ def dashboard_equipe():
         username = commercial["username"]
         display_name = commercial["display_name"] or username
         role_label = {"user": "Commercial", "manager": "Manager", "admin": "Admin"}.get(commercial["role"], commercial["role"])
+        last_login = commercial["last_login_at"] or "Jamais connecté"
 
         if selected_commercial and username != selected_commercial:
             continue
