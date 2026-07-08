@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Récapitulatif campagne</title>
+<title>Campagne ciblée</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
@@ -114,6 +114,7 @@ body{
     display:flex;
     gap:12px;
     flex-wrap:wrap;
+    align-items:center;
 }
 
 .btn{
@@ -123,6 +124,8 @@ body{
     padding:10px 14px;
     font-weight:800;
     font-size:14px;
+    border:none;
+    cursor:pointer;
 }
 
 .btn-primary{
@@ -138,6 +141,11 @@ body{
 .btn-light{
     background:#e5e7eb;
     color:#111827;
+}
+
+.copy-message{
+    font-weight:800;
+    color:#16a34a;
 }
 
 .kpi-grid{
@@ -218,6 +226,26 @@ body{
     font-size:14px;
 }
 
+.progress-wrap{
+    background:#e5e7eb;
+    border-radius:999px;
+    overflow:hidden;
+    height:18px;
+    margin-top:10px;
+}
+
+.progress-bar{
+    background:#f97316;
+    height:18px;
+    border-radius:999px;
+}
+
+.progress-text{
+    margin-top:10px;
+    font-weight:800;
+    color:#374151;
+}
+
 #map{
     height:420px;
     border-radius:14px;
@@ -234,13 +262,14 @@ body{
 .commerce-card{
     background:#f8fafc;
     border:1px solid #e5e7eb;
-    border-radius:12px;
-    padding:15px;
+    border-radius:14px;
+    padding:16px;
 }
 
 .commerce-name{
     font-weight:900;
     margin-bottom:8px;
+    font-size:17px;
 }
 
 .commerce-line{
@@ -249,14 +278,138 @@ body{
     margin-top:4px;
 }
 
-.priority-pill{
-    display:inline-block;
-    margin-top:10px;
-    padding:5px 9px;
+.priority-zone{
+    margin-top:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.priority-label{
+    font-weight:900;
+    font-size:14px;
+}
+
+.priority-form{
+    display:inline;
+    margin:0;
+}
+
+.priority-btn{
+    border:none;
     border-radius:999px;
+    padding:6px 11px;
+    font-weight:900;
+    cursor:pointer;
     background:#e5e7eb;
-    font-weight:800;
+    color:#111827;
+}
+
+.priority-btn:hover{
+    opacity:.85;
+}
+
+.priority-active-0{
+    background:#6b7280;
+    color:white;
+}
+
+.priority-active-1{
+    background:#2563eb;
+    color:white;
+}
+
+.priority-active-2{
+    background:#f59e0b;
+    color:white;
+}
+
+.priority-active-3{
+    background:#dc2626;
+    color:white;
+}
+
+.work-form{
+    margin-top:14px;
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:14px;
+}
+
+.work-row{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.work-row label{
+    font-size:14px;
+}
+
+.work-row select,
+.work-row input{
+    padding:8px 10px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    background:white;
+}
+
+.work-form textarea{
+    width:100%;
+    box-sizing:border-box;
+    padding:9px 10px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    resize:vertical;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.save-btn{
+    margin-top:10px;
+    background:#22c55e;
+    color:white;
+    border:none;
+    border-radius:10px;
+    padding:9px 13px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.save-btn:hover{
+    opacity:.9;
+}
+
+.status-pill{
+    display:inline-block;
+    padding:5px 10px;
+    border-radius:999px;
     font-size:13px;
+    font-weight:900;
+    margin-top:10px;
+}
+
+.status-oui{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.status-non{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.status-jamais{
+    background:#e5e7eb;
+    color:#374151;
+}
+
+.status-vide{
+    background:#ffedd5;
+    color:#9a3412;
 }
 
 @media(max-width:900px){
@@ -282,6 +435,32 @@ body{
 
 <div class="container">
 
+    {% set ns = namespace(p0=0, p1=0, p2=0, p3=0, oui=0, non=0, jamais=0, vide=0) %}
+
+    {% for item in items %}
+        {% if item["priority"] == 0 %}{% set ns.p0 = ns.p0 + 1 %}{% endif %}
+        {% if item["priority"] == 1 %}{% set ns.p1 = ns.p1 + 1 %}{% endif %}
+        {% if item["priority"] == 2 %}{% set ns.p2 = ns.p2 + 1 %}{% endif %}
+        {% if item["priority"] == 3 %}{% set ns.p3 = ns.p3 + 1 %}{% endif %}
+
+        {% if item["accepte"] == "oui" %}
+            {% set ns.oui = ns.oui + 1 %}
+        {% elif item["accepte"] == "non" %}
+            {% set ns.non = ns.non + 1 %}
+        {% elif item["accepte"] == "jamais" %}
+            {% set ns.jamais = ns.jamais + 1 %}
+        {% else %}
+            {% set ns.vide = ns.vide + 1 %}
+        {% endif %}
+    {% endfor %}
+
+    {% set total_traites = ns.oui + ns.non + ns.jamais %}
+    {% if total_commerces > 0 %}
+        {% set progression = ((total_traites / total_commerces) * 100)|round(0, 'floor') %}
+    {% else %}
+        {% set progression = 0 %}
+    {% endif %}
+
     <div class="resume-hero">
 
         <div class="resume-title-row">
@@ -290,7 +469,7 @@ body{
             <div>
                 <div class="resume-type">Campagne ciblée</div>
                 <h1>{{ campaign["name"] }}</h1>
-                <div class="resume-subtitle">Vue d'ensemble et récapitulatif de la campagne</div>
+                <div class="resume-subtitle">Vue d'ensemble, pilotage et suivi de la campagne</div>
             </div>
         </div>
 
@@ -346,11 +525,11 @@ body{
                 ✅ Lien copié !
             </span>
 
-            <a class="btn btn-primary" href="/campaign/{{ campaign['token'] }}">
-                ⚙️ Détail / Priorités
+            <a class="btn btn-light" href="/campaign/{{ campaign['token'] }}">
+                ⚙️ Ancienne vue détail
             </a>
 
-            <a class="btn btn-light" href="/campaign/{{ campaign['token'] }}/export?filter=all_sorted">
+            <a class="btn btn-primary" href="/campaign/{{ campaign['token'] }}/export?filter=all_sorted">
                 📄 Export Excel
             </a>
         </div>
@@ -392,6 +571,16 @@ body{
     </div>
 
     <div class="section">
+        <h2 class="section-title">Progression</h2>
+        <div class="progress-wrap">
+            <div class="progress-bar" style="width:{{ progression }}%;"></div>
+        </div>
+        <div class="progress-text">
+            {{ progression }} % traité — {{ total_traites }} commerce(s) traité(s), {{ ns.vide }} restant(s)
+        </div>
+    </div>
+
+    <div class="section">
         <h2 class="section-title">Notes</h2>
         <div class="notes-box">
             {% if campaign["notes"] %}
@@ -401,25 +590,6 @@ body{
             {% endif %}
         </div>
     </div>
-
-    {% set ns = namespace(p0=0, p1=0, p2=0, p3=0, oui=0, non=0, jamais=0, vide=0) %}
-
-    {% for item in items %}
-        {% if item["priority"] == 0 %}{% set ns.p0 = ns.p0 + 1 %}{% endif %}
-        {% if item["priority"] == 1 %}{% set ns.p1 = ns.p1 + 1 %}{% endif %}
-        {% if item["priority"] == 2 %}{% set ns.p2 = ns.p2 + 1 %}{% endif %}
-        {% if item["priority"] == 3 %}{% set ns.p3 = ns.p3 + 1 %}{% endif %}
-
-        {% if item["accepte"] == "oui" %}
-            {% set ns.oui = ns.oui + 1 %}
-        {% elif item["accepte"] == "non" %}
-            {% set ns.non = ns.non + 1 %}
-        {% elif item["accepte"] == "jamais" %}
-            {% set ns.jamais = ns.jamais + 1 %}
-        {% else %}
-            {% set ns.vide = ns.vide + 1 %}
-        {% endif %}
-    {% endfor %}
 
     <div class="section">
         <h2 class="section-title">Répartition des priorités</h2>
@@ -476,7 +646,7 @@ body{
         {% if items %}
             <div class="commerce-list">
                 {% for item in items %}
-                    <div class="commerce-card">
+                    <div class="commerce-card" id="commerce-{{ item['id'] }}">
                         <div class="commerce-name">{{ item["name"] }}</div>
 
                         {% if item["adresse"] %}
@@ -489,7 +659,67 @@ body{
                             <div class="commerce-line">📞 {{ item["telephone"] }}</div>
                         {% endif %}
 
-                        <span class="priority-pill">Priorité {{ item["priority"] or 0 }}</span>
+                        {% if item["accepte"] == "oui" %}
+                            <span class="status-pill status-oui">Accepté</span>
+                        {% elif item["accepte"] == "non" %}
+                            <span class="status-pill status-non">Refusé</span>
+                        {% elif item["accepte"] == "jamais" %}
+                            <span class="status-pill status-jamais">Jamais</span>
+                        {% else %}
+                            <span class="status-pill status-vide">Non renseigné</span>
+                        {% endif %}
+
+                        <div class="priority-zone">
+                            <span class="priority-label">Priorité :</span>
+
+                            {% for p in [0, 1, 2, 3] %}
+                                <form method="POST"
+                                      action="{{ url_for('set_campaign_priority', token=campaign['token']) }}"
+                                      class="priority-form">
+                                    <input type="hidden" name="item_id" value="{{ item['id'] }}">
+                                    <input type="hidden" name="priority" value="{{ p }}">
+                                    <button type="submit"
+                                            class="priority-btn {% if item['priority'] == p %}priority-active-{{ p }}{% endif %}">
+                                        {{ p }}
+                                    </button>
+                                </form>
+                            {% endfor %}
+                        </div>
+
+                        <form method="POST"
+                              action="{{ url_for('update_campaign_item', token=campaign['token']) }}"
+                              class="work-form">
+
+                            <input type="hidden" name="item_id" value="{{ item['id'] }}">
+
+                            <div class="work-row">
+                                <label>
+                                    <b>Accepte :</b>
+                                    <select name="accepte">
+                                        <option value="" {% if item["accepte"] == "" or item["accepte"] is none %}selected{% endif %}>Non renseigné</option>
+                                        <option value="oui" {% if item["accepte"] == "oui" %}selected{% endif %}>Oui</option>
+                                        <option value="non" {% if item["accepte"] == "non" %}selected{% endif %}>Non</option>
+                                        <option value="jamais" {% if item["accepte"] == "jamais" %}selected{% endif %}>Jamais</option>
+                                    </select>
+                                </label>
+
+                                <label>
+                                    <b>Quantité :</b>
+                                    <input type="number"
+                                           name="quantite"
+                                           value="{{ item['quantite'] or 0 }}"
+                                           min="0"
+                                           style="width:90px;">
+                                </label>
+                            </div>
+
+                            <label>
+                                <b>Commentaire :</b>
+                                <textarea name="commentaire" rows="2">{{ item["commentaire"] or "" }}</textarea>
+                            </label>
+
+                            <button type="submit" class="save-btn">Enregistrer</button>
+                        </form>
                     </div>
                 {% endfor %}
             </div>
@@ -540,6 +770,25 @@ function copyCampaignLink(button) {
     });
 }
 </script>
-    
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const savedScrollY = sessionStorage.getItem("campaignResumeScrollY");
+
+    if (savedScrollY !== null) {
+        window.scrollTo(0, parseInt(savedScrollY, 10));
+        sessionStorage.removeItem("campaignResumeScrollY");
+    }
+
+    const forms = document.querySelectorAll(".priority-form, .work-form");
+
+    forms.forEach(function(form) {
+        form.addEventListener("submit", function() {
+            sessionStorage.setItem("campaignResumeScrollY", window.scrollY);
+        });
+    });
+});
+</script>
+
 </body>
 </html>
