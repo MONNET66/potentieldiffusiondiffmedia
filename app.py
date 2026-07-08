@@ -1988,6 +1988,14 @@ def log_massive_export():
 
     campaign_id = cur.lastrowid
 
+    conn_auth = get_auth_connection()
+    conn_auth.execute("""
+        INSERT INTO activity_logs (user_id, username, role, action, details)
+        VALUES (?, ?, ?, ?, ?)
+    """, (session.get("user_id"), session.get("username"), session.get("role"), "Création campagne massive", filename))
+    conn_auth.commit()
+    conn_auth.close()
+
     for item in LAST_RESULTS:
         cur.execute("""
             INSERT INTO campaign_items (
