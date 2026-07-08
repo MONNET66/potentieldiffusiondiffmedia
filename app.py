@@ -2098,6 +2098,20 @@ def delete_campaign(token):
         conn.close()
         return "Accès interdit", 403
 
+    conn_auth = get_auth_connection()
+    conn_auth.execute("""
+        INSERT INTO activity_logs (user_id, username, role, action, details)
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        session.get("user_id"),
+        session.get("username"),
+        session.get("role"),
+        "Suppression campagne",
+        campaign["name"]
+    ))
+    conn_auth.commit()
+    conn_auth.close()
+
     cur.execute("DELETE FROM campaign_items WHERE campaign_id = ?", (campaign["id"],))
     cur.execute("DELETE FROM campaigns WHERE id = ?", (campaign["id"],))
     conn.commit()
