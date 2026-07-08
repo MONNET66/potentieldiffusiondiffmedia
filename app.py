@@ -1103,6 +1103,19 @@ def login():
 
 @app.route("/logout")
 def logout():
+    conn_auth = get_auth_connection()
+    conn_auth.execute("""
+        INSERT INTO activity_logs (user_id, username, role, action, details)
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        session.get("user_id"),
+        session.get("username"),
+        session.get("role"),
+        "Déconnexion",
+        "Déconnexion de l'application"
+    ))
+    conn_auth.commit()
+    conn_auth.close()
     session.clear()
     return redirect(url_for("login"))
 
