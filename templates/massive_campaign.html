@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -7,9 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -28,20 +26,8 @@
             box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 22px;
-        }
-
-        .brand img {
-            height: 52px;
-        }
-
-        .brand-title {
-            font-size: 22px;
-            font-weight: bold;
-        }
+        .brand { display: flex; align-items: center; gap: 22px; }
+        .brand img { height: 52px; }
 
         .back-btn {
             background: linear-gradient(135deg, #ff5a00, #ff7a1a);
@@ -153,6 +139,17 @@
             font-weight: bold;
             text-decoration: none;
             font-size: 14px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .copy-message {
+            color: #16a34a;
+            font-weight: bold;
+            font-size: 13px;
+            margin-left: 8px;
         }
 
         .notes-box {
@@ -292,9 +289,7 @@
                 display: none !important;
             }
 
-            body {
-                background: white;
-            }
+            body { background: white; }
 
             .page {
                 margin: 0;
@@ -314,9 +309,7 @@
                 grid-template-columns: 1fr;
             }
 
-            h1 {
-                font-size: 30px;
-            }
+            h1 { font-size: 30px; }
 
             .topbar {
                 height: auto;
@@ -381,11 +374,11 @@
                     <div class="info-label">Partage</div>
                     <div class="info-value">Lien client</div>
                     <button class="csv-link" type="button"
-                        data-link="{{ url_for('massive_campaign_client', token=campaign['token'], _external=True) }}"
-                        onclick="copyCampaignLink(this)">
+                            data-link="{{ url_for('massive_campaign_client', token=campaign['token'], _external=True) }}"
+                            onclick="copyCampaignLink(this)">
                         📋 Copier le lien
-                </button>
-                <span class="copy-message" style="display:none;">Lien copié !</span>
+                    </button>
+                    <span class="copy-message" style="display:none;">Lien copié !</span>
                 </div>
             </div>
 
@@ -427,20 +420,11 @@
                 </div>
 
                 <div class="metric-card">
-                    <div class="metric-icon">📦</div>
+                    <div class="metric-icon">👥</div>
                     <div>
-                        <div class="metric-value">{{ supports_potentiels }}</div>
-                        <div class="metric-title">{{ support_display }}</div>
-
-                        {% if campaign["support"] == "all" %}
-                            <div class="metric-help">
-                                {% for label, total in support_breakdown %}
-                                    <div>{{ label }} : <strong>{{ total }}</strong></div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="metric-help">Supports concernés par la campagne</div>
-                        {% endif %}
+                        <div class="metric-value">{{ commerces_potentiels }}</div>
+                        <div class="metric-title">Commerces potentiels</div>
+                        <div class="metric-help">Selon le calcul des potentiels actuels</div>
                     </div>
                 </div>
 
@@ -573,6 +557,6 @@ function copyCampaignLink(button) {
     });
 }
 </script>
-    
+
 </body>
 </html>
