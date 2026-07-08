@@ -2825,7 +2825,7 @@ def dashboard_equipe():
 
     if session.get("role") == "admin":
         commerciaux = cur_auth.execute("""
-            SELECT id, username, display_name, last_login_at
+            SELECT id, username, display_name, role, last_login_at
             FROM users
             WHERE role IN ('user', 'manager', 'admin')
         """).fetchall()
