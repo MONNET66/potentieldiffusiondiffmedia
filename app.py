@@ -1008,7 +1008,7 @@ def ensure_databases_exist():
             role TEXT,
             action TEXT,
             details TEXT,
-            created_at TEXT DEFAULT (datetime('now', '+2 hours'))
+            created_at TEXT DEFAULT (datetime('now', 'localtime'))
         )
     """)
 
