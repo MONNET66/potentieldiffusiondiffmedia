@@ -931,7 +931,7 @@
                 </div>
             </div>
 			
-{% if 'camping' in selected_types %}
+{% if search_mode != "support" and 'camping' in selected_types %}
 <div class="search-cell">
     <select name="camping_stars" id="camping_stars">
         <option value="all">Tous les campings</option>
