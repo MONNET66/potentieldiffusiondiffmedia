@@ -1450,6 +1450,14 @@ def create_campaign():
 
             campaign_id = cur.lastrowid
 
+            conn_auth = get_auth_connection()
+            conn_auth.execute("""
+                INSERT INTO activity_logs (user_id, username, role, action, details)
+                VALUES (?, ?, ?, ?, ?)
+            """, (session.get("user_id"), session.get("username"), session.get("role"), "Création campagne", campaign_name))
+            conn_auth.commit()
+            conn_auth.close()
+
             quantite_par_commerce = {
                 "sac_pain": 1000,
                 "set_table": 1000,
