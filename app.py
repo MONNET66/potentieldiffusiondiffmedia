@@ -2950,13 +2950,13 @@ def dashboard_equipe():
         """).fetchall()
     else:
         commerciaux = cur_auth.execute("""
-            SELECT id, username, display_name
+            SELECT id, username, display_name, role, last_login_at
             FROM users
             WHERE role = 'user' AND manager_id = ?
 
             UNION ALL
 
-            SELECT id, username, username AS display_name
+            SELECT id, username, username AS display_name, role, last_login_at
             FROM users
             WHERE id = ?
         """, (session.get("user_id"), session.get("user_id"))).fetchall()
