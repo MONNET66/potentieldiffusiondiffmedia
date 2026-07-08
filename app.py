@@ -2833,8 +2833,10 @@ def activity_logs():
     """).fetchall()
     conn.close()
 
-        rows = "".join([f"<tr><td>{log['created_at']}</td><td>{log['username']}</td><td>{log['role']}</td><td>{log['action']}</td><td>{log['details']}</td></tr>" for log in logs])
-        return f"<h1>Journal d'activité</h1><table border='1' cellpadding='8'><tr><th>Date</th><th>Utilisateur</th><th>Rôle</th><th>Action</th><th>Détail</th></tr>{rows}</table>"
+    rows = ""
+    for log in logs:
+        rows += f"<tr><td>{log['created_at']}</td><td>{log['username']}</td><td>{log['role']}</td><td>{log['action']}</td><td>{log['details']}</td></tr>"
+    return f"<h1>Journal d'activité</h1><table border='1' cellpadding='8'><tr><th>Date</th><th>Utilisateur</th><th>Rôle</th><th>Action</th><th>Détail</th></tr>{rows}</table>"
     
 @app.route("/dashboard_equipe")
 @login_required
