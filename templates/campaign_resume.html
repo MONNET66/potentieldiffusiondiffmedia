@@ -215,6 +215,51 @@ body{
     padding:16px;
 }
 
+.stat-green{
+    background:#ecfdf5;
+    border:2px solid #22c55e;
+}
+
+.stat-red{
+    background:#fef2f2;
+    border:2px solid #ef4444;
+}
+
+.stat-orange{
+    background:#fff7ed;
+    border:2px solid #f59e0b;
+}
+
+.stat-blue{
+    background:#eff6ff;
+    border:2px solid #2563eb;
+}
+
+.stat-gray{
+    background:#f3f4f6;
+    border:2px solid #6b7280;
+}
+
+.stat-green .stat-number{
+    color:#166534;
+}
+
+.stat-red .stat-number{
+    color:#b91c1c;
+}
+
+.stat-orange .stat-number{
+    color:#c2410c;
+}
+
+.stat-blue .stat-number{
+    color:#1d4ed8;
+}
+
+.stat-gray .stat-number{
+    color:#374151;
+}
+    
 .stat-number{
     font-size:26px;
     font-weight:900;
@@ -614,19 +659,19 @@ body{
     <div class="section">
         <h2 class="section-title">Répartition des priorités</h2>
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card stat-red">
                 <div class="stat-number">{{ ns.p3 }}</div>
                 <div class="stat-label">Priorité 3</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card stat-orange">
                 <div class="stat-number">{{ ns.p2 }}</div>
                 <div class="stat-label">Priorité 2</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card stat-blue">
                 <div class="stat-number">{{ ns.p1 }}</div>
                 <div class="stat-label">Priorité 1</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card stat-gray">
                 <div class="stat-number">{{ ns.p0 }}</div>
                 <div class="stat-label">Non sélectionnés</div>
             </div>
@@ -635,20 +680,20 @@ body{
 
     <div class="section">
         <h2 class="section-title">État des commerces</h2>
-        <div class="stats-grid">
+        <div class="stat-card stat-green">
             <div class="stat-card">
                 <div class="stat-number">{{ ns.oui }}</div>
                 <div class="stat-label">Acceptés</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card stat-red">
                 <div class="stat-number">{{ ns.non }}</div>
                 <div class="stat-label">Refusés</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card stat-gray">
                 <div class="stat-number">{{ ns.jamais }}</div>
                 <div class="stat-label">Jamais</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card stat-orange">
                 <div class="stat-number">{{ ns.vide }}</div>
                 <div class="stat-label">Non renseignés</div>
             </div>
