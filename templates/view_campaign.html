@@ -244,6 +244,13 @@
             <div class="info-line"><b>Référence :</b> {{ campaign["token"] }}</div>
         </div>
 
+        <div class="info-box">
+            <h2>Vue d’ensemble</h2>
+            <div class="info-line"><b>Type :</b> Campagne ciblée</div>
+            <div class="info-line"><b>Commerces ciblés :</b> {{ items|length }}</div>
+            <div class="info-line"><b>Support :</b> {{ campaign["support"] }}</div>
+        </div>
+        
         <div class="notes-box">
             <div class="notes-title">Notes</div>
             <div>
