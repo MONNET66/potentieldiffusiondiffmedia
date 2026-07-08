@@ -2817,6 +2817,24 @@ def mon_equipe():
         </div>
     </div>
     """
+
+@app.route("/activity_logs")
+@login_required
+def activity_logs():
+    if session.get("role") != "admin":
+        return "Accès refusé", 403
+
+    conn = get_auth_connection()
+    logs = conn.execute("""
+        SELECT username, role, action, details, created_at
+        FROM activity_logs
+        ORDER BY id DESC
+        LIMIT 200
+    """).fetchall()
+    conn.close()
+
+    return str([dict(log) for log in logs])
+    
 @app.route("/dashboard_equipe")
 @login_required
 def dashboard_equipe():
