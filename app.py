@@ -2914,7 +2914,7 @@ def activity_logs():
     rows = ""
     for log in logs:
         rows += f"<tr><td>{log['created_at']}</td><td>{log['username']}</td><td>{log['role']}</td><td>{log['action']}</td><td>{log['details']}</td></tr>"
-    return f"<h1>Journal d'activité</h1><table border='1' cellpadding='8'><tr><th>Date</th><th>Utilisateur</th><th>Rôle</th><th>Action</th><th>Détail</th></tr>{rows}</table>"
+    return f"<a href='/dashboard_equipe' style='display:inline-block;margin-bottom:15px;padding:8px 12px;background:#2563eb;color:white;text-decoration:none;border-radius:6px;'>⬅ Retour au dashboard</a><h1>Journal d'activité</h1><table border='1' cellpadding='8'><tr><th>Date</th><th>Utilisateur</th><th>Rôle</th><th>Action</th><th>Détail</th></tr>{rows}</table>"
     
 @app.route("/dashboard_equipe")
 @login_required
