@@ -1749,7 +1749,7 @@ def update_campaign_item(token):
         main_conn.commit()
         main_conn.close()
 
-    return redirect(url_for("view_campaign", token=token))
+    return redirect(url_for("campaign_resume", token=token) + f"#commerce-{item_id}")
 
 
 init_campaign_items_table()
