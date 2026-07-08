@@ -1755,7 +1755,6 @@ def massive_campaign_detail(campaign_id):
     potential_data = [dict(row) for row in items]
 
     _, totals_by_label = compute_potentiel_and_supports(potential_data)
-    support_breakdown = sorted(totals_by_label.items(), key=lambda x: x[0])
     support_label = SUPPORT_LABELS.get(campaign["support"], "")
 
     if campaign["support"] == "all":
@@ -1793,7 +1792,6 @@ def massive_campaign_detail(campaign_id):
         commerces_potentiels=commerces_potentiels,
         supports_potentiels=supports_potentiels,
         support_display=support_display,
-        support_breakdown=support_breakdown,
         is_public=False
     )
 
