@@ -1052,22 +1052,30 @@ conn.close()
 def login():
     if session.get("user_id"):
         return redirect(url_for("index"))
+
     error = ""
+
     if request.method == "POST":
         username = (request.form.get("username") or "").strip()
         password = (request.form.get("password") or "")
+
         conn = get_auth_connection()
         cur = conn.cursor()
+
         user = cur.execute("""
             SELECT id, username, password_hash, is_active, role
             FROM users
             WHERE username = ?
         """, (username,)).fetchone()
+
         if not user:
+            conn.close()
             error = "Identifiant ou mot de passe invalide."
         elif int(user["is_active"]) != 1:
+            conn.close()
             error = "Compte désactivé."
         elif not check_password_hash(user["password_hash"], password):
+            conn.close()
             error = "Identifiant ou mot de passe invalide."
         else:
             cur.execute("""
@@ -1075,13 +1083,16 @@ def login():
                 SET last_login_at = datetime('now', 'localtime')
                 WHERE id = ?
             """, (user["id"],))
+
             conn.commit()
             conn.close()
 
-    session["user_id"] = user["id"]
-    session["username"] = user["username"]
-    session["role"] = user["role"]
-    return redirect(url_for("index"))
+            session["user_id"] = user["id"]
+            session["username"] = user["username"]
+            session["role"] = user["role"]
+
+            return redirect(url_for("index"))
+
     return render_template("login.html", error=error)
 
 
