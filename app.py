@@ -1472,7 +1472,7 @@ def create_campaign():
                     item.get("telephone"),
                     item.get("lat"),
                     item.get("lon"),
-                    quantite_par_commerce,
+                    compute_item_potentiel_for_support(item, selected_support) if selected_support == "all" else quantite_par_commerce,
                     compute_item_potentiel_for_support(item, selected_support)
                 ))
 
@@ -1993,7 +1993,7 @@ def log_massive_export():
             item.get("telephone"),
             item.get("lat"),
             item.get("lon"),
-            quantite_map.get(support, 0),
+            compute_item_potentiel_for_support(item, support) if support == "all" else quantite_map.get(support, 0),
             compute_item_potentiel_for_support(item, support)
         ))
         
