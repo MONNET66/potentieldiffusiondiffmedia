@@ -3299,6 +3299,7 @@ def dashboard_equipe():
 
     <div class="top-nav">
         <span class="user-pill">👤 {session.get("username", "")}</span>
+        <a class="nav-btn" href="/activity_logs">Journal d'activité</a>
         <a class="nav-btn" href="/dashboard_equipe">Dashboard équipe</a>
         <a class="nav-btn" href="/logout">Déconnexion</a>
     </div>
