@@ -1747,6 +1747,19 @@ def export_campaign(token):
     for item in items:
         writer.writerow([item["name"] or "", item["type"] or "", item["adresse"] or "", item["ville"] or "", item["code_postal"] or "", item["telephone"] or "", item["priority"] if item["priority"] is not None else 0])
     csv_content = "\ufeff" + output.getvalue()
+    conn_auth = get_auth_connection()
+    conn_auth.execute("""
+        INSERT INTO activity_logs (user_id, username, role, action, details)
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        session.get("user_id"),
+        session.get("username"),
+        session.get("role"),
+        "Export campagne",
+        campaign["name"]
+    ))
+    conn_auth.commit()
+    conn_auth.close()
     return Response(csv_content, mimetype="text/csv; charset=utf-8", headers={"Content-Disposition": f"attachment; filename=campagne_{campaign['name']}.csv"})
 
 @app.route("/massive_campaign/<int:campaign_id>")
