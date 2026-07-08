@@ -2921,7 +2921,7 @@ def dashboard_equipe():
                     <td><span class="year-pill">{annee}</span></td>
                     <td><span class="month-pill">{mois}</span></td>
                     <td>
-                        <span class="commercial-badge">👤 {display_name}</span>
+                        <span class="commercial-badge">👤 {display_name}<br><small>{role_label}</small></span>
                     </td>
                     <td>
                         {"<a class='campaign-link' href='/massive_campaign/" + str(item["id"]) + "'>" + item["name"] + "</a>" if item["notes"] == "Campagne massive" else "<strong>" + item["name"] + "</strong><br><a class='campaign-link' href='/campaign_resume/" + item["token"] + "'>📊 Voir le récapitulatif</a><br><a class='campaign-link' href='/campaign/" + item["token"] + "'>⚙️ Détail / Priorités</a>"}
