@@ -1672,7 +1672,7 @@ def set_campaign_priority(token):
     """, (priority, item_id, campaign["id"]))
     conn.commit()
     conn.close()
-    return redirect(url_for("view_campaign", token=token) + f"#commerce-{item_id}")
+    return redirect(url_for("campaign_resume", token=token) + f"#commerce-{item_id}")
 
 @app.route("/campaign/<token>/update_item", methods=["POST"])
 def update_campaign_item(token):
