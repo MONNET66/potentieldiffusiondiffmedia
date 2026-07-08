@@ -1585,7 +1585,7 @@ def view_campaign(token):
         except ValueError:
             selected_priority = 0
         items = cur.execute("SELECT * FROM campaign_items WHERE campaign_id = ? AND priority = ? ORDER BY name", (campaign["id"], selected_priority)).fetchall()
-    last_update_row = cur.execute("SELECT MAX(updated_at) AS last_update FROM campaign_items WHERE campaign_id = ?", (campaign["id"],)).fetchone()
+        last_update_row = cur.execute("SELECT MAX(updated_at) AS last_update FROM campaign_items WHERE campaign_id = ?", (campaign["id"],)).fetchone()
         all_items = cur.execute("SELECT * FROM campaign_items WHERE campaign_id = ?", (campaign["id"],)).fetchall()
         campaign_stats = {
             "total": len(all_items),
@@ -1596,6 +1596,7 @@ def view_campaign(token):
         }
     conn.close()
     return render_template("view_campaign.html", campaign=campaign, items=items, last_update=last_update_row["last_update"], campaign_stats=campaign_stats)
+    
 @app.route("/campaign_resume/<token>")
 @login_required
 def campaign_resume(token):
