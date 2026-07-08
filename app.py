@@ -1345,6 +1345,19 @@ def index():
     LAST_RESULTS = visible_data
     session["last_results_count"] = len(visible_data)
     nb_commerces = len(visible_data)
+    conn_auth = get_auth_connection()
+    conn_auth.execute("""
+        INSERT INTO activity_logs (user_id, username, role, action, details)
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        session.get("user_id"),
+        session.get("username"),
+        session.get("role"),
+        "Recherche",
+        f"{nb_commerces} résultat(s)"
+    ))
+    conn_auth.commit()
+    conn_auth.close()
     
     potentiel, totals_by_label = compute_potentiel_and_supports(visible_data)
     if selected_support == "all":
