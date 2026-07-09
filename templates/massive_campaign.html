@@ -160,6 +160,32 @@
             margin-left: 8px;
         }
 
+        .btn{
+            display:inline-block;
+            text-decoration:none;
+            border-radius:10px;
+            padding:10px 14px;
+            font-weight:800;
+            font-size:14px;
+            border:none;
+            cursor:pointer;
+        }
+
+        .btn-primary{
+            background:#f97316;
+            color:white;
+        }
+
+        .btn-dark{
+            background:#374151;
+            color:white;
+        }
+
+        .btn-light{
+            background:#e5e7eb;
+            color:#111827;
+        }
+        
         .notes-box {
             margin-top: 24px;
             border: 1px solid #ffd28a;
@@ -397,6 +423,10 @@
                 📋 Copier le lien
             </button>
             <span class="copy-message" style="display:none;">Lien copié !</span>
+            <a class="btn btn-primary"
+               href="/massive_export/{{ campaign['id'] }}/download">
+                📄 Export Excel
+            </a>
             <a class="btn btn-primary"
                href="/massive_export/{{ campaign['id'] }}/download">
                 📄 Export Excel
