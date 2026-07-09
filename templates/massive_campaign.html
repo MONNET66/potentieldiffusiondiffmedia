@@ -391,12 +391,16 @@
         </div>
 
         <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-            <button class="back-btn" type="button"
+            <button class="btn btn-light" type="button"
                     data-link="{{ url_for('massive_campaign_client', token=campaign['token'], _external=True) }}"
                     onclick="copyCampaignLink(this)">
                 📋 Copier le lien
             </button>
             <span class="copy-message" style="display:none;">Lien copié !</span>
+            <a class="btn btn-primary"
+               href="/massive_export/{{ campaign['id'] }}/download">
+                📄 Export Excel
+            </a>
         </div>
 
         <div class="notes-box">
@@ -462,17 +466,7 @@
             <div class="section-title">⚙️ Actions</div>
 
             <div class="actions-grid">
-                <div class="action-card">
-                    <div class="action-head">
-                        <div class="action-icon">⬇️</div>
-                        <div>
-                            <div class="action-title">Exporter la liste complète</div>
-                            <div class="action-help">Télécharger les commerces ciblés</div>
-                        </div>
-                    </div>
-                    <a class="orange-btn" href="/massive_export/{{ campaign['id'] }}/download">Exporter</a>
-                </div>
-
+                
                 <div class="action-card">
                     <div class="action-head">
                         <div class="action-icon">🖨️</div>
