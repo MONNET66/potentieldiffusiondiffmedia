@@ -766,6 +766,7 @@ body{
 
                             <input type="hidden" name="item_id" value="{{ item['id'] }}">
 
+                            {% if session.role == "admin" %}
                             <div class="work-row">
                                 <label>
                                     <b>Accepte :</b>
@@ -786,7 +787,7 @@ body{
                                            style="width:90px;">
                                 </label>
                             </div>
-
+                            {% endif %}
                             <label>
                                 <b>Commentaire :</b>
                                 <textarea name="commentaire" rows="2">{{ item["commentaire"] or "" }}</textarea>
