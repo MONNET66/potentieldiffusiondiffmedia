@@ -3447,9 +3447,8 @@ def mon_dashboard():
     total_ciblees = len(targeted)
     total_campaigns = total_ciblees
 
-    total_commerces = sum((row["nb_commerces"] or 0) for row in targeted)
-
-    total_quantite = sum((row["quantite_totale"] or 0) for row in targeted)
+    total_commerces = 0
+    total_quantite = 0
 
     rows = ""
 
@@ -3478,6 +3477,11 @@ def mon_dashboard():
             potentiel_quantite = sum(totals_by_label.values())
         else:
             potentiel_quantite = totals_by_label.get(support_label, 0)
+            total_commerces += int(
+                potentiel_quantite / (item["quantite_totale"] / item["nb_commerces"])
+            ) if item["nb_commerces"] and item["quantite_totale"] else 0
+
+            total_quantite += potentiel_quantite
             
         rows += f"""
             <tr>
@@ -3784,7 +3788,7 @@ def mon_dashboard():
         <div class="summary-card">
             <div class="summary-icon">🏪</div>
             <div>
-                <div class="summary-card-title">Commerces ciblés</div>
+                <div class="summary-card-title">Commerces retenus</div>
                 <div class="summary-card-value">{total_commerces}</div>
                 <div class="summary-card-help">Toutes campagnes</div>
             </div>
