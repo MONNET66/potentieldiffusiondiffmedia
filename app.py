@@ -1706,20 +1706,32 @@ def update_campaign_item(token):
         conn.close()
         return "Campagne introuvable", 404
 
-    cur.execute("""
-        UPDATE campaign_items
-        SET accepte = ?,
-            commentaire = ?,
-            quantite = ?,
-            updated_at = datetime('now', 'localtime')
-        WHERE id = ? AND campaign_id = ?
-    """, (
-        accepte,
-        commentaire,
-        quantite,
-        item_id,
-        campaign["id"]
-    ))
+    if session.get("role") == "admin":
+        cur.execute("""
+            UPDATE campaign_items
+            SET accepte = ?,
+                commentaire = ?,
+                quantite = ?,
+                updated_at = datetime('now', 'localtime')
+            WHERE id = ? AND campaign_id = ?
+        """, (
+            accepte,
+            commentaire,
+            quantite,
+            item_id,
+            campaign["id"]
+        ))
+    else:
+        cur.execute("""
+            UPDATE campaign_items
+            SET commentaire = ?,
+                updated_at = datetime('now', 'localtime')
+            WHERE id = ? AND campaign_id = ?
+        """, (
+            commentaire,
+            item_id,
+            campaign["id"]
+        ))
 
     item_row = cur.execute("""
         SELECT name, ville, code_postal, type
