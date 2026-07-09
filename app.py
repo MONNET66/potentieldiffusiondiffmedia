@@ -1520,7 +1520,7 @@ def create_campaign():
             conn.commit()
             conn.close()
 
-            campaign_link = url_for("view_campaign", token=token, _external=True)
+            campaign_link = url_for("campaign_resume", token=token, _external=True)
             success = "Campagne enregistrée avec succès."
 
             return render_template(
