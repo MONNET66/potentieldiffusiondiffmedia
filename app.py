@@ -1523,7 +1523,7 @@ def create_campaign():
             campaign_link = url_for("campaign_resume", token=token, _external=True)
             success = "Campagne enregistrée avec succès."
 
-            return redirect(url_for("campaign_resume", token=token))
+            return redirect(url_for("campaign_resume", token=token, created="1"))
 
     return render_template(
         "create_campaign.html",
