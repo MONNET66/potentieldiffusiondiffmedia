@@ -1177,21 +1177,9 @@
                                  <div class="result-line">
                                      {% if item.accepte_support == "jamais" %}
                                          ❌ Jamais
-                                     {% elif item.accepte_support == "oui" %}
+                                     {% elif item.accepte_support == "accepte" %}
                                          ✅ Accepte
                                      {% endif %}
-                                 </div>
-                             {% endif %}
-
-                             {% if item.commentaire_support %}
-                                 <div class="result-line">
-                                     📝 {{ item.commentaire_support }}
-                                 </div>
-                             {% endif %}
-
-                             {% if item.quantite_support and item.quantite_support > 0 %}
-                                 <div class="result-line">
-                                    📦 Quantité : {{ item.quantite_support }}
                                  </div>
                              {% endif %}
 
