@@ -861,5 +861,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+{% if request.args.get("created") == "1" %}
+<script>
+    alert("Campagne ciblée enregistrée dans le dashboard.");
+</script>
+{% endif %}
+    
 </body>
 </html>
