@@ -602,39 +602,31 @@ body{
             <div class="kpi-icon">🏪</div>
             <div>
                 <div class="kpi-value">{{ total_commerces }}</div>
-                <div class="kpi-label">Commerces</div>
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-icon">📦</div>
-            <div>
-                <div class="kpi-value">{{ total_quantite }}</div>
-                <div class="kpi-label">Quantité totale</div>
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-icon">🎯</div>
-            <div>
-                <div class="kpi-value">{{ potentiel_quantite }}</div>
-                <div class="kpi-label">Potentiel</div>
+                <div class="kpi-label">Commerces ciblés</div>
             </div>
         </div>
 
         <div class="kpi-card">
             <div class="kpi-icon">✅</div>
             <div>
-                <div class="kpi-value">{{ total_acceptes }}</div>
-                <div class="kpi-label">Commerces validés</div>
+                <div class="kpi-value">{{ (potentiel_quantite / (total_quantite / total_commerces))|int if total_commerces and total_quantite else 0 }}</div>
+                <div class="kpi-label">Commerces retenus</div>
             </div>
         </div>
 
         <div class="kpi-card">
             <div class="kpi-icon">📦</div>
             <div>
-                <div class="kpi-value">{{ quantite_acceptes }}</div>
-                <div class="kpi-label">Quantité validée</div>
+                <div class="kpi-value">{{ potentiel_quantite }}</div>
+                <div class="kpi-label">Potentiel diffusion</div>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon">✔️</div>
+            <div>
+                <div class="kpi-value">{{ total_acceptes }}</div>
+                <div class="kpi-label">Commerces validés</div>
             </div>
         </div>
 
