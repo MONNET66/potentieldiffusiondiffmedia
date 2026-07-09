@@ -1742,7 +1742,7 @@ def update_campaign_item(token):
     conn.commit()
     conn.close()
 
-    if item_row:
+    if item_row and session.get("role") == "admin":
         main_conn = get_db_connection()
         main_cur = main_conn.cursor()
 
