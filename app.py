@@ -1513,7 +1513,7 @@ def create_campaign():
                     item.get("telephone"),
                     item.get("lat"),
                     item.get("lon"),
-                    compute_item_potentiel_for_support(item, selected_support) if selected_support == "all" else quantite_par_commerce,
+                    0,
                     compute_item_potentiel_for_support(item, selected_support)
                 ))
 
