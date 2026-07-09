@@ -3326,11 +3326,16 @@ def dashboard_equipe():
     <div class="dashboard-container">
 
         <div class="dashboard-title-row">
-            <div class="dashboard-icon">📊</div>
-            <div class="dashboard-title">Dashboard équipe</div>
-        </div>
+            <div style="display:flex;align-items:center;gap:16px;">
+                <div class="dashboard-icon">📊</div>
+                <div>
+                    <div class="dashboard-title">Dashboard équipe</div>
+                    <p class="dashboard-subtitle">Vue d'ensemble des performances de votre équipe</p>
+                </div>
+            </div>
 
-        <p class="dashboard-subtitle">Vue d'ensemble des performances de votre équipe</p>
+            <a href="/" class="back-link">← Retour</a>
+        </div>
 
         <div class="summary-cards">
             <div class="summary-card">
@@ -3386,8 +3391,6 @@ def dashboard_equipe():
 
             <button type="submit">Filtrer</button>
         </form>
-
-        <a href="/" class="back-link">← Retour</a>
 
         <table class="dashboard-table">
             <tr>
