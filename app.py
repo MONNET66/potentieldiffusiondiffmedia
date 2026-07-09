@@ -3015,9 +3015,7 @@ def dashboard_equipe():
                 continue
 
             total_campaigns += 1
-            total_commerces += item["nb_commerces"] or 0
-            total_quantite += item["quantite_totale"] or 0
-
+    
             campaign_items_for_potential = cur_campaign.execute("""
                 SELECT type
                 FROM campaign_items
@@ -3034,6 +3032,11 @@ def dashboard_equipe():
                 potentiel_quantite = sum(totals_by_label.values())
             else:
                 potentiel_quantite = totals_by_label.get(support_label, 0)
+                total_commerces += int(
+                potentiel_quantite / (item["quantite_totale"] / item["nb_commerces"])
+                ) if item["nb_commerces"] and item["quantite_totale"] else 0
+
+                total_quantite += potentiel_quantite    
 
             active_commerciaux.add(username)
 
@@ -3352,7 +3355,7 @@ def dashboard_equipe():
                 <div>
                     <div class="summary-card-title">Total commerces</div>
                     <div class="summary-card-value">{total_commerces}</div>
-                    <div class="summary-card-help">Commerces ciblés</div>
+                    <div class="summary-card-title">Commerces retenus</div>
                 </div>
             </div>
 
