@@ -1466,6 +1466,21 @@ def create_campaign():
                 campaign_results = LAST_RESULTS
                 search_zone_labels = []
 
+            if session.get("user_id"):
+                conn_hidden = sqlite3.connect(AUTH_DB_FILE)
+                cur_hidden = conn_hidden.cursor()
+                cur_hidden.execute(
+                    "SELECT commerce_id FROM user_hidden_commerces WHERE user_id = ?",
+                    (session["user_id"],)
+                )
+                hidden_ids = {str(row[0]) for row in cur_hidden.fetchall()}
+                conn_hidden.close()
+
+                campaign_results = [
+                    item for item in campaign_results
+                    if str(item.get("id")) not in hidden_ids
+                ]
+
             conn = get_campaign_connection()
             cur = conn.cursor()
             token = uuid.uuid4().hex
@@ -2073,7 +2088,24 @@ def log_massive_export():
     conn_auth.commit()
     conn_auth.close()
 
-    for item in LAST_RESULTS:
+    massive_results = LAST_RESULTS
+
+    if session.get("user_id"):
+        conn_hidden = sqlite3.connect(AUTH_DB_FILE)
+        cur_hidden = conn_hidden.cursor()
+        cur_hidden.execute(
+            "SELECT commerce_id FROM user_hidden_commerces WHERE user_id = ?",
+            (session["user_id"],)
+        )
+        hidden_ids = {str(row[0]) for row in cur_hidden.fetchall()}
+        conn_hidden.close()
+
+        massive_results = [
+            item for item in massive_results
+            if str(item.get("id")) not in hidden_ids
+        ]
+
+    for item in massive_results:
         cur.execute("""
             INSERT INTO campaign_items (
                 campaign_id, name, type, ville, code_postal,
