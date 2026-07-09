@@ -1688,7 +1688,7 @@ def update_campaign_item(token):
     accepte = (request.form.get("accepte") or "").strip()
     commentaire = (request.form.get("commentaire") or "").strip()
     quantite = request.form.get("quantite") or "0"
-
+    
     try:
         item_id = int(item_id)
         quantite = int(quantite)
@@ -1763,6 +1763,42 @@ init_campaign_items_table()
 init_campaigns_extra_columns()
 init_commerces_extra_columns()
 
+@app.route("/campaign/<token>/update_comment", methods=["POST"])
+def update_campaign_comment(token):
+    item_id = request.form.get("item_id")
+    commentaire = (request.form.get("commentaire") or "").strip()
+
+    try:
+        item_id = int(item_id)
+    except ValueError:
+        return "Paramètres invalides", 400
+
+    conn = get_campaign_connection()
+    cur = conn.cursor()
+
+    campaign = cur.execute("""
+        SELECT * FROM campaigns WHERE token = ?
+    """, (token,)).fetchone()
+
+    if not campaign:
+        conn.close()
+        return "Campagne introuvable", 404
+
+    cur.execute("""
+        UPDATE campaign_items
+        SET commentaire = ?,
+            updated_at = datetime('now', 'localtime')
+        WHERE id = ? AND campaign_id = ?
+    """, (
+        commentaire,
+        item_id,
+        campaign["id"]
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("campaign_resume", token=token) + f"#commerce-{item_id}")
 
 @app.route("/campaign/<token>/export")
 def export_campaign(token):
