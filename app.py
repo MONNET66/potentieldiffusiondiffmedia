@@ -3057,7 +3057,7 @@ def dashboard_equipe():
                         {"<span class='type-badge type-massive'>Massive</span>" if item["notes"] == "Campagne massive" else "<span class='type-badge type-ciblee'>Ciblée</span>"}
                     </td>
                     <td><strong>{item['nb_commerces']}</strong></td>
-                    <td><strong>{item['quantite_totale'] or 0}</strong></td>
+                    <td><strong>{int(potentiel_quantite / (item['quantite_totale'] / item['nb_commerces'])) if item['nb_commerces'] and item['quantite_totale'] else 0}</strong></td>
                     <td>
                         <span class="potentiel-pill">{potentiel_quantite}</span>
                     </td>
