@@ -1865,12 +1865,11 @@ function confirmMassiveCampaignName() {
 }
 
 function buildDefaultMassiveCampaignName() {
-    const form = document.querySelector("form");
-    const support = form.querySelector("[name='support']").value;
-    const mode = form.querySelector("[name='mode']").value;
-    const city = form.querySelector("[name='city']").value;
-    const departement = form.querySelector("[name='departement']").value;
-    const rayon = form.querySelector("[name='rayon']").value;
+    const support = document.getElementById("support").value;
+	const mode = document.querySelector('select[name="mode"]')?.value || "";
+	const city = document.getElementById("villeInput")?.value || "";
+	const departement = document.getElementById("departementInput")?.value || "";
+	const rayon = document.getElementById("rayonInput")?.value || "";
 
     let zoneLabel = "";
 
