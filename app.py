@@ -3359,7 +3359,7 @@ def dashboard_equipe():
             <div class="summary-card">
                 <div class="summary-icon">📦</div>
                 <div>
-                    <div class="summary-card-title">Quantités distribuées</div>
+                    <div class="summary-card-title">Potentiel diffusion</div>
                     <div class="summary-card-value">{total_quantite}</div>
                     <div class="summary-card-help">Supports distribués</div>
                 </div>
@@ -3400,9 +3400,9 @@ def dashboard_equipe():
                 <th>Campagne</th>
                 <th>Support</th>
                 <th>Type</th>
-                <th>Nb commerces</th>
-                <th>Quantité totale</th>
-                <th>Potentiel quantité</th>
+                <th>Commerces ciblés</th>
+                <th>Commerces retenus</th>
+                <th>Potentiel diffusion</th>
                 <th>Action</th>
             </tr>
             {rows}
@@ -3781,7 +3781,7 @@ def mon_dashboard():
         <div class="summary-card">
             <div class="summary-icon">🏪</div>
             <div>
-                <div class="summary-card-title">Commerces touchés</div>
+                <div class="summary-card-title">Commerces ciblés</div>
                 <div class="summary-card-value">{total_commerces}</div>
                 <div class="summary-card-help">Toutes campagnes</div>
             </div>
@@ -3790,7 +3790,7 @@ def mon_dashboard():
         <div class="summary-card">
             <div class="summary-icon">📦</div>
             <div>
-                <div class="summary-card-title">Quantités distribuées</div>
+                <div class="summary-card-title">Potentiel diffusion</div>
                 <div class="summary-card-value">{total_quantite}</div>
                 <div class="summary-card-help">Supports distribués</div>
             </div>
@@ -3812,9 +3812,9 @@ def mon_dashboard():
             <th>Campagne</th>
             <th>Support</th>
             <th>Type</th>
-            <th>Nb commerces</th>
-            <th>Quantité totale</th>
-            <th>Potentiel quantité</th>
+            <th>Commerces ciblés</th>
+            <th>Commerces retenus</th>
+            <th>Potentiel diffusion</th>
             <th>Action</th>
         </tr>
         {rows}
