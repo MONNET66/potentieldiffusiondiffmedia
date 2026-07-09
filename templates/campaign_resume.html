@@ -529,13 +529,21 @@ body{
     <div class="resume-hero">
 
         <div class="resume-title-row">
-            <div class="resume-icon">📊</div>
+            <div style="display:flex;align-items:center;gap:18px;">
+                <div class="resume-icon">📊</div>
 
-            <div>
-                <div class="resume-type">Campagne ciblée</div>
-                <h1>{{ campaign["name"] }}</h1>
-                <div class="resume-subtitle">Vue d'ensemble, pilotage et suivi de la campagne</div>
+                <div>
+                    <div class="resume-type">Campagne ciblée</div>
+                    <h1>{{ campaign["name"] }}</h1>
+                    <div class="resume-subtitle">Vue d'ensemble, pilotage et suivi de la campagne</div>
+                </div>
             </div>
+
+            {% if session.role == "user" %}
+                <a class="btn btn-primary" href="/mon_dashboard">← Retour</a>
+            {% else %}
+                <a class="btn btn-primary" href="/dashboard_equipe">← Retour</a>
+            {% endif %}
         </div>
 
         <div class="resume-info-grid">
@@ -573,12 +581,7 @@ body{
         </div>
 
         <div class="resume-actions">
-            {% if session.role == "user" %}
-                <a class="btn btn-dark" href="/mon_dashboard">← Dashboard</a>
-            {% else %}
-                <a class="btn btn-dark" href="/dashboard_equipe">← Dashboard</a>
-            {% endif %}
-
+           
             <button class="btn btn-light"
                     type="button"
                     data-link="{{ url_for('campaign_resume', token=campaign['token'], _external=True) }}"
