@@ -339,17 +339,20 @@
 <div class="page">
     <div class="main-card">
 
-        <div style="display:flex; align-items:center; gap:14px; margin-bottom:8px;">
-            <div style="font-size:38px;">📊</div>
-            <div>
-                <div style="color:#ff5a00; font-weight:bold; margin-bottom:4px;">
-                    Campagne massive
+        <div class="resume-title-row">
+            <div style="display:flex;align-items:center;gap:18px;">
+                <div style="font-size:38px;">📊</div>
+                <div>
+                    <div style="color:#ff5a00; font-weight:bold; margin-bottom:4px;">
+                        Campagne massive
+                    </div>
+                    <h1>{{ campaign["name"] }}</h1>
+                    <div class="subtitle">Vue d'ensemble et récapitulatif de la campagne</div>
                 </div>
-                <h1>{{ campaign["name"] }}</h1>
             </div>
-        </div>
 
-        <div class="subtitle">Vue d'ensemble et récapitulatif de la campagne</div>
+            <a href="/dashboard_equipe" class="back-btn">← Retour</a>
+        </div>
 
         <div class="info-grid">
             <div class="info-card">
@@ -369,27 +372,29 @@
             </div>
 
             <div class="info-card">
-                <div class="info-icon">📄</div>
+                <div class="info-icon">🎯</div>
                 <div>
-                    <div class="info-label">Partage</div>
-                    <div class="info-value">Lien client</div>
-                    <button class="csv-link" type="button"
-                            data-link="{{ url_for('massive_campaign_client', token=campaign['token'], _external=True) }}"
-                            onclick="copyCampaignLink(this)">
-                        📋 Copier le lien
-                    </button>
-                    <span class="copy-message" style="display:none;">Lien copié !</span>
+                    <div class="info-label">Support</div>
+                    <div class="info-value">{{ support_label }}</div>
                 </div>
             </div>
 
             <div class="info-card">
-                <div class="info-icon">🎯</div>
+                <div class="info-icon">📄</div>
                 <div>
                     <div class="info-label">Type de campagne</div>
                     <div class="info-value">Massive</div>
-                    <div class="info-label">Diffusion large</div>
                 </div>
             </div>
+        </div>
+
+        <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+            <button class="back-btn" type="button"
+                    data-link="{{ url_for('massive_campaign_client', token=campaign['token'], _external=True) }}"
+                    onclick="copyCampaignLink(this)">
+                📋 Copier le lien
+            </button>
+            <span class="copy-message" style="display:none;">Lien copié !</span>
         </div>
 
         <div class="notes-box">
