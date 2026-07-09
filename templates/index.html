@@ -791,6 +791,59 @@
 		.search-mode-option input{
     		accent-color:#f97316;
 		}	
+
+		.modal-overlay{
+    		display:none;
+    		position:fixed;
+    		inset:0;
+    		background:rgba(0,0,0,.45);
+    		z-index:9999;
+    		align-items:center;
+    		justify-content:center;
+		}
+
+		.modal-card{
+    		background:white;
+    		padding:24px;
+    		border-radius:14px;
+    		max-width:420px;
+    		width:90%;
+    		box-shadow:0 10px 28px rgba(15,23,42,.25);
+		}
+
+		.modal-title{
+    		margin-top:0;
+    		margin-bottom:18px;
+    		font-size:24px;
+		}
+
+		.modal-label{
+    		display:block;
+    		font-weight:800;
+    		margin-bottom:6px;
+		}
+
+		.modal-input{
+    		width:100%;
+    		box-sizing:border-box;
+    		padding:10px;
+    		margin-bottom:14px;
+    		border:1px solid #d1d5db;
+    		border-radius:8px;
+    		font-family:Arial, sans-serif;
+		}
+
+		.modal-help{
+    		color:#64748b;
+    		font-size:14px;
+    		margin-bottom:14px;
+		}
+
+		.modal-actions{
+    		display:flex;
+    		gap:10px;
+    		flex-wrap:wrap;
+		}
 		
     </style>
 </head>
@@ -1040,22 +1093,48 @@
     </div>
 
     <div class="actions-row">
-        <button class="export-btn" type="button" onclick="document.getElementById('campaignModal').style.display='flex'">Créer une campagne ciblée</button>
-        <button class="export-btn" type="button" onclick="exportRouteCSV()">Créer une campagne massive</button>
-		<div id="campaignModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
-    		<form method="POST" action="/create_campaign" style="background:white;padding:24px;border-radius:14px;max-width:420px;width:90%;">
-        		<h2>Créer une campagne ciblée</h2>
+    	<button class="export-btn" type="button" onclick="openCampaignModal()">
+        	Créer une campagne ciblée
+    	</button>
 
-        		<label><b>Nom de la campagne</b></label>
-        		<input name="campaign_name" required style="width:100%;padding:10px;margin:8px 0 14px 0;">
+    	<button class="export-btn" type="button" onclick="openMassiveCampaignModal()">
+        	Créer une campagne massive
+    	</button>
+	</div>
 
-        		<label><b>Notes</b></label>
-        		<textarea name="campaign_notes" rows="4" style="width:100%;padding:10px;margin:8px 0 14px 0;"></textarea>
+	<div id="campaignModal" class="modal-overlay">
+    	<form method="POST" action="/create_campaign" class="modal-card">
+        	<h2 class="modal-title">🎯 Nouvelle campagne ciblée</h2>
 
-        		<button class="export-btn" type="submit">Créer la campagne</button>
-        		<button class="export-btn" type="button" onclick="document.getElementById('campaignModal').style.display='none'">Annuler</button>
-    		</form>
-		</div>
+        	<label class="modal-label">Nom de la campagne</label>
+        	<input class="modal-input" name="campaign_name" required>
+
+        	<label class="modal-label">Notes</label>
+        	<textarea class="modal-input" name="campaign_notes" rows="4"></textarea>
+
+        	<div class="modal-actions">
+            	<button class="export-btn" type="submit">Créer la campagne</button>
+            	<button class="export-btn" type="button" onclick="closeCampaignModal()">Annuler</button>
+        	</div>
+    	</form>
+	</div>
+
+<div id="massiveCampaignModal" class="modal-overlay">
+    <form onsubmit="confirmMassiveCampaignName(); return false;" class="modal-card">
+        <h2 class="modal-title">🚀 Nouvelle campagne massive</h2>
+
+        <label class="modal-label">Nom de la campagne</label>
+        <input class="modal-input" id="massiveCampaignNameInput" required>
+
+        <div class="modal-help">
+            Le nombre de commerces sera calculé automatiquement.
+        </div>
+
+        <div class="modal-actions">
+            <button class="export-btn" type="submit">Créer la campagne</button>
+            <button class="export-btn" type="button" onclick="closeMassiveCampaignModal()">Annuler</button>
+        </div>
+    </form>
     </div>
 
     <div class="main-workspace">
@@ -1755,7 +1834,69 @@ function csvCell(value) {
     return '"' + String(value).replace(/"/g, '""') + '"';
 }
 
-function exportRouteCSV() {
+let pendingMassiveCampaignName = "";
+
+function openCampaignModal() {
+    document.getElementById("campaignModal").style.display = "flex";
+}
+
+function closeCampaignModal() {
+    document.getElementById("campaignModal").style.display = "none";
+}
+
+function openMassiveCampaignModal() {
+    pendingMassiveCampaignName = buildDefaultMassiveCampaignName();
+    document.getElementById("massiveCampaignNameInput").value = pendingMassiveCampaignName;
+    document.getElementById("massiveCampaignModal").style.display = "flex";
+}
+
+function closeMassiveCampaignModal() {
+    document.getElementById("massiveCampaignModal").style.display = "none";
+}
+
+function confirmMassiveCampaignName() {
+    const input = document.getElementById("massiveCampaignNameInput");
+    pendingMassiveCampaignName = input.value.trim();
+    if (!pendingMassiveCampaignName) {
+        return;
+    }
+    closeMassiveCampaignModal();
+    exportRouteCSV(pendingMassiveCampaignName);
+}
+
+function buildDefaultMassiveCampaignName() {
+    const form = document.querySelector("form");
+    const support = form.querySelector("[name='support']").value;
+    const mode = form.querySelector("[name='mode']").value;
+    const city = form.querySelector("[name='city']").value;
+    const departement = form.querySelector("[name='departement']").value;
+    const rayon = form.querySelector("[name='rayon']").value;
+
+    let zoneLabel = "";
+
+    if (mode === "departement" && departement) {
+        zoneLabel = `Département ${departement}`;
+    } else if (mode === "rayon" && city && rayon) {
+        zoneLabel = `${city} (${rayon}km)`;
+    } else if (city) {
+        zoneLabel = city;
+    }
+
+    const supportLabels = {
+        sac_pain: "Sacs pain",
+        set_table: "Sets de table",
+        sous_bock: "Sous-bocks",
+        flyer: "Flyers",
+        affiche: "Affiches",
+        sac_pharmacie: "Sacs pharmacie",
+        sac_galette: "Sacs galette",
+        all: "Tous supports"
+    };
+
+    return `${supportLabels[support] || support}${zoneLabel ? " – " + zoneLabel : ""}`;
+}	
+
+function exportRouteCSV(forcedCampaignName) {
     if (!data || data.length === 0) {
         alert("Aucune tournée à exporter");
         return;
@@ -1835,10 +1976,8 @@ const supportLabels = {
 
 let campaignName = `${supportLabels[support] || support}${zoneLabel ? " – " + zoneLabel : ""}`;
 
-const customCampaignName = prompt("Nom de la campagne massive :", campaignName);
-
-if (customCampaignName && customCampaignName.trim() !== "") {
-    campaignName = customCampaignName.trim();
+if (forcedCampaignName && forcedCampaignName.trim() !== "") {
+    campaignName = forcedCampaignName.trim();
 }
 
 link.download = campaignName + ".csv";
