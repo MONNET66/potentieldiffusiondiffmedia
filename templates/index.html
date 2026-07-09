@@ -1042,6 +1042,20 @@
     <div class="actions-row">
         <button class="export-btn" type="button" onclick="document.getElementById('campaignModal').style.display='flex'">Créer une campagne ciblée</button>
         <button class="export-btn" type="button" onclick="exportRouteCSV()">Créer une campagne massive</button>
+		<div id="campaignModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
+    		<form method="POST" action="/create_campaign" style="background:white;padding:24px;border-radius:14px;max-width:420px;width:90%;">
+        		<h2>Créer une campagne ciblée</h2>
+
+        		<label><b>Nom de la campagne</b></label>
+        		<input name="campaign_name" required style="width:100%;padding:10px;margin:8px 0 14px 0;">
+
+        		<label><b>Notes</b></label>
+        		<textarea name="campaign_notes" rows="4" style="width:100%;padding:10px;margin:8px 0 14px 0;"></textarea>
+
+        		<button class="export-btn" type="submit">Créer la campagne</button>
+        		<button class="export-btn" type="button" onclick="document.getElementById('campaignModal').style.display='none'">Annuler</button>
+    		</form>
+		</div>
     </div>
 
     <div class="main-workspace">
