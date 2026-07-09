@@ -3487,7 +3487,7 @@ def mon_dashboard():
                     {"<span class='type-badge type-massive'>Massive</span>" if item["notes"] == "Campagne massive" else "<span class='type-badge type-ciblee'>Ciblée</span>"}
                 </td>
                 <td>{item['nb_commerces'] or 0}</td>
-                <td>{item['quantite_totale'] or 0}</td>
+                <td>{int(potentiel_quantite / (item['quantite_totale'] / item['nb_commerces'])) if item['nb_commerces'] and item['quantite_totale'] else 0}</td>
                 <td>{potentiel_quantite}</td>
                 <td>
                     <form method="POST" action="/campaign/{item['token']}/delete" onsubmit="return confirm('Supprimer cette campagne ?');">
