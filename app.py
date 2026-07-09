@@ -1295,6 +1295,16 @@ def index():
         else:
             data, lat, lon, show_circle = execute_search_criteria(current_criteria)
             temp_searches = session.get("temp_searches", [])
+            
+            if session.get("user_id"):
+                conn_hidden = sqlite3.connect(AUTH_DB_FILE)
+                cur_hidden = conn_hidden.cursor()
+                cur_hidden.execute(
+                    "DELETE FROM user_hidden_commerces WHERE user_id = ?",
+                    (session["user_id"],)
+                )
+                conn_hidden.commit()
+                conn_hidden.close()
     else:
         if temp_searches:
             data, lat, lon = rebuild_cumulative_results(temp_searches)
