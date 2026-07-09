@@ -3748,11 +3748,16 @@ def mon_dashboard():
 <div class="dashboard-container">
 
     <div class="dashboard-title-row">
-        <div class="dashboard-icon">📊</div>
-        <div class="dashboard-title">Mon dashboard</div>
-    </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+            <div class="dashboard-icon">📊</div>
+            <div>
+                <div class="dashboard-title">Mon dashboard</div>
+                <p class="dashboard-subtitle">Vue d'ensemble de vos campagnes et distributions</p>
+            </div>
+        </div>
 
-    <p class="dashboard-subtitle">Vue d'ensemble de vos campagnes et distributions</p>
+        <a href="/" class="back-link">← Retour</a>
+    </div>
 
     <div class="summary-cards">
         <div class="summary-card">
@@ -3800,8 +3805,6 @@ def mon_dashboard():
 
         <button type="submit">Filtrer</button>
     </form>
-
-    <a href="/" class="back-link">← Retour</a>
 
     <table class="dashboard-table">
         <tr>
