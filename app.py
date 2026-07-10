@@ -1548,7 +1548,10 @@ def create_campaign():
             campaign_link = url_for("campaign_resume", token=token, _external=True)
             success = "Campagne enregistrée avec succès."
 
-            return redirect(url_for("campaign_resume", token=token, created="1"))
+            if session.get("role") == "user":
+                return redirect(url_for("mon_dashboard", created="targeted"))
+            else:
+                return redirect(url_for("dashboard_equipe", created="targeted"))
 
     return render_template(
         "create_campaign.html",
