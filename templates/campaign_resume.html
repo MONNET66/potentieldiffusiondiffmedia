@@ -612,7 +612,20 @@ body{
         <div class="kpi-card">
             <div class="kpi-icon">✅</div>
             <div>
-                <div class="kpi-value">{{ (potentiel_quantite / (total_quantite / total_commerces))|int if total_commerces and total_quantite else 0 }}</div>
+                {% set quantite_unitaire = {
+                    "sac_pain": 1000,
+                    "set_table": 1000,
+                    "sous_bock": 250,
+                    "flyer": 50,
+                    "affiche": 1,
+                    "sac_pharmacie": 1000,
+                    "sac_galette": 1000
+                }.get(campaign["support"], 1) %}
+
+                <div class="kpi-value">
+                    {{ (potentiel_quantite / quantite_unitaire)|int if quantite_unitaire else 0 }}
+                </div>
+
                 <div class="kpi-label">Commerces retenus</div>
             </div>
         </div>
