@@ -379,7 +379,11 @@
                 </div>
             </div>
 
-            <a href="/dashboard_equipe" class="back-btn">← Retour</a>
+            {% if session.role == "user" %}
+                <a href="/mon_dashboard" class="back-btn">← Retour</a>
+            {% else %}
+                <a href="/dashboard_equipe" class="back-btn">← Retour</a>
+            {% endif %}
         </div>
 
         <div class="info-grid">
