@@ -3371,8 +3371,6 @@ def dashboard_equipe():
         <a class="nav-btn" href="/logout">Déconnexion</a>
     </div>
 
-    {"<script>alert('Campagne ciblée enregistrée dans le dashboard.');</script>" if request.args.get("created") == "targeted" else ""}    
-
     <div class="dashboard-container">
 
         <div class="dashboard-title-row">
@@ -3459,6 +3457,7 @@ def dashboard_equipe():
         </table>
 
     </div>
+    {"<script>window.addEventListener('load', function () {{ alert('Campagne ciblée enregistrée dans le dashboard.'); window.history.replaceState({{}}, document.title, window.location.pathname); }});</script>" if request.args.get("created") == "targeted" else ""}
     """
 
 @app.route("/mon_dashboard")
@@ -3799,8 +3798,6 @@ def mon_dashboard():
     <a class="nav-btn" href="/logout">Déconnexion</a>
 </div>
 
-{"<script>alert('Campagne ciblée enregistrée dans le dashboard.');</script>" if request.args.get("created") == "targeted" else ""}
-
 <div class="dashboard-container">
 
     <div class="dashboard-title-row">
@@ -3877,6 +3874,7 @@ def mon_dashboard():
     </table>
 
 </div>
+{"<script>window.addEventListener('load', function () {{ alert('Campagne ciblée enregistrée dans le dashboard.'); window.history.replaceState({{}}, document.title, window.location.pathname); }});</script>" if request.args.get("created") == "targeted" else ""}
 """    
     
 @app.route("/commercial/<int:user_id>")
