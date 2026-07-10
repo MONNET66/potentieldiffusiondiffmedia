@@ -3371,6 +3371,8 @@ def dashboard_equipe():
         <a class="nav-btn" href="/logout">Déconnexion</a>
     </div>
 
+    {"<script>alert('Campagne ciblée enregistrée dans le dashboard.');</script>" if request.args.get("created") == "targeted" else ""}    
+
     <div class="dashboard-container">
 
         <div class="dashboard-title-row">
@@ -3796,6 +3798,8 @@ def mon_dashboard():
     <span class="user-pill">👤 {username}</span>
     <a class="nav-btn" href="/logout">Déconnexion</a>
 </div>
+
+{"<script>alert('Campagne ciblée enregistrée dans le dashboard.');</script>" if request.args.get("created") == "targeted" else ""}
 
 <div class="dashboard-container">
 
