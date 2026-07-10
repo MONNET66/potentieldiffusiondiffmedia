@@ -3541,11 +3541,32 @@ def mon_dashboard():
             potentiel_quantite = sum(totals_by_label.values())
         else:
             potentiel_quantite = totals_by_label.get(support_label, 0)
-            total_commerces += int(
-                potentiel_quantite / (item["quantite_totale"] / item["nb_commerces"])
-            ) if item["nb_commerces"] and item["quantite_totale"] else 0
 
-            total_quantite += potentiel_quantite
+        quantite_unitaire_map = {
+            "sac_pain": 1000,
+            "set_table": 1000,
+            "sous_bock": 250,
+            "flyer": 50,
+            "affiche": 1,
+            "sac_pharmacie": 1000,
+            "sac_galette": 1000,
+        }
+
+        if item["notes"] == "Campagne massive":
+            commerces_retenus = int(
+                potentiel_quantite / (
+                    item["quantite_totale"] / item["nb_commerces"]
+                )
+            ) if item["nb_commerces"] and item["quantite_totale"] else 0
+        else:
+            qte_unitaire = quantite_unitaire_map.get(item["support"], 1)
+
+            commerces_retenus = int(
+                potentiel_quantite / qte_unitaire
+            ) if qte_unitaire else 0
+
+        total_commerces += commerces_retenus
+        total_quantite += potentiel_quantite
             
         rows += f"""
             <tr>
@@ -3558,7 +3579,7 @@ def mon_dashboard():
                     {"<span class='type-badge type-massive'>Massive</span>" if item["notes"] == "Campagne massive" else "<span class='type-badge type-ciblee'>Ciblée</span>"}
                 </td>
                 <td>{item['nb_commerces'] or 0}</td>
-                <td>{int(potentiel_quantite / (item['quantite_totale'] / item['nb_commerces'])) if item['nb_commerces'] and item['quantite_totale'] else 0}</td>
+                <td>{commerces_retenus}</td>
                 <td>{potentiel_quantite}</td>
                 <td>
                     <form method="POST" action="/campaign/{item['token']}/delete" onsubmit="return confirm('Supprimer cette campagne ?');">
