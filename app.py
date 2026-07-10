@@ -3457,7 +3457,7 @@ def dashboard_equipe():
         </table>
 
     </div>
-    {"<script>window.addEventListener('load', function () {{ alert('Campagne ciblée enregistrée dans le dashboard.'); window.history.replaceState({{}}, document.title, window.location.pathname); }});</script>" if request.args.get("created") == "targeted" else ""}
+    {"<script>setTimeout(function () { alert('Campagne ciblée enregistrée dans le dashboard.'); window.history.replaceState({}, document.title, window.location.pathname); }, 100);</script>" if request.args.get("created") == "targeted" else ""}
     """
 
 @app.route("/mon_dashboard")
@@ -3874,7 +3874,7 @@ def mon_dashboard():
     </table>
 
 </div>
-{"<script>window.addEventListener('load', function () {{ alert('Campagne ciblée enregistrée dans le dashboard.'); window.history.replaceState({{}}, document.title, window.location.pathname); }});</script>" if request.args.get("created") == "targeted" else ""}
+{"<script>setTimeout(function () { alert('Campagne ciblée enregistrée dans le dashboard.'); window.history.replaceState({}, document.title, window.location.pathname); }, 100);</script>" if request.args.get("created") == "targeted" else ""}
 """    
     
 @app.route("/commercial/<int:user_id>")
