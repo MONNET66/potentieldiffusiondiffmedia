@@ -12,6 +12,11 @@
         {{ campaign["name"] }}
     </p>
 
+    <p>
+        <strong>Support :</strong>
+        {{ support_label }}
+    </p>
+
     <a href="{{ url_for('campaign_resume', token=campaign['token']) }}">
         ← Retour à la campagne
     </a>
