@@ -577,6 +577,29 @@ const quantiteInput = document.getElementById("quantite-souhaitee");
 const pointsElement = document.getElementById("nombre-points-livraison");
 const totalLivraisonElement = document.getElementById("total-livraison");
 const totalCreationElement = document.getElementById("total-creation");
+const totalImpressionElement = document.getElementById("total-impression");
+
+const tarifsSacsPain = {
+    10000: 675.00,
+    15000: 800.00,
+    20000: 937.50,
+    25000: 1062.50,
+    30000: 1187.50,
+    35000: 1385.00,
+    40000: 1450.00,
+    45000: 1631.25,
+    50000: 1693.75,
+    55000: 1865.00,
+    60000: 1935.00,
+    65000: 2000.00,
+    70000: 2150.00,
+    75000: 2250.00,
+    80000: 2350.00,
+    85000: 2400.00,
+    90000: 2450.00,
+    95000: 2555.00,
+    100000: 2687.50
+};
 
 function formatEuros(value) {
     return value.toLocaleString("fr-FR", {
