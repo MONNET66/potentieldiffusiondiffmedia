@@ -1698,6 +1698,8 @@ def create_quote_from_campaign(token):
 
     conn.close()
 
+    total_commerces = len(items)
+
     support_label = SUPPORT_LABELS.get(
         campaign["support"],
         campaign["support"] or "Support non renseigné"
@@ -1706,7 +1708,8 @@ def create_quote_from_campaign(token):
     return render_template(
         "devis_create.html",
         campaign=campaign,
-        support_label=support_label
+        support_label=support_label,
+        total_commerces=total_commerces
     ) 
     
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
