@@ -1687,9 +1687,15 @@ def create_quote_from_campaign(token):
     if not campaign:
         return "Campagne introuvable", 404
 
+    support_label = SUPPORT_LABELS.get(
+        campaign["support"],
+        campaign["support"] or "Support non renseigné"
+    )
+    
     return render_template(
         "devis_create.html",
-        campaign=campaign
+        campaign=campaign,
+        support_label=support_label
     ) 
     
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
