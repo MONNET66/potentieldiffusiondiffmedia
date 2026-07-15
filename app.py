@@ -1677,7 +1677,20 @@ def campaign_resume(token):
 @app.route("/devis/nouveau/campagne/<token>")
 @login_required
 def create_quote_from_campaign(token):
-    return render_template("devis_create.html")  
+    conn = get_campaign_connection()
+    campaign = conn.execute(
+        "SELECT * FROM campaigns WHERE token = ?",
+        (token,)
+    ).fetchone()
+    conn.close()
+
+    if not campaign:
+        return "Campagne introuvable", 404
+
+    return render_template(
+        "devis_create.html",
+        campaign=campaign
+    ) 
     
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
 def set_campaign_priority(token):
