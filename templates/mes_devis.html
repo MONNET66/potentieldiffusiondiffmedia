@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Mes devis</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .btn-orange {
+            background: #f28c28;
+            color: #ffffff;
+        }
+
+        .page {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 24px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 13px;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+
+        .numero {
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .montant {
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .statut {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #fff3e6;
+            color: #c96800;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .empty {
+            padding: 50px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        @media (max-width: 900px) {
+            .card {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 900px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>💶 Mes devis</h1>
+
+    <a href="{{ url_for('index') }}"
+       class="btn btn-orange">
+        ← Retour à l'étude de potentiel
+    </a>
+</div>
+
+<div class="page">
+
+    <div class="card">
+
+        {% if devis %}
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>N° devis</th>
+                        <th>Client</th>
+                        <th>Campagne</th>
+                        <th>Quantité</th>
+                        <th>Total HT</th>
+                        <th>Total TTC</th>
+                        <th>Statut</th>
+                        <th>Créé par</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for devis_item in devis %}
+                        <tr>
+                            <td class="numero">
+                                {{ devis_item["numero"] }}
+                            </td>
+
+                            <td>
+                                {{ devis_item["client_societe"] or "Non renseigné" }}
+                            </td>
+
+                            <td>
+                                {{ devis_item["campaign_name"] }}
+                            </td>
+
+                            <td>
+                                {{ "{:,}".format(devis_item["quantite"]).replace(",", " ") }}
+                            </td>
+
+                            <td class="montant">
+                                {{ "%.2f"|format(devis_item["total_ht"]) }} €
+                            </td>
+
+                            <td class="montant">
+                                {{ "%.2f"|format(devis_item["total_ttc"]) }} €
+                            </td>
+
+                            <td>
+                                <span class="statut">
+                                    {{ devis_item["statut"] }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ devis_item["created_by"] }}
+                            </td>
+
+                            <td>
+                                {{ devis_item["created_at"] }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+
+            <div class="empty">
+                Aucun devis enregistré pour le moment.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>
