@@ -617,6 +617,19 @@ function updateTarifsFixes() {
         quantite / quantiteParCommerce
     );
 
+    const support = {{ campaign["support"]|tojson }};
+
+    let totalImpression = 0;
+
+    if (support === "sac_pain") {
+        totalImpression = tarifsSacsPain[quantite] || 0;
+    }
+
+    if (totalImpressionElement) {
+        totalImpressionElement.textContent =
+            formatEuros(totalImpression);
+    }
+
     if (totalLivraisonElement) {
         totalLivraisonElement.textContent =
             formatEuros(nombrePoints * 15.50);
