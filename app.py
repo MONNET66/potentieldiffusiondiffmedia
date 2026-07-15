@@ -1678,16 +1678,19 @@ def campaign_resume(token):
 @login_required
 def create_quote_from_campaign(token):
     conn = get_campaign_connection()
+
     campaign = conn.execute(
         "SELECT * FROM campaigns WHERE token = ?",
         (token,)
     ).fetchone()
-    conn.close()
 
     if not campaign:
+        conn.close()
         return "Campagne introuvable", 404
 
-    conn = get_campaign_connection()
+    if (campaign["notes"] or "") == "Campagne massive":
+        conn.close()
+        return "Cette version du devis est réservée aux campagnes ciblées.", 400
 
     items = conn.execute("""
         SELECT *
@@ -1698,19 +1701,79 @@ def create_quote_from_campaign(token):
 
     conn.close()
 
+    accepted_items = [
+        item for item in items
+        if (item["accepte"] or "") == "oui"
+    ]
+
     total_commerces = len(items)
+    total_acceptes = len(accepted_items)
+
+    potentiel_reel = sum(
+        int(item["quantite"] or 0)
+        for item in accepted_items
+    )
+
+    support_key = campaign["support"] or ""
 
     support_label = SUPPORT_LABELS.get(
-        campaign["support"],
-        campaign["support"] or "Support non renseigné"
+        support_key,
+        support_key or "Support non renseigné"
     )
-    
+
+    fabrication_rules = {
+        "sac_pain": (10000, 5000, "sacs"),
+        "sac_pharmacie": (10000, 5000, "sacs"),
+        "sac_galette": (10000, 5000, "sacs"),
+        "set_table": (10000, 5000, "sets"),
+        "sous_bock": (5000, 2500, "sous-bocks"),
+        "affiche": (30, 10, "affiches"),
+        "flyer": (1500, 500, "flyers"),
+    }
+
+    rule = fabrication_rules.get(support_key)
+
+    minimum_fabrication = 0
+    palier_fabrication = 0
+    quantite_devisable = 0
+    potentiel_manquant = 0
+    devis_possible = False
+    configuration_disponible = rule is not None
+    unite = "exemplaires"
+
+    if rule:
+        minimum_fabrication, palier_fabrication, unite = rule
+
+        if potentiel_reel >= minimum_fabrication:
+            nombre_paliers = (
+                potentiel_reel - minimum_fabrication
+            ) // palier_fabrication
+
+            quantite_devisable = (
+                minimum_fabrication
+                + nombre_paliers * palier_fabrication
+            )
+
+            devis_possible = True
+        else:
+            potentiel_manquant = minimum_fabrication - potentiel_reel
+
     return render_template(
         "devis_create.html",
         campaign=campaign,
+        accepted_items=accepted_items,
+        total_commerces=total_commerces,
+        total_acceptes=total_acceptes,
+        potentiel_reel=potentiel_reel,
         support_label=support_label,
-        total_commerces=total_commerces
-    ) 
+        minimum_fabrication=minimum_fabrication,
+        palier_fabrication=palier_fabrication,
+        quantite_devisable=quantite_devisable,
+        potentiel_manquant=potentiel_manquant,
+        devis_possible=devis_possible,
+        configuration_disponible=configuration_disponible,
+        unite=unite
+    )
     
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
 def set_campaign_priority(token):
