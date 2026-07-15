@@ -1687,6 +1687,17 @@ def create_quote_from_campaign(token):
     if not campaign:
         return "Campagne introuvable", 404
 
+    conn = get_campaign_connection()
+
+    items = conn.execute("""
+        SELECT *
+        FROM campaign_items
+        WHERE campaign_id = ?
+        ORDER BY name
+    """, (campaign["id"],)).fetchall()
+
+    conn.close()
+
     support_label = SUPPORT_LABELS.get(
         campaign["support"],
         campaign["support"] or "Support non renseigné"
