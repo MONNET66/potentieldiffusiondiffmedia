@@ -1834,7 +1834,35 @@ def create_quote_from_campaign(token):
         commerces_potentiels=commerces_potentiels,
         quantite_par_commerce=quantite_par_commerce,
     )
-    
+
+@app.route("/mes_devis")
+@login_required
+def mes_devis():
+    conn = get_campaign_connection()
+
+    if session.get("role") == "admin":
+        devis = conn.execute("""
+            SELECT *
+            FROM devis
+            ORDER BY created_at DESC, id DESC
+        """).fetchall()
+    else:
+        devis = conn.execute("""
+            SELECT *
+            FROM devis
+            WHERE created_by = ?
+            ORDER BY created_at DESC, id DESC
+        """, (
+            session.get("username"),
+        )).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "mes_devis.html",
+        devis=devis
+    )
+
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
 def set_campaign_priority(token):
     item_id = request.form.get("item_id")
