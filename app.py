@@ -1677,7 +1677,7 @@ def campaign_resume(token):
 @app.route("/devis/nouveau/campagne/<token>")
 @login_required
 def create_quote_from_campaign(token):
-    return "Page devis en préparation"    
+    return render_template("devis_create.html")  
     
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
 def set_campaign_priority(token):
