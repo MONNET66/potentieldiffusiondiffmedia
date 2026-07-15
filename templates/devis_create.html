@@ -446,7 +446,7 @@
                             point(s) de livraison
                         </div>
                     </div>
-                    <strong>0,00 €</strong>
+                    <strong id="total-livraison">0,00 €</strong>
                 </div>
 
                 <div class="service-line">
@@ -458,7 +458,7 @@
                             Forfait optionnel
                         </div>
                     </div>
-                    <strong>0,00 €</strong>
+                    <strong id="total-creation">70,00 €</strong>
                 </div>
                 
             </div>
@@ -585,6 +585,7 @@ if (quantiteInput && pointsElement) {
         pointsElement.textContent = Math.floor(
             quantite / quantiteParCommerce
         );
+        updateTarifsFixes();
     }
 
     quantiteInput.addEventListener("change", function () {
@@ -606,6 +607,37 @@ if (quantiteInput && pointsElement) {
     quantiteInput.addEventListener("input", updatePointsLivraison);
     updatePointsLivraison();
 }
+
+const totalLivraisonElement = document.getElementById("total-livraison");
+const totalCreationElement = document.getElementById("total-creation");
+
+function formatEuros(value) {
+    return value.toLocaleString("fr-FR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + " €";
+}
+
+function updateTarifsFixes() {
+    const quantite = Number(quantiteInput.value) || 0;
+    const quantiteParCommerce =
+        Number(quantiteInput.dataset.quantiteParCommerce) || 1;
+
+    const nombrePoints = Math.floor(
+        quantite / quantiteParCommerce
+    );
+
+    const totalLivraison = nombrePoints * 15.50;
+
+    if (totalLivraisonElement) {
+        totalLivraisonElement.textContent = formatEuros(totalLivraison);
+    }
+
+    if (totalCreationElement) {
+        totalCreationElement.textContent = formatEuros(70);
+    }
+}    
+    
 </script>
     
 </body>
