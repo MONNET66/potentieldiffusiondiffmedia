@@ -554,8 +554,10 @@
 
                 <div class="action-zone">
                     {% if devis_possible %}
-                        <button type="button" class="btn btn-disabled" disabled>
-                            Enregistrement bientôt disponible
+                        <button type="button"
+                                class="btn btn-orange"
+                                id="enregistrer-devis">
+                            💾 Enregistrer le devis
                         </button>
                     {% else %}
                         <button type="button" class="btn btn-disabled" disabled>
