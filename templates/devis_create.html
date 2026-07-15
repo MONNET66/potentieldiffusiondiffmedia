@@ -575,39 +575,6 @@ function initializeMap() {
 <script>
 const quantiteInput = document.getElementById("quantite-souhaitee");
 const pointsElement = document.getElementById("nombre-points-livraison");
-
-if (quantiteInput && pointsElement) {
-    function updatePointsLivraison() {
-        const quantite = Number(quantiteInput.value) || 0;
-        const quantiteParCommerce =
-            Number(quantiteInput.dataset.quantiteParCommerce) || 1;
-
-        pointsElement.textContent = Math.floor(
-            quantite / quantiteParCommerce
-        );
-        updateTarifsFixes();
-    }
-
-    quantiteInput.addEventListener("change", function () {
-    const minimum = {{ minimum_fabrication }};
-    const palier = {{ palier_fabrication }};
-    let quantite = Number(quantiteInput.value) || 0;
-
-    if (quantite < minimum) {
-        quantite = minimum;
-    } else {
-        quantite = minimum + Math.floor(
-            (quantite - minimum) / palier
-        ) * palier;
-    }
-
-    quantiteInput.value = quantite;
-    updatePointsLivraison();
-});
-    quantiteInput.addEventListener("input", updatePointsLivraison);
-    updatePointsLivraison();
-}
-
 const totalLivraisonElement = document.getElementById("total-livraison");
 const totalCreationElement = document.getElementById("total-creation");
 
@@ -627,16 +594,50 @@ function updateTarifsFixes() {
         quantite / quantiteParCommerce
     );
 
-    const totalLivraison = nombrePoints * 15.50;
-
     if (totalLivraisonElement) {
-        totalLivraisonElement.textContent = formatEuros(totalLivraison);
+        totalLivraisonElement.textContent =
+            formatEuros(nombrePoints * 15.50);
     }
 
     if (totalCreationElement) {
         totalCreationElement.textContent = formatEuros(70);
     }
-}    
+}
+
+if (quantiteInput && pointsElement) {
+    function updatePointsLivraison() {
+        const quantite = Number(quantiteInput.value) || 0;
+        const quantiteParCommerce =
+            Number(quantiteInput.dataset.quantiteParCommerce) || 1;
+
+        pointsElement.textContent = Math.floor(
+            quantite / quantiteParCommerce
+        );
+
+        updateTarifsFixes();
+    }
+
+    quantiteInput.addEventListener("change", function () {
+        const minimum = {{ minimum_fabrication }};
+        const palier = {{ palier_fabrication }};
+        let quantite = Number(quantiteInput.value) || 0;
+
+        if (quantite < minimum) {
+            quantite = minimum;
+        } else {
+            quantite = minimum + Math.floor(
+                (quantite - minimum) / palier
+            ) * palier;
+        }
+
+        quantiteInput.value = quantite;
+        updatePointsLivraison();
+    });
+
+    quantiteInput.addEventListener("input", updatePointsLivraison);
+    updatePointsLivraison();
+}
+</script>
     
 </script>
     
