@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Devis</title>
+</head>
+<body>
+    <h1>Devis / Estimation</h1>
+
+    <p>
+        <strong>Campagne :</strong>
+        {{ campaign["name"] }}
+    </p>
+
+    <a href="{{ url_for('campaign_resume', token=campaign['token']) }}">
+        ← Retour à la campagne
+    </a>
+</body>
+</html>
