@@ -1155,6 +1155,39 @@
 
 </div>
 
+	<div id="campaignInfoModal" class="modal-overlay">
+    <div class="modal-card campaign-info-modal-card">
+
+        <button
+            type="button"
+            class="campaign-info-close"
+            onclick="closeCampaignInfoModal()"
+            aria-label="Fermer"
+        >
+            ×
+        </button>
+
+        <div class="campaign-info-icon" id="campaignInfoIcon">🎯</div>
+
+        <h2 class="modal-title" id="campaignInfoTitle">
+            Campagne ciblée
+        </h2>
+
+        <p class="campaign-info-text" id="campaignInfoText"></p>
+
+        <div class="campaign-info-minimum" id="campaignInfoMinimum"></div>
+
+        <button
+            type="button"
+            class="export-btn campaign-info-ok"
+            onclick="closeCampaignInfoModal()"
+        >
+            J'ai compris
+        </button>
+
+    </div>
+</div>
+
 	<div id="campaignModal" class="modal-overlay">
     	<form method="POST" action="/create_campaign" class="modal-card">
         	<h2 class="modal-title">🎯 Nouvelle campagne ciblée</h2>
@@ -2376,7 +2409,55 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    updateSearchModeDisplay();
+        updateSearchModeDisplay();
+});
+
+function openCampaignInfoModal(type) {
+    const modal = document.getElementById("campaignInfoModal");
+    const icon = document.getElementById("campaignInfoIcon");
+    const title = document.getElementById("campaignInfoTitle");
+    const text = document.getElementById("campaignInfoText");
+    const minimum = document.getElementById("campaignInfoMinimum");
+
+    if (!modal || !icon || !title || !text || !minimum) {
+        return;
+    }
+
+    if (type === "massive") {
+        icon.textContent = "📦";
+        title.textContent = "Campagne massive";
+        text.textContent = "Diffusion des supports sur le terrain, avec rapport photo et cartographie des points livrés.";
+        minimum.textContent = "À partir de 20 000 exemplaires.";
+    } else {
+        icon.textContent = "🎯";
+        title.textContent = "Campagne ciblée";
+        text.textContent = "Recrutement de commerces partenaires et livraison des supports directement dans les points de diffusion sélectionnés.";
+        minimum.textContent = "À partir de 10 000 exemplaires.";
+    }
+
+    modal.classList.add("open");
+}
+
+function closeCampaignInfoModal() {
+    const modal = document.getElementById("campaignInfoModal");
+
+    if (modal) {
+        modal.classList.remove("open");
+    }
+}
+
+document.addEventListener("click", function(event) {
+    const modal = document.getElementById("campaignInfoModal");
+
+    if (modal && event.target === modal) {
+        closeCampaignInfoModal();
+    }
+});
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        closeCampaignInfoModal();
+    }
 });
 </script>
 
