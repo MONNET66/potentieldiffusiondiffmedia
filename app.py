@@ -1861,6 +1861,217 @@ def set_campaign_priority(token):
     conn.close()
     return redirect(url_for("campaign_resume", token=token) + f"#commerce-{item_id}")
 
+@app.route("/devis/enregistrer/campagne/<token>", methods=["POST"])
+@login_required
+def save_quote_from_campaign(token):
+    data = request.get_json(silent=True) or {}
+
+    conn = get_campaign_connection()
+
+    campaign = conn.execute(
+        "SELECT * FROM campaigns WHERE token = ?",
+        (token,)
+    ).fetchone()
+
+    if not campaign:
+        conn.close()
+        return {"status": "error", "message": "Campagne introuvable."}, 404
+
+    support_key = campaign["support"] or ""
+
+    if support_key != "sac_pain":
+        conn.close()
+        return {
+            "status": "error",
+            "message": "Le tarif d’impression de ce support n’est pas encore configuré."
+        }, 400
+
+    try:
+        quantite = int(data.get("quantite") or 0)
+    except (TypeError, ValueError):
+        conn.close()
+        return {"status": "error", "message": "Quantité invalide."}, 400
+
+    tarifs_sacs_pain = {
+        10000: 675.00,
+        15000: 800.00,
+        20000: 937.50,
+        25000: 1062.50,
+        30000: 1187.50,
+        35000: 1385.00,
+        40000: 1450.00,
+        45000: 1631.25,
+        50000: 1693.75,
+        55000: 1865.00,
+        60000: 1935.00,
+        65000: 2000.00,
+        70000: 2150.00,
+        75000: 2250.00,
+        80000: 2350.00,
+        85000: 2400.00,
+        90000: 2450.00,
+        95000: 2555.00,
+        100000: 2687.50,
+    }
+
+    montant_impression_ht = tarifs_sacs_pain.get(quantite)
+
+    if montant_impression_ht is None:
+        conn.close()
+        return {
+            "status": "error",
+            "message": "La quantité ne correspond pas à un palier tarifaire."
+        }, 400
+
+    items = conn.execute("""
+        SELECT *
+        FROM campaign_items
+        WHERE campaign_id = ?
+    """, (campaign["id"],)).fetchall()
+
+    items_as_dict = [dict(item) for item in items]
+    _, totals_by_label = compute_potentiel_and_supports(items_as_dict)
+
+    support_label = SUPPORT_LABELS.get(
+        support_key,
+        support_key
+    )
+
+    potentiel_reel = totals_by_label.get(support_label, 0)
+
+    if quantite > potentiel_reel:
+        conn.close()
+        return {
+            "status": "error",
+            "message": "La quantité dépasse le potentiel de la campagne."
+        }, 400
+
+    quantite_par_commerce = QUANTITE_PAR_SUPPORT.get(support_key, 1000)
+    commerces_potentiels = int(
+        potentiel_reel / quantite_par_commerce
+    )
+
+    points_livraison = int(
+        quantite / quantite_par_commerce
+    )
+
+    montant_livraison_ht = points_livraison * 15.50
+
+    creation_graphique = bool(
+        data.get("creation_graphique")
+    )
+
+    montant_creation_ht = 70.00 if creation_graphique else 0.00
+
+    sous_total_ht = (
+        montant_impression_ht
+        + montant_livraison_ht
+        + montant_creation_ht
+    )
+
+    montant_remise = 0.00
+    total_ht = sous_total_ht - montant_remise
+    taux_tva = 20.00
+    montant_tva = total_ht * 0.20
+    total_ttc = total_ht + montant_tva
+
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO devis (
+            campaign_id,
+            campaign_token,
+            campaign_name,
+            support,
+
+            client_societe,
+            client_contact,
+            client_adresse,
+            client_code_postal,
+            client_ville,
+            client_email,
+            client_telephone,
+
+            commerces_cibles,
+            commerces_potentiels,
+            quantite,
+            points_livraison,
+
+            montant_impression_ht,
+            montant_livraison_ht,
+            creation_graphique,
+            montant_creation_ht,
+
+            sous_total_ht,
+            montant_remise,
+            total_ht,
+            taux_tva,
+            montant_tva,
+            total_ttc,
+
+            statut,
+            created_by
+        )
+        VALUES (
+            ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?,
+            ?, ?
+        )
+    """, (
+        campaign["id"],
+        campaign["token"],
+        campaign["name"],
+        support_key,
+
+        (data.get("client_societe") or "").strip(),
+        (data.get("client_contact") or "").strip(),
+        (data.get("client_adresse") or "").strip(),
+        (data.get("client_code_postal") or "").strip(),
+        (data.get("client_ville") or "").strip(),
+        (data.get("client_email") or "").strip(),
+        (data.get("client_telephone") or "").strip(),
+
+        len(items),
+        commerces_potentiels,
+        quantite,
+        points_livraison,
+
+        montant_impression_ht,
+        montant_livraison_ht,
+        1 if creation_graphique else 0,
+        montant_creation_ht,
+
+        sous_total_ht,
+        montant_remise,
+        total_ht,
+        taux_tva,
+        montant_tva,
+        total_ttc,
+
+        "brouillon",
+        session.get("username") or campaign["created_by"]
+    ))
+
+    devis_id = cur.lastrowid
+    numero = f"DEV-{devis_id:06d}"
+
+    cur.execute(
+        "UPDATE devis SET numero = ? WHERE id = ?",
+        (numero, devis_id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "status": "ok",
+        "devis_id": devis_id,
+        "numero": numero
+    }
+
 @app.route("/campaign/<token>/update_item", methods=["POST"])
 def update_campaign_item(token):
 
