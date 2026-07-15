@@ -1094,14 +1094,38 @@
     </div>
 
     <div class="actions-row">
-    	<button class="export-btn" type="button" onclick="openCampaignModal()">
-        	Créer une campagne ciblée
-    	</button>
 
-    	<button class="export-btn" type="button" onclick="openMassiveCampaignModal()">
-        	Créer une campagne massive
-    	</button>
-	</div>
+    <div class="campaign-action-wrap">
+        <button class="export-btn" type="button" onclick="openCampaignModal()">
+            Créer une campagne ciblée
+        </button>
+
+        <button
+            class="campaign-info-btn"
+            type="button"
+            aria-label="Informations sur la campagne ciblée"
+            onclick="openCampaignInfoModal('targeted')"
+        >
+            i
+        </button>
+    </div>
+
+    <div class="campaign-action-wrap">
+        <button class="export-btn" type="button" onclick="openMassiveCampaignModal()">
+            Créer une campagne massive
+        </button>
+
+        <button
+            class="campaign-info-btn"
+            type="button"
+            aria-label="Informations sur la campagne massive"
+            onclick="openCampaignInfoModal('massive')"
+        >
+            i
+        </button>
+    </div>
+
+</div>
 
 	<div id="campaignModal" class="modal-overlay">
     	<form method="POST" action="/create_campaign" class="modal-card">
