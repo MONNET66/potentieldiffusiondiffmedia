@@ -1047,6 +1047,53 @@ cur.execute("""
 conn.commit()
 conn.close()
 
+conn = sqlite3.connect(CAMPAIGN_DB_FILE)
+cur = conn.cursor()
+
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS devis (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        numero TEXT UNIQUE,
+        campaign_id INTEGER NOT NULL,
+        campaign_token TEXT NOT NULL,
+        campaign_name TEXT NOT NULL,
+        support TEXT NOT NULL,
+
+        client_societe TEXT,
+        client_contact TEXT,
+        client_adresse TEXT,
+        client_code_postal TEXT,
+        client_ville TEXT,
+        client_email TEXT,
+        client_telephone TEXT,
+
+        commerces_cibles INTEGER NOT NULL DEFAULT 0,
+        commerces_potentiels INTEGER NOT NULL DEFAULT 0,
+        quantite INTEGER NOT NULL DEFAULT 0,
+        points_livraison INTEGER NOT NULL DEFAULT 0,
+
+        montant_impression_ht REAL NOT NULL DEFAULT 0,
+        montant_livraison_ht REAL NOT NULL DEFAULT 0,
+        creation_graphique INTEGER NOT NULL DEFAULT 0,
+        montant_creation_ht REAL NOT NULL DEFAULT 0,
+
+        sous_total_ht REAL NOT NULL DEFAULT 0,
+        montant_remise REAL NOT NULL DEFAULT 0,
+        total_ht REAL NOT NULL DEFAULT 0,
+        taux_tva REAL NOT NULL DEFAULT 20,
+        montant_tva REAL NOT NULL DEFAULT 0,
+        total_ttc REAL NOT NULL DEFAULT 0,
+
+        statut TEXT NOT NULL DEFAULT 'brouillon',
+        created_by TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+""")
+
+conn.commit()
+conn.close()
+    
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
