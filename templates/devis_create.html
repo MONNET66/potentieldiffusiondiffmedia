@@ -797,6 +797,79 @@ function updateTarifsFixes() {
         updatePointsLivraison();
         }
 </script>
+
+const enregistrerDevisButton =
+    document.getElementById("enregistrer-devis");
+
+if (enregistrerDevisButton) {
+    enregistrerDevisButton.addEventListener("click", function () {
+        const quantite = Number(quantiteInput.value) || 0;
+
+        enregistrerDevisButton.disabled = true;
+        enregistrerDevisButton.textContent = "Enregistrement...";
+
+        fetch(
+            "{{ url_for('save_quote_from_campaign', token=campaign['token']) }}",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    client_societe:
+                        document.getElementById("client-societe").value,
+                    client_contact:
+                        document.getElementById("client-contact").value,
+                    client_adresse:
+                        document.getElementById("client-adresse").value,
+                    client_code_postal:
+                        document.getElementById("client-code-postal").value,
+                    client_ville:
+                        document.getElementById("client-ville").value,
+                    client_email:
+                        document.getElementById("client-email").value,
+                    client_telephone:
+                        document.getElementById("client-telephone").value,
+                    quantite: quantite,
+                    creation_graphique:
+                        creationGraphiqueCheckbox
+                        && creationGraphiqueCheckbox.checked
+                })
+            }
+        )
+        .then(function (response) {
+            return response.json().then(function (result) {
+                return {
+                    ok: response.ok,
+                    result: result
+                };
+            });
+        })
+        .then(function (payload) {
+            if (!payload.ok) {
+                throw new Error(
+                    payload.result.message
+                    || "Erreur lors de l’enregistrement."
+                );
+            }
+
+            alert(
+                "Devis enregistré avec succès : "
+                + payload.result.numero
+            );
+
+            enregistrerDevisButton.textContent =
+                "✅ Devis enregistré";
+        })
+        .catch(function (error) {
+            alert(error.message);
+
+            enregistrerDevisButton.disabled = false;
+            enregistrerDevisButton.textContent =
+                "💾 Enregistrer le devis";
+        });
+    });
+}
     
 </script>
     
