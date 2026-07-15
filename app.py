@@ -1772,7 +1772,7 @@ def create_quote_from_campaign(token):
     return render_template(
         "devis_create.html",
         campaign=campaign,
-        accepted_items=accepted_items,
+        accepted_items=items,
         total_commerces=total_commerces,
         total_acceptes=total_acceptes,
         potentiel_reel=potentiel_reel,
