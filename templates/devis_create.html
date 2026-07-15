@@ -587,6 +587,22 @@ if (quantiteInput && pointsElement) {
         );
     }
 
+    quantiteInput.addEventListener("change", function () {
+    const minimum = {{ minimum_fabrication }};
+    const palier = {{ palier_fabrication }};
+    let quantite = Number(quantiteInput.value) || 0;
+
+    if (quantite < minimum) {
+        quantite = minimum;
+    } else {
+        quantite = minimum + Math.floor(
+            (quantite - minimum) / palier
+        ) * palier;
+    }
+
+    quantiteInput.value = quantite;
+    updatePointsLivraison();
+});
     quantiteInput.addEventListener("input", updatePointsLivraison);
     updatePointsLivraison();
 }
