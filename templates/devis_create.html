@@ -2,23 +2,580 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Devis</title>
+    <title>Devis — {{ campaign["name"] }}</title>
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <style>
+        *{
+            box-sizing:border-box;
+        }
+
+        body{
+            margin:0;
+            background:#f4f6fa;
+            font-family:Arial,Helvetica,sans-serif;
+            color:#111827;
+        }
+
+        .container{
+            max-width:1200px;
+            margin:30px auto;
+            padding:0 18px;
+        }
+
+        .header,
+        .section{
+            background:#ffffff;
+            border:1px solid #e5e7eb;
+            border-radius:20px;
+            padding:28px;
+            margin-bottom:22px;
+            box-shadow:0 10px 28px rgba(15,23,42,.08);
+        }
+
+        .header-top{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            flex-wrap:wrap;
+        }
+
+        .page-type{
+            color:#f97316;
+            font-size:17px;
+            font-weight:900;
+            margin-bottom:7px;
+        }
+
+        h1{
+            margin:0;
+            font-size:36px;
+        }
+
+        .subtitle{
+            color:#64748b;
+            margin-top:8px;
+        }
+
+        .btn{
+            display:inline-block;
+            border:none;
+            border-radius:10px;
+            padding:11px 15px;
+            font-weight:900;
+            font-size:14px;
+            text-decoration:none;
+            cursor:pointer;
+        }
+
+        .btn-orange{
+            background:#f97316;
+            color:#ffffff;
+        }
+
+        .btn-light{
+            background:#e5e7eb;
+            color:#111827;
+        }
+
+        .btn-disabled{
+            background:#cbd5e1;
+            color:#64748b;
+            cursor:not-allowed;
+        }
+
+        .summary-grid{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:14px;
+            margin-top:24px;
+        }
+
+        .summary-card{
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:14px;
+            padding:18px;
+        }
+
+        .summary-label{
+            color:#64748b;
+            font-size:14px;
+        }
+
+        .summary-value{
+            font-size:22px;
+            font-weight:900;
+            margin-top:6px;
+        }
+
+        .section-title{
+            margin:0 0 18px;
+            font-size:22px;
+        }
+
+        .potential-grid{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:14px;
+        }
+
+        .potential-card{
+            border:1px solid #e5e7eb;
+            border-radius:14px;
+            padding:18px;
+        }
+
+        .potential-card.highlight{
+            background:#fff7ed;
+            border-color:#fdba74;
+        }
+
+        .potential-value{
+            font-size:28px;
+            font-weight:900;
+            margin-top:5px;
+        }
+
+        .alert{
+            border-radius:14px;
+            padding:18px;
+            margin-top:18px;
+            line-height:1.5;
+        }
+
+        .alert-success{
+            background:#ecfdf5;
+            border:1px solid #86efac;
+            color:#166534;
+        }
+
+        .alert-warning{
+            background:#fff7ed;
+            border:1px solid #fdba74;
+            color:#9a3412;
+        }
+
+        .alert-error{
+            background:#fef2f2;
+            border:1px solid #fca5a5;
+            color:#991b1b;
+        }
+
+        .map-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:15px;
+        }
+
+        #map-wrap{
+            display:none;
+            margin-top:18px;
+        }
+
+        #map{
+            height:340px;
+            border-radius:14px;
+            border:1px solid #e5e7eb;
+            overflow:hidden;
+        }
+
+        .calculation-grid{
+            display:grid;
+            grid-template-columns:1.25fr .75fr;
+            gap:22px;
+        }
+
+        .form-row{
+            margin-bottom:16px;
+        }
+
+        .form-row label{
+            display:block;
+            font-size:14px;
+            font-weight:900;
+            margin-bottom:7px;
+        }
+
+        .form-row input,
+        .form-row textarea{
+            width:100%;
+            padding:11px 12px;
+            border:1px solid #d1d5db;
+            border-radius:10px;
+            font-size:15px;
+            font-family:Arial,Helvetica,sans-serif;
+        }
+
+        .service-line{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:14px;
+            border-bottom:1px solid #e5e7eb;
+            padding:14px 0;
+        }
+
+        .service-name{
+            font-weight:900;
+        }
+
+        .service-description{
+            color:#64748b;
+            font-size:13px;
+            margin-top:4px;
+        }
+
+        .totals{
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+            border-radius:14px;
+            padding:20px;
+        }
+
+        .total-line{
+            display:flex;
+            justify-content:space-between;
+            gap:15px;
+            padding:10px 0;
+        }
+
+        .total-final{
+            border-top:2px solid #111827;
+            margin-top:8px;
+            padding-top:16px;
+            font-size:21px;
+            font-weight:900;
+        }
+
+        .action-zone{
+            margin-top:20px;
+            text-align:right;
+        }
+
+        @media(max-width:900px){
+            .summary-grid,
+            .potential-grid,
+            .calculation-grid{
+                grid-template-columns:1fr;
+            }
+
+            h1{
+                font-size:29px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Devis / Estimation</h1>
 
-    <p>
-        <strong>Campagne :</strong>
-        {{ campaign["name"] }}
-    </p>
+<div class="container">
 
-    <p>
-        <strong>Support :</strong>
-        {{ support_label }}
-    </p>
+    <div class="header">
+        <div class="header-top">
+            <div>
+                <div class="page-type">💶 Devis / Estimation</div>
+                <h1>{{ campaign["name"] }}</h1>
+                <div class="subtitle">
+                    Préparation du devis depuis une campagne ciblée
+                </div>
+            </div>
 
-    <a href="{{ url_for('campaign_resume', token=campaign['token']) }}">
-        ← Retour à la campagne
-    </a>
+            <a class="btn btn-light"
+               href="{{ url_for('campaign_resume', token=campaign['token']) }}">
+                ← Retour à la campagne
+            </a>
+        </div>
+
+        <div class="summary-grid">
+
+            <div class="summary-card">
+                <div class="summary-label">Campagne</div>
+                <div class="summary-value">{{ campaign["name"] }}</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-label">Support</div>
+                <div class="summary-value">{{ support_label }}</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-label">Commerces ciblés</div>
+                <div class="summary-value">{{ total_commerces }}</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-label">Commerces retenus</div>
+                <div class="summary-value">{{ total_acceptes }}</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Analyse du potentiel</h2>
+
+        <div class="potential-grid">
+
+            <div class="potential-card">
+                <div class="summary-label">Potentiel réel</div>
+                <div class="potential-value">
+                    {{ potentiel_reel }}
+                </div>
+                <div class="summary-label">{{ unite }}</div>
+            </div>
+
+            <div class="potential-card">
+                <div class="summary-label">Minimum de fabrication</div>
+                <div class="potential-value">
+                    {{ minimum_fabrication }}
+                </div>
+                <div class="summary-label">{{ unite }}</div>
+            </div>
+
+            <div class="potential-card">
+                <div class="summary-label">Palier</div>
+                <div class="potential-value">
+                    {{ palier_fabrication }}
+                </div>
+                <div class="summary-label">{{ unite }}</div>
+            </div>
+
+            <div class="potential-card highlight">
+                <div class="summary-label">Quantité devisable</div>
+                <div class="potential-value">
+                    {{ quantite_devisable }}
+                </div>
+                <div class="summary-label">{{ unite }}</div>
+            </div>
+
+        </div>
+
+        {% if not configuration_disponible %}
+
+            <div class="alert alert-error">
+                <strong>Configuration indisponible.</strong><br>
+                Aucune règle de fabrication n’est configurée pour ce support.
+            </div>
+
+        {% elif devis_possible %}
+
+            <div class="alert alert-success">
+                <strong>Campagne compatible avec un devis.</strong><br>
+                La quantité proposée correspond au plus grand palier ne dépassant
+                pas le potentiel réel de la campagne.
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-warning">
+                <strong>Campagne impossible : potentiel insuffisant.</strong><br>
+                Il manque {{ potentiel_manquant }} {{ unite }} pour atteindre
+                le minimum de fabrication.
+            </div>
+
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <div class="map-header">
+            <div>
+                <h2 class="section-title" style="margin-bottom:5px;">
+                    Cartographie des commerces retenus
+                </h2>
+                <div class="summary-label">
+                    {{ total_acceptes }} commerce(s) accepté(s)
+                </div>
+            </div>
+
+            <button class="btn btn-light"
+                    type="button"
+                    onclick="toggleMap()"
+                    id="map-button">
+                🗺️ Voir la carte
+            </button>
+        </div>
+
+        <div id="map-wrap">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Calcul de la prestation</h2>
+
+        <div class="calculation-grid">
+
+            <div>
+                <div class="form-row">
+                    <label>Quantité souhaitée</label>
+                    <input type="number"
+                           value="{{ quantite_devisable }}"
+                           min="0"
+                           {% if not devis_possible %}disabled{% endif %}>
+                </div>
+
+                <div class="service-line">
+                    <div>
+                        <div class="service-name">
+                            ☑ Impression {{ support_label }}
+                        </div>
+                        <div class="service-description">
+                            Tarif d’impression à configurer
+                        </div>
+                    </div>
+                    <strong>0,00 €</strong>
+                </div>
+
+                <div class="service-line">
+                    <div>
+                        <div class="service-name">
+                            ☑ Distribution
+                        </div>
+                        <div class="service-description">
+                            {{ total_acceptes }} commerce(s) retenu(s)
+                        </div>
+                    </div>
+                    <strong>0,00 €</strong>
+                </div>
+
+                <div class="service-line">
+                    <div>
+                        <div class="service-name">
+                            ☐ Création graphique
+                        </div>
+                        <div class="service-description">
+                            Forfait optionnel
+                        </div>
+                    </div>
+                    <strong>0,00 €</strong>
+                </div>
+
+                <div class="service-line">
+                    <div>
+                        <div class="service-name">
+                            ☐ Livraison
+                        </div>
+                        <div class="service-description">
+                            Forfait optionnel
+                        </div>
+                    </div>
+                    <strong>0,00 €</strong>
+                </div>
+            </div>
+
+            <div class="totals">
+                <div class="total-line">
+                    <span>Sous-total HT</span>
+                    <strong>0,00 €</strong>
+                </div>
+
+                <div class="total-line">
+                    <span>Remise</span>
+                    <strong>0,00 €</strong>
+                </div>
+
+                <div class="total-line">
+                    <span>Total HT</span>
+                    <strong>0,00 €</strong>
+                </div>
+
+                <div class="total-line">
+                    <span>TVA 20 %</span>
+                    <strong>0,00 €</strong>
+                </div>
+
+                <div class="total-line total-final">
+                    <span>Total TTC</span>
+                    <span>0,00 €</span>
+                </div>
+
+                <div class="action-zone">
+                    {% if devis_possible %}
+                        <button type="button" class="btn btn-disabled" disabled>
+                            Enregistrement bientôt disponible
+                        </button>
+                    {% else %}
+                        <button type="button" class="btn btn-disabled" disabled>
+                            Devis impossible
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+let mapInitialized = false;
+let map = null;
+
+function toggleMap() {
+    const wrap = document.getElementById("map-wrap");
+    const button = document.getElementById("map-button");
+
+    if (wrap.style.display === "block") {
+        wrap.style.display = "none";
+        button.textContent = "🗺️ Voir la carte";
+        return;
+    }
+
+    wrap.style.display = "block";
+    button.textContent = "Masquer la carte";
+
+    if (!mapInitialized) {
+        initializeMap();
+        mapInitialized = true;
+    }
+
+    setTimeout(function () {
+        if (map) {
+            map.invalidateSize();
+        }
+    }, 150);
+}
+
+function initializeMap() {
+    map = L.map("map").setView([46.6, 2.4], 6);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19
+    }).addTo(map);
+
+    const markers = [];
+
+    {% for item in accepted_items %}
+        {% if item["lat"] and item["lon"] %}
+            const marker{{ loop.index }} = L.marker([
+                {{ item["lat"] }},
+                {{ item["lon"] }}
+            ]).addTo(map);
+
+            marker{{ loop.index }}.bindPopup(
+                "<strong>{{ item['name']|e }}</strong><br>" +
+                "{{ item['code_postal'] }} {{ item['ville']|e }}"
+            );
+
+            markers.push(marker{{ loop.index }});
+        {% endif %}
+    {% endfor %}
+
+    if (markers.length > 0) {
+        const group = L.featureGroup(markers);
+        map.fitBounds(group.getBounds(), {
+            padding:[30,30]
+        });
+    }
+}
+</script>
+
 </body>
 </html>
