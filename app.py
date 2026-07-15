@@ -1709,16 +1709,27 @@ def create_quote_from_campaign(token):
     total_commerces = len(items)
     total_acceptes = len(accepted_items)
 
-    potentiel_reel = sum(
-        int(item["quantite"] or 0)
-        for item in accepted_items
-    )
+    items_as_dict = [dict(item) for item in items]
+    _, totals_by_label = compute_potentiel_and_supports(items_as_dict)
 
     support_key = campaign["support"] or ""
 
     support_label = SUPPORT_LABELS.get(
         support_key,
         support_key or "Support non renseigné"
+    )
+
+    if support_key == "all":
+        potentiel_reel = sum(totals_by_label.values())
+    else:
+        potentiel_reel = totals_by_label.get(support_label, 0)
+
+    quantite_par_commerce = QUANTITE_PAR_SUPPORT.get(support_key, 0)
+
+    commerces_potentiels = (
+        int(potentiel_reel / quantite_par_commerce)
+        if quantite_par_commerce
+        else 0
     )
 
     fabrication_rules = {
@@ -1772,7 +1783,9 @@ def create_quote_from_campaign(token):
         potentiel_manquant=potentiel_manquant,
         devis_possible=devis_possible,
         configuration_disponible=configuration_disponible,
-        unite=unite
+        unite=unite,
+        commerces_potentiels=commerces_potentiels,
+        quantite_par_commerce=quantite_par_commerce,
     )
     
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
