@@ -414,8 +414,11 @@
                 <div class="form-row">
                     <label>Quantité souhaitée</label>
                     <input type="number"
+                           id="quantite-souhaitee"
                            value="{{ quantite_devisable }}"
                            min="0"
+                           step="{{ palier_fabrication }}"
+                           data-quantite-par-commerce="{{ quantite_par_commerce }}"
                            {% if not devis_possible %}disabled{% endif %}>
                 </div>
 
@@ -437,7 +440,10 @@
                             ☑ Livraison
                         </div>
                         <div class="service-description">
-                            {{ quantite_devisable // quantite_par_commerce }} point(s) de livraison
+                            <span id="nombre-points-livraison">
+                                {{ quantite_devisable // quantite_par_commerce }}
+                            </span>
+                            point(s) de livraison
                         </div>
                     </div>
                     <strong>0,00 €</strong>
@@ -577,5 +583,25 @@ function initializeMap() {
 }
 </script>
 
+<script>
+const quantiteInput = document.getElementById("quantite-souhaitee");
+const pointsElement = document.getElementById("nombre-points-livraison");
+
+if (quantiteInput && pointsElement) {
+    function updatePointsLivraison() {
+        const quantite = Number(quantiteInput.value) || 0;
+        const quantiteParCommerce =
+            Number(quantiteInput.dataset.quantiteParCommerce) || 1;
+
+        pointsElement.textContent = Math.floor(
+            quantite / quantiteParCommerce
+        );
+    }
+
+    quantiteInput.addEventListener("input", updatePointsLivraison);
+    updatePointsLivraison();
+}
+</script>
+    
 </body>
 </html>
