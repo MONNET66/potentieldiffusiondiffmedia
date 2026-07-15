@@ -581,6 +581,8 @@ const quantiteInput = document.getElementById("quantite-souhaitee");
 const pointsElement = document.getElementById("nombre-points-livraison");
 const totalLivraisonElement = document.getElementById("total-livraison");
 const totalCreationElement = document.getElementById("total-creation");
+const creationGraphiqueCheckbox =
+    document.getElementById("creation-graphique");    
 const totalImpressionElement = document.getElementById("total-impression");
 
 const tarifsSacsPain = {
@@ -639,8 +641,13 @@ function updateTarifsFixes() {
             formatEuros(nombrePoints * 15.50);
     }
 
+    const totalCreation =
+        creationGraphiqueCheckbox && creationGraphiqueCheckbox.checked
+            ? 70
+            : 0;
+
     if (totalCreationElement) {
-        totalCreationElement.textContent = formatEuros(70);
+        totalCreationElement.textContent = formatEuros(totalCreation);
     }
 }
 
@@ -672,11 +679,19 @@ if (quantiteInput && pointsElement) {
 
         quantiteInput.value = quantite;
         updatePointsLivraison();
-    });
+        });
 
-    quantiteInput.addEventListener("input", updatePointsLivraison);
-    updatePointsLivraison();
-}
+        quantiteInput.addEventListener("input", updatePointsLivraison);
+
+        if (creationGraphiqueCheckbox) {
+            creationGraphiqueCheckbox.addEventListener(
+                "change",
+                updateTarifsFixes
+            );
+        }
+
+        updatePointsLivraison();
+        }
 </script>
     
 </script>
