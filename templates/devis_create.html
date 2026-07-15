@@ -584,7 +584,12 @@ const totalCreationElement = document.getElementById("total-creation");
 const creationGraphiqueCheckbox =
     document.getElementById("creation-graphique");    
 const totalImpressionElement = document.getElementById("total-impression");
-
+const sousTotalHtElement = document.getElementById("sous-total-ht");
+const montantRemiseElement = document.getElementById("montant-remise");
+const totalHtElement = document.getElementById("total-ht");
+const montantTvaElement = document.getElementById("montant-tva");
+const totalTtcElement = document.getElementById("total-ttc");
+    
 const tarifsSacsPain = {
     10000: 675.00,
     15000: 800.00,
@@ -636,9 +641,11 @@ function updateTarifsFixes() {
             formatEuros(totalImpression);
     }
 
+    const totalLivraison = nombrePoints * 15.50;
+
     if (totalLivraisonElement) {
         totalLivraisonElement.textContent =
-            formatEuros(nombrePoints * 15.50);
+            formatEuros(totalLivraison);
     }
 
     const totalCreation =
@@ -647,13 +654,49 @@ function updateTarifsFixes() {
             : 0;
 
     if (totalCreationElement) {
-        totalCreationElement.textContent = formatEuros(totalCreation);
+        totalCreationElement.textContent =
+            formatEuros(totalCreation);
+    }
+
+    const sousTotalHt =
+        totalImpression
+        + totalLivraison
+        + totalCreation;
+
+    const montantRemise = 0;
+    const totalHt = sousTotalHt - montantRemise;
+    const montantTva = totalHt * 0.20;
+    const totalTtc = totalHt + montantTva;
+
+    if (sousTotalHtElement) {
+        sousTotalHtElement.textContent =
+            formatEuros(sousTotalHt);
+    }
+
+    if (montantRemiseElement) {
+        montantRemiseElement.textContent =
+            formatEuros(montantRemise);
+    }
+
+    if (totalHtElement) {
+        totalHtElement.textContent =
+            formatEuros(totalHt);
+    }
+
+    if (montantTvaElement) {
+        montantTvaElement.textContent =
+            formatEuros(montantTva);
+    }
+
+    if (totalTtcElement) {
+        totalTtcElement.textContent =
+            formatEuros(totalTtc);
     }
 }
 
-if (quantiteInput && pointsElement) {
+    if (quantiteInput && pointsElement) {
     function updatePointsLivraison() {
-        const quantite = Number(quantiteInput.value) || 0;
+    const quantite = Number(quantiteInput.value) || 0;
         const quantiteParCommerce =
             Number(quantiteInput.dataset.quantiteParCommerce) || 1;
 
