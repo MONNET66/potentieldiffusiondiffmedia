@@ -601,6 +601,7 @@ body{
     </div>
 
     <div class="kpi-grid">
+
         <div class="kpi-card">
             <div class="kpi-icon">🏪</div>
             <div>
@@ -610,7 +611,7 @@ body{
         </div>
 
         <div class="kpi-card">
-            <div class="kpi-icon">✅</div>
+            <div class="kpi-icon">👥</div>
             <div>
                 {% set quantite_unitaire = {
                     "sac_pain": 1000,
@@ -626,7 +627,7 @@ body{
                     {{ (potentiel_quantite / quantite_unitaire)|int if quantite_unitaire else 0 }}
                 </div>
 
-                <div class="kpi-label">Commerces retenus</div>
+                <div class="kpi-label">Commerces potentiels</div>
             </div>
         </div>
 
@@ -634,10 +635,12 @@ body{
             <div class="kpi-icon">📦</div>
             <div>
                 <div class="kpi-value">{{ potentiel_quantite }}</div>
-                <div class="kpi-label">Potentiel diffusion</div>
+                <div class="kpi-label">
+                    {{ support_label or "Supports concernés" }}
+                </div>
             </div>
         </div>
-        
+
     </div>
 
     <div class="section">
