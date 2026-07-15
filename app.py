@@ -1674,6 +1674,10 @@ def campaign_resume(token):
         support_label=support_label
     )
 
+@app.route("/devis/nouveau/campagne/<token>")
+@login_required
+def create_quote_from_campaign(token):
+    return "Page devis en préparation"    
     
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
 def set_campaign_priority(token):
