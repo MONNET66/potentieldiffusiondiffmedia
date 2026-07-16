@@ -181,7 +181,25 @@
 
             <div class="field">
                 <span class="label">Support</span>
-                <span class="value">{{ devis.support }}</span>
+                <span class="value">
+                    {% if devis.support == "sac_pharmacie" %}
+                        Sacs pharmacie
+                    {% elif devis.support == "sac_pain" %}
+                        Sacs à pain
+                    {% elif devis.support == "sac_galette" %}
+                        Sacs galettes
+                    {% elif devis.support == "set_table" %}
+                        Sets de table
+                    {% elif devis.support == "sous_bock" %}
+                        Sous-bocks
+                    {% elif devis.support == "flyer" %}
+                        Flyers
+                    {% elif devis.support == "affiche" %}
+                        Affiches
+                    {% else %}
+                        {{ devis.support }}
+                    {% endif %}
+                </span>
             </div>
 
             <div class="field">
