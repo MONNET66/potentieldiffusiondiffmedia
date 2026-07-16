@@ -2193,6 +2193,7 @@ def save_quote_from_campaign(token):
             campaign_token,
             campaign_name,
             support,
+            caracteristiques_support,
 
             client_societe,
             client_contact,
@@ -2223,7 +2224,7 @@ def save_quote_from_campaign(token):
             created_by
         )
         VALUES (
-            ?, ?, ?, ?,
+            ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?,
             ?, ?, ?, ?,
@@ -2235,6 +2236,7 @@ def save_quote_from_campaign(token):
         campaign["token"],
         campaign["name"],
         support_key,
+        caracteristiques_support,
 
         (data.get("client_societe") or "").strip(),
         (data.get("client_contact") or "").strip(),
