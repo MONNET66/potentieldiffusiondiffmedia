@@ -1846,6 +1846,7 @@ def create_quote_from_campaign(token):
         potentiel_reel=potentiel_reel,
         support_label=support_label,
         produits_devis=PRODUITS_DEVIS.get(campaign["support"], []),
+        tarifs_produits=TARIFS_PRODUITS,
         minimum_fabrication=minimum_fabrication,
         palier_fabrication=palier_fabrication,
         quantite_devisable=quantite_devisable,
