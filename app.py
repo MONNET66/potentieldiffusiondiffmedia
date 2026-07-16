@@ -35,6 +35,8 @@ from math import radians, sin, cos, sqrt, atan2
 from urllib.parse import unquote
 from werkzeug.security import check_password_hash
 
+from tarifs import PRODUITS_DEVIS, TARIFS_PRODUITS
+
 session_http = requests.Session()
 
 app = Flask(__name__)
