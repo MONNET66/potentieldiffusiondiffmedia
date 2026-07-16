@@ -267,11 +267,10 @@
             🖨️ Imprimer
         </button>
 
-        <button type="button"
-                class="action-button pdf"
-                onclick="window.print()">
-            📄 Exporter en PDF
-        </button>
+        <a href="{{ url_for('telecharger_devis_pdf', numero=devis.numero) }}"
+           class="action-button pdf">
+            📄 Télécharger le PDF
+        </a>
 
         <a href="{{ url_for('mes_devis') }}" class="back-button">
             ← Retour à mes devis
