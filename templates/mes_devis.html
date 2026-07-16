@@ -152,7 +152,9 @@
                     {% for devis_item in devis %}
                         <tr>
                             <td class="numero">
-                                {{ devis_item["numero"] }}
+                                <a href="{{ url_for('voir_devis', numero=devis_item['numero']) }}">
+                                    {{ devis_item["numero"] }}
+                                </a>
                             </td>
 
                             <td>
