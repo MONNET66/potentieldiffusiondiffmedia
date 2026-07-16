@@ -1981,9 +1981,23 @@ def mes_devis():
 
     conn.close()
 
+    devis_prepares = []
+
+    for devis_item in devis:
+        devis_item = dict(devis_item)
+
+        try:
+            devis_item["caracteristiques_support"] = json.loads(
+                devis_item.get("caracteristiques_support") or "{}"
+            )
+        except (json.JSONDecodeError, TypeError):
+            devis_item["caracteristiques_support"] = {}
+
+        devis_prepares.append(devis_item)
+
     return render_template(
         "mes_devis.html",
-        devis=devis
+        devis=devis_prepares
     )
 
 @app.route("/devis/<numero>")
