@@ -2079,6 +2079,15 @@ def save_quote_from_campaign(token):
         }, 400
 
     support_key = campaign["support"] or ""
+    caracteristiques_support = json.dumps(
+        {
+            "nom": produit["nom"],
+            "format": produit["format"],
+            "papier": produit["papier"],
+            "impression": produit["impression"],
+        },
+        ensure_ascii=False
+    )
 
     if support_key != "sac_pain":
         conn.close()
