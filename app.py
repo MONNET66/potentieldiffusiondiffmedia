@@ -2316,7 +2316,7 @@ def generer_pdf_devis(devis):
             style_marque,
         ),
         Paragraph(
-            "Diffusion ciblée et impression de médias tactiques/>"
+            "Diffusion ciblée et impression de médias tactiques<br/>",
             style_petit,
         ),
         Spacer(1, 2 * mm),
