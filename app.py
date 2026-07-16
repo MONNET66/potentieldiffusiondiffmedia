@@ -2137,6 +2137,525 @@ def voir_devis(numero):
         devis=devis
     )
 
+def charger_devis_autorise(numero):
+    """
+    Charge un devis en respectant les droits de l'utilisateur connecté.
+    Retourne un dictionnaire ou None si le devis est introuvable/interdit.
+    """
+    conn = get_campaign_connection()
+
+    if session.get("role") == "admin":
+        devis = conn.execute("""
+            SELECT *
+            FROM devis
+            WHERE numero = ?
+        """, (numero,)).fetchone()
+    else:
+        devis = conn.execute("""
+            SELECT *
+            FROM devis
+            WHERE numero = ?
+              AND created_by = ?
+        """, (
+            numero,
+            session.get("username"),
+        )).fetchone()
+
+    conn.close()
+
+    if devis is None:
+        return None
+
+    devis = dict(devis)
+
+    try:
+        devis["caracteristiques_support"] = json.loads(
+            devis.get("caracteristiques_support") or "{}"
+        )
+    except (json.JSONDecodeError, TypeError):
+        devis["caracteristiques_support"] = {}
+
+    return devis
+
+
+def generer_pdf_devis(devis):
+    """
+    Génère le devis au format PDF et retourne son contenu en mémoire.
+    Cette fonction sera aussi réutilisée pour l'envoi par mail.
+    """
+
+    def texte(valeur, defaut="—"):
+        if valeur is None:
+            return defaut
+
+        valeur = str(valeur).strip()
+
+        if not valeur:
+            return defaut
+
+        return html.escape(valeur)
+
+    def montant(valeur):
+        try:
+            return f"{float(valeur or 0):,.2f}".replace(",", " ").replace(".", ",")
+        except (TypeError, ValueError):
+            return "0,00"
+
+    def entier(valeur):
+        try:
+            return f"{int(valeur or 0):,}".replace(",", " ")
+        except (TypeError, ValueError):
+            return "0"
+
+    support_labels = {
+        "sac_pharmacie": "Sacs pharmacie",
+        "sac_pain": "Sacs à pain",
+        "sac_galette": "Sacs galettes",
+        "set_table": "Sets de table",
+        "sous_bock": "Sous-bocks",
+        "flyer": "Flyers",
+        "affiche": "Affiches",
+    }
+
+    buffer_pdf = io.BytesIO()
+
+    document = SimpleDocTemplate(
+        buffer_pdf,
+        pagesize=A4,
+        rightMargin=15 * mm,
+        leftMargin=15 * mm,
+        topMargin=14 * mm,
+        bottomMargin=14 * mm,
+        title=f"Devis {devis.get('numero', '')}",
+        author="DIFFMEDIA",
+    )
+
+    styles = getSampleStyleSheet()
+
+    style_titre = ParagraphStyle(
+        "TitreDevis",
+        parent=styles["Title"],
+        fontName="Helvetica-Bold",
+        fontSize=23,
+        leading=27,
+        alignment=TA_RIGHT,
+        textColor=colors.HexColor("#17233c"),
+        spaceAfter=4 * mm,
+    )
+
+    style_marque = ParagraphStyle(
+        "Marque",
+        parent=styles["Heading1"],
+        fontName="Helvetica-Bold",
+        fontSize=22,
+        leading=25,
+        alignment=TA_LEFT,
+        textColor=colors.HexColor("#f07800"),
+        spaceAfter=2 * mm,
+    )
+
+    style_sous_titre = ParagraphStyle(
+        "SousTitre",
+        parent=styles["Heading2"],
+        fontName="Helvetica-Bold",
+        fontSize=13,
+        leading=16,
+        textColor=colors.HexColor("#17233c"),
+        spaceBefore=3 * mm,
+        spaceAfter=3 * mm,
+    )
+
+    style_normal = ParagraphStyle(
+        "NormalDevis",
+        parent=styles["BodyText"],
+        fontName="Helvetica",
+        fontSize=9.5,
+        leading=13,
+        textColor=colors.HexColor("#17233c"),
+    )
+
+    style_petit = ParagraphStyle(
+        "PetitDevis",
+        parent=style_normal,
+        fontSize=8,
+        leading=11,
+        textColor=colors.HexColor("#667085"),
+    )
+
+    style_droite = ParagraphStyle(
+        "DroiteDevis",
+        parent=style_normal,
+        alignment=TA_RIGHT,
+    )
+
+    style_total = ParagraphStyle(
+        "TotalDevis",
+        parent=style_normal,
+        fontName="Helvetica-Bold",
+        fontSize=13,
+        leading=16,
+        alignment=TA_RIGHT,
+        textColor=colors.HexColor("#f07800"),
+    )
+
+    contenu = []
+
+    bloc_societe = [
+        Paragraph("DIFFMEDIA", style_marque),
+        Paragraph(
+            "Solutions de communication locale<br/>"
+            "Supports publicitaires et campagnes commerciales",
+            style_petit,
+        ),
+        Spacer(1, 3 * mm),
+        Paragraph(
+            "Email : contact@diffmedia.fr",
+            style_normal,
+        ),
+    ]
+
+    bloc_devis = [
+        Paragraph("DEVIS", style_titre),
+        Paragraph(
+            f"<b>Numéro :</b> {texte(devis.get('numero'))}<br/>"
+            f"<b>Date :</b> {texte(devis.get('created_at'))}<br/>"
+            f"<b>Statut :</b> {texte(devis.get('statut'))}",
+            style_droite,
+        ),
+    ]
+
+    entete = Table(
+        [[bloc_societe, bloc_devis]],
+        colWidths=[105 * mm, 65 * mm],
+    )
+
+    entete.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("BOX", (1, 0), (1, 0), 1.2, colors.HexColor("#f07800")),
+        ("BACKGROUND", (1, 0), (1, 0), colors.HexColor("#fff7ef")),
+        ("LEFTPADDING", (1, 0), (1, 0), 8),
+        ("RIGHTPADDING", (1, 0), (1, 0), 8),
+        ("TOPPADDING", (1, 0), (1, 0), 8),
+        ("BOTTOMPADDING", (1, 0), (1, 0), 8),
+        ("LEFTPADDING", (0, 0), (0, 0), 0),
+        ("TOPPADDING", (0, 0), (0, 0), 0),
+    ]))
+
+    contenu.append(entete)
+    contenu.append(Spacer(1, 7 * mm))
+
+    contenu.append(Paragraph("CLIENT", style_sous_titre))
+
+    ville_client = " ".join(
+        valeur
+        for valeur in [
+            str(devis.get("client_code_postal") or "").strip(),
+            str(devis.get("client_ville") or "").strip(),
+        ]
+        if valeur
+    )
+
+    client_data = [
+        [
+            Paragraph("<b>Société</b>", style_petit),
+            Paragraph(texte(devis.get("client_societe")), style_normal),
+            Paragraph("<b>Contact</b>", style_petit),
+            Paragraph(texte(devis.get("client_contact")), style_normal),
+        ],
+        [
+            Paragraph("<b>Adresse</b>", style_petit),
+            Paragraph(texte(devis.get("client_adresse")), style_normal),
+            Paragraph("<b>Ville</b>", style_petit),
+            Paragraph(texte(ville_client), style_normal),
+        ],
+        [
+            Paragraph("<b>Email</b>", style_petit),
+            Paragraph(texte(devis.get("client_email")), style_normal),
+            Paragraph("<b>Téléphone</b>", style_petit),
+            Paragraph(texte(devis.get("client_telephone")), style_normal),
+        ],
+    ]
+
+    tableau_client = Table(
+        client_data,
+        colWidths=[25 * mm, 60 * mm, 25 * mm, 60 * mm],
+    )
+
+    tableau_client.setStyle(TableStyle([
+        ("BOX", (0, 0), (-1, -1), 0.7, colors.HexColor("#dfe3e8")),
+        ("INNERGRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#edf0f3")),
+        ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#f7f8fa")),
+        ("BACKGROUND", (2, 0), (2, -1), colors.HexColor("#f7f8fa")),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 7),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 7),
+        ("TOPPADDING", (0, 0), (-1, -1), 7),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+    ]))
+
+    contenu.append(tableau_client)
+    contenu.append(Spacer(1, 6 * mm))
+
+    contenu.append(Paragraph("DÉTAIL DES PRESTATIONS", style_sous_titre))
+
+    caracteristiques = devis.get("caracteristiques_support") or {}
+
+    nom_produit = (
+        caracteristiques.get("nom")
+        or support_labels.get(
+            devis.get("support"),
+            devis.get("support") or "Support publicitaire",
+        )
+    )
+
+    details_produit = []
+
+    if caracteristiques.get("format"):
+        details_produit.append(
+            f"Format : {texte(caracteristiques.get('format'))}"
+        )
+
+    if caracteristiques.get("papier"):
+        details_produit.append(
+            f"Papier : {texte(caracteristiques.get('papier'))}"
+        )
+
+    if caracteristiques.get("impression"):
+        details_produit.append(
+            f"Impression : {texte(caracteristiques.get('impression'))}"
+        )
+
+    designation_impression = f"<b>{texte(nom_produit)}</b>"
+
+    if details_produit:
+        designation_impression += (
+            "<br/><font color='#667085' size='8'>"
+            + "<br/>".join(details_produit)
+            + "</font>"
+        )
+
+    lignes_prestations = [
+        [
+            Paragraph("<b>Désignation</b>", style_normal),
+            Paragraph("<b>Quantité</b>", style_droite),
+            Paragraph("<b>Total HT</b>", style_droite),
+        ],
+        [
+            Paragraph(designation_impression, style_normal),
+            Paragraph(entier(devis.get("quantite")), style_droite),
+            Paragraph(
+                f"{montant(devis.get('montant_impression_ht'))} €",
+                style_droite,
+            ),
+        ],
+    ]
+
+    montant_livraison = float(devis.get("montant_livraison_ht") or 0)
+
+    if montant_livraison:
+        lignes_prestations.append([
+            Paragraph(
+                "<b>Livraison</b><br/>"
+                f"<font color='#667085' size='8'>"
+                f"{entier(devis.get('points_livraison'))} point(s) de livraison"
+                "</font>",
+                style_normal,
+            ),
+            Paragraph("—", style_droite),
+            Paragraph(
+                f"{montant(montant_livraison)} €",
+                style_droite,
+            ),
+        ])
+
+    montant_creation = float(devis.get("montant_creation_ht") or 0)
+
+    if devis.get("creation_graphique") or montant_creation:
+        lignes_prestations.append([
+            Paragraph("<b>Création graphique</b>", style_normal),
+            Paragraph("1", style_droite),
+            Paragraph(
+                f"{montant(montant_creation)} €",
+                style_droite,
+            ),
+        ])
+
+    tableau_prestations = Table(
+        lignes_prestations,
+        colWidths=[110 * mm, 25 * mm, 35 * mm],
+        repeatRows=1,
+    )
+
+    tableau_prestations.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17233c")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("BOX", (0, 0), (-1, -1), 0.7, colors.HexColor("#dfe3e8")),
+        ("INNERGRID", (0, 1), (-1, -1), 0.4, colors.HexColor("#edf0f3")),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+        ("TOPPADDING", (0, 0), (-1, -1), 8),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+    ]))
+
+    contenu.append(tableau_prestations)
+    contenu.append(Spacer(1, 5 * mm))
+
+    lignes_totaux = [
+        [
+            Paragraph("Sous-total HT", style_normal),
+            Paragraph(
+                f"{montant(devis.get('sous_total_ht'))} €",
+                style_droite,
+            ),
+        ],
+    ]
+
+    montant_remise = float(devis.get("montant_remise") or 0)
+
+    if montant_remise:
+        lignes_totaux.append([
+            Paragraph("Remise", style_normal),
+            Paragraph(
+                f"- {montant(montant_remise)} €",
+                style_droite,
+            ),
+        ])
+
+    lignes_totaux.extend([
+        [
+            Paragraph("<b>Total HT</b>", style_normal),
+            Paragraph(
+                f"<b>{montant(devis.get('total_ht'))} €</b>",
+                style_droite,
+            ),
+        ],
+        [
+            Paragraph(
+                f"TVA {montant(devis.get('taux_tva')).replace(',00', '')} %",
+                style_normal,
+            ),
+            Paragraph(
+                f"{montant(devis.get('montant_tva'))} €",
+                style_droite,
+            ),
+        ],
+        [
+            Paragraph("<b>TOTAL TTC</b>", style_total),
+            Paragraph(
+                f"<b>{montant(devis.get('total_ttc'))} €</b>",
+                style_total,
+            ),
+        ],
+    ])
+
+    tableau_totaux = Table(
+        lignes_totaux,
+        colWidths=[55 * mm, 45 * mm],
+        hAlign="RIGHT",
+    )
+
+    tableau_totaux.setStyle(TableStyle([
+        ("BOX", (0, 0), (-1, -2), 0.6, colors.HexColor("#dfe3e8")),
+        ("INNERGRID", (0, 0), (-1, -2), 0.3, colors.HexColor("#edf0f3")),
+        ("BACKGROUND", (0, -1), (-1, -1), colors.HexColor("#fff1e2")),
+        ("BOX", (0, -1), (-1, -1), 1, colors.HexColor("#f07800")),
+        ("LEFTPADDING", (0, 0), (-1, -1), 9),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 9),
+        ("TOPPADDING", (0, 0), (-1, -1), 8),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+    ]))
+
+    contenu.append(tableau_totaux)
+    contenu.append(Spacer(1, 8 * mm))
+
+    contenu.append(Paragraph("BON POUR ACCORD", style_sous_titre))
+
+    signature_client = [
+        Paragraph("<b>Le client</b>", style_normal),
+        Spacer(1, 4 * mm),
+        Paragraph("Nom :", style_petit),
+        Spacer(1, 5 * mm),
+        Paragraph("Date :", style_petit),
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "Signature précédée de la mention « Bon pour accord » :",
+            style_petit,
+        ),
+        Spacer(1, 18 * mm),
+    ]
+
+    signature_diffmedia = [
+        Paragraph("<b>DIFFMEDIA</b>", style_normal),
+        Spacer(1, 4 * mm),
+        Paragraph("Nom :", style_petit),
+        Spacer(1, 5 * mm),
+        Paragraph("Date :", style_petit),
+        Spacer(1, 5 * mm),
+        Paragraph("Signature :", style_petit),
+        Spacer(1, 18 * mm),
+    ]
+
+    tableau_signature = Table(
+        [[signature_client, signature_diffmedia]],
+        colWidths=[85 * mm, 85 * mm],
+    )
+
+    tableau_signature.setStyle(TableStyle([
+        ("BOX", (0, 0), (-1, -1), 0.7, colors.HexColor("#9aa4b2")),
+        ("INNERGRID", (0, 0), (-1, -1), 0.7, colors.HexColor("#9aa4b2")),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 10),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+        ("TOPPADDING", (0, 0), (-1, -1), 10),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+    ]))
+
+    contenu.append(
+        KeepTogether([
+            tableau_signature,
+            Spacer(1, 5 * mm),
+            Paragraph(
+                f"Devis {texte(devis.get('numero'))} — "
+                "Document généré par DIFFMEDIA",
+                style_petit,
+            ),
+        ])
+    )
+
+    document.build(contenu)
+
+    buffer_pdf.seek(0)
+
+    return buffer_pdf.getvalue()
+
+
+@app.route("/devis/<numero>/pdf")
+@login_required
+def telecharger_devis_pdf(numero):
+    devis = charger_devis_autorise(numero)
+
+    if devis is None:
+        return "Devis introuvable", 404
+
+    pdf = generer_pdf_devis(devis)
+
+    nom_fichier = re.sub(
+        r"[^A-Za-z0-9._-]+",
+        "_",
+        f"devis_{devis.get('numero', numero)}.pdf",
+    )
+
+    return Response(
+        pdf,
+        mimetype="application/pdf",
+        headers={
+            "Content-Disposition": (
+                f'attachment; filename="{nom_fichier}"'
+            )
+        },
+    )
+
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
 def set_campaign_priority(token):
     item_id = request.form.get("item_id")
