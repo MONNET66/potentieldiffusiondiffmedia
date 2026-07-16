@@ -2180,8 +2180,9 @@ def charger_devis_autorise(numero):
 
 def generer_pdf_devis(devis):
     """
-    Génère le devis au format PDF et retourne son contenu en mémoire.
-    Cette fonction sera aussi réutilisée pour l'envoi par mail.
+    Génère un devis PDF DIFFMEDIA.
+    Le document est optimisé pour tenir sur une page A4
+    lorsqu'il contient un nombre normal de prestations.
     """
 
     def texte(valeur, defaut="—"):
@@ -2197,7 +2198,12 @@ def generer_pdf_devis(devis):
 
     def montant(valeur):
         try:
-            return f"{float(valeur or 0):,.2f}".replace(",", " ").replace(".", ",")
+            nombre = float(valeur or 0)
+            return (
+                f"{nombre:,.2f}"
+                .replace(",", " ")
+                .replace(".", ",")
+            )
         except (TypeError, ValueError):
             return "0,00"
 
@@ -2222,63 +2228,62 @@ def generer_pdf_devis(devis):
     document = SimpleDocTemplate(
         buffer_pdf,
         pagesize=A4,
-        rightMargin=15 * mm,
-        leftMargin=15 * mm,
-        topMargin=14 * mm,
-        bottomMargin=14 * mm,
+        rightMargin=12 * mm,
+        leftMargin=12 * mm,
+        topMargin=9 * mm,
+        bottomMargin=9 * mm,
         title=f"Devis {devis.get('numero', '')}",
         author="DIFFMEDIA",
     )
 
     styles = getSampleStyleSheet()
 
-    style_titre = ParagraphStyle(
-        "TitreDevis",
-        parent=styles["Title"],
-        fontName="Helvetica-Bold",
-        fontSize=23,
-        leading=27,
-        alignment=TA_RIGHT,
-        textColor=colors.HexColor("#17233c"),
-        spaceAfter=4 * mm,
-    )
-
     style_marque = ParagraphStyle(
-        "Marque",
+        "MarqueDiffmedia",
         parent=styles["Heading1"],
         fontName="Helvetica-Bold",
         fontSize=22,
-        leading=25,
+        leading=24,
         alignment=TA_LEFT,
-        textColor=colors.HexColor("#f07800"),
+        spaceAfter=1 * mm,
+    )
+
+    style_titre_devis = ParagraphStyle(
+        "TitreDevis",
+        parent=styles["Title"],
+        fontName="Helvetica-Bold",
+        fontSize=22,
+        leading=24,
+        alignment=TA_RIGHT,
+        textColor=colors.HexColor("#17233c"),
         spaceAfter=2 * mm,
     )
 
-    style_sous_titre = ParagraphStyle(
-        "SousTitre",
+    style_section = ParagraphStyle(
+        "SectionDevis",
         parent=styles["Heading2"],
         fontName="Helvetica-Bold",
-        fontSize=13,
-        leading=16,
+        fontSize=12,
+        leading=14,
         textColor=colors.HexColor("#17233c"),
-        spaceBefore=3 * mm,
-        spaceAfter=3 * mm,
+        spaceBefore=1 * mm,
+        spaceAfter=2 * mm,
     )
 
     style_normal = ParagraphStyle(
         "NormalDevis",
         parent=styles["BodyText"],
         fontName="Helvetica",
-        fontSize=9.5,
-        leading=13,
+        fontSize=8.6,
+        leading=11,
         textColor=colors.HexColor("#17233c"),
     )
 
     style_petit = ParagraphStyle(
         "PetitDevis",
         parent=style_normal,
-        fontSize=8,
-        leading=11,
+        fontSize=7.5,
+        leading=9.5,
         textColor=colors.HexColor("#667085"),
     )
 
@@ -2292,30 +2297,41 @@ def generer_pdf_devis(devis):
         "TotalDevis",
         parent=style_normal,
         fontName="Helvetica-Bold",
-        fontSize=13,
-        leading=16,
+        fontSize=12,
+        leading=14,
         alignment=TA_RIGHT,
         textColor=colors.HexColor("#f07800"),
     )
 
     contenu = []
 
+    # ---------------------------------------------------------
+    # EN-TÊTE DIFFMEDIA
+    # ---------------------------------------------------------
+
     bloc_societe = [
-        Paragraph("DIFFMEDIA", style_marque),
         Paragraph(
-            "Solutions de communication locale<br/>"
-            "Supports publicitaires et campagnes commerciales",
+            "<font color='#17233c'>DIFF</font>"
+            "<font color='#f07800'>MEDIA</font>",
+            style_marque,
+        ),
+        Paragraph(
+            "Diffusion ciblée et impression de médias tactiques/>"
             style_petit,
         ),
-        Spacer(1, 3 * mm),
+        Spacer(1, 2 * mm),
         Paragraph(
-            "Email : contact@diffmedia.fr",
-            style_normal,
+            "19 rue Beausoleil<br/>"
+            "66300 Ponteilla<br/>"
+            "Tél. : 06 25 85 84 60<br/>"
+            "Email : contact@diffmedia.fr<br/>"
+            "SIRET : 999 911 043 00019",
+            style_petit,
         ),
     ]
 
     bloc_devis = [
-        Paragraph("DEVIS", style_titre),
+        Paragraph("DEVIS", style_titre_devis),
         Paragraph(
             f"<b>Numéro :</b> {texte(devis.get('numero'))}<br/>"
             f"<b>Date :</b> {texte(devis.get('created_at'))}<br/>"
@@ -2326,25 +2342,34 @@ def generer_pdf_devis(devis):
 
     entete = Table(
         [[bloc_societe, bloc_devis]],
-        colWidths=[105 * mm, 65 * mm],
+        colWidths=[112 * mm, 62 * mm],
     )
 
     entete.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("BOX", (1, 0), (1, 0), 1.2, colors.HexColor("#f07800")),
+
+        ("BOX", (1, 0), (1, 0), 1.1, colors.HexColor("#f07800")),
         ("BACKGROUND", (1, 0), (1, 0), colors.HexColor("#fff7ef")),
-        ("LEFTPADDING", (1, 0), (1, 0), 8),
-        ("RIGHTPADDING", (1, 0), (1, 0), 8),
-        ("TOPPADDING", (1, 0), (1, 0), 8),
-        ("BOTTOMPADDING", (1, 0), (1, 0), 8),
+
         ("LEFTPADDING", (0, 0), (0, 0), 0),
+        ("RIGHTPADDING", (0, 0), (0, 0), 4),
         ("TOPPADDING", (0, 0), (0, 0), 0),
+        ("BOTTOMPADDING", (0, 0), (0, 0), 0),
+
+        ("LEFTPADDING", (1, 0), (1, 0), 7),
+        ("RIGHTPADDING", (1, 0), (1, 0), 7),
+        ("TOPPADDING", (1, 0), (1, 0), 7),
+        ("BOTTOMPADDING", (1, 0), (1, 0), 7),
     ]))
 
     contenu.append(entete)
-    contenu.append(Spacer(1, 7 * mm))
+    contenu.append(Spacer(1, 3 * mm))
 
-    contenu.append(Paragraph("CLIENT", style_sous_titre))
+    # ---------------------------------------------------------
+    # CLIENT
+    # ---------------------------------------------------------
+
+    contenu.append(Paragraph("CLIENT", style_section))
 
     ville_client = " ".join(
         valeur
@@ -2358,53 +2383,91 @@ def generer_pdf_devis(devis):
     client_data = [
         [
             Paragraph("<b>Société</b>", style_petit),
-            Paragraph(texte(devis.get("client_societe")), style_normal),
+            Paragraph(
+                texte(devis.get("client_societe")),
+                style_normal,
+            ),
             Paragraph("<b>Contact</b>", style_petit),
-            Paragraph(texte(devis.get("client_contact")), style_normal),
+            Paragraph(
+                texte(devis.get("client_contact")),
+                style_normal,
+            ),
         ],
         [
             Paragraph("<b>Adresse</b>", style_petit),
-            Paragraph(texte(devis.get("client_adresse")), style_normal),
+            Paragraph(
+                texte(devis.get("client_adresse")),
+                style_normal,
+            ),
             Paragraph("<b>Ville</b>", style_petit),
-            Paragraph(texte(ville_client), style_normal),
+            Paragraph(
+                texte(ville_client),
+                style_normal,
+            ),
         ],
         [
             Paragraph("<b>Email</b>", style_petit),
-            Paragraph(texte(devis.get("client_email")), style_normal),
+            Paragraph(
+                texte(devis.get("client_email")),
+                style_normal,
+            ),
             Paragraph("<b>Téléphone</b>", style_petit),
-            Paragraph(texte(devis.get("client_telephone")), style_normal),
+            Paragraph(
+                texte(devis.get("client_telephone")),
+                style_normal,
+            ),
         ],
     ]
 
     tableau_client = Table(
         client_data,
-        colWidths=[25 * mm, 60 * mm, 25 * mm, 60 * mm],
+        colWidths=[
+            24 * mm,
+            63 * mm,
+            24 * mm,
+            63 * mm,
+        ],
     )
 
     tableau_client.setStyle(TableStyle([
-        ("BOX", (0, 0), (-1, -1), 0.7, colors.HexColor("#dfe3e8")),
-        ("INNERGRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#edf0f3")),
+        ("BOX", (0, 0), (-1, -1), 0.6, colors.HexColor("#dfe3e8")),
+        ("INNERGRID", (0, 0), (-1, -1), 0.35, colors.HexColor("#edf0f3")),
+
         ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#f7f8fa")),
         ("BACKGROUND", (2, 0), (2, -1), colors.HexColor("#f7f8fa")),
+
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("LEFTPADDING", (0, 0), (-1, -1), 7),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 7),
-        ("TOPPADDING", (0, 0), (-1, -1), 7),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+
+        ("LEFTPADDING", (0, 0), (-1, -1), 6),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+        ("TOPPADDING", (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
     ]))
 
     contenu.append(tableau_client)
-    contenu.append(Spacer(1, 6 * mm))
+    contenu.append(Spacer(1, 3 * mm))
 
-    contenu.append(Paragraph("DÉTAIL DES PRESTATIONS", style_sous_titre))
+    # ---------------------------------------------------------
+    # PRESTATIONS
+    # ---------------------------------------------------------
 
-    caracteristiques = devis.get("caracteristiques_support") or {}
+    contenu.append(
+        Paragraph(
+            "DÉTAIL DES PRESTATIONS",
+            style_section,
+        )
+    )
+
+    caracteristiques = (
+        devis.get("caracteristiques_support") or {}
+    )
 
     nom_produit = (
         caracteristiques.get("nom")
         or support_labels.get(
             devis.get("support"),
-            devis.get("support") or "Support publicitaire",
+            devis.get("support")
+            or "Support publicitaire",
         )
     )
 
@@ -2422,14 +2485,17 @@ def generer_pdf_devis(devis):
 
     if caracteristiques.get("impression"):
         details_produit.append(
-            f"Impression : {texte(caracteristiques.get('impression'))}"
+            "Impression : "
+            f"{texte(caracteristiques.get('impression'))}"
         )
 
-    designation_impression = f"<b>{texte(nom_produit)}</b>"
+    designation_impression = (
+        f"<b>{texte(nom_produit)}</b>"
+    )
 
     if details_produit:
         designation_impression += (
-            "<br/><font color='#667085' size='8'>"
+            "<br/><font color='#667085' size='7'>"
             + "<br/>".join(details_produit)
             + "</font>"
         )
@@ -2441,8 +2507,14 @@ def generer_pdf_devis(devis):
             Paragraph("<b>Total HT</b>", style_droite),
         ],
         [
-            Paragraph(designation_impression, style_normal),
-            Paragraph(entier(devis.get("quantite")), style_droite),
+            Paragraph(
+                designation_impression,
+                style_normal,
+            ),
+            Paragraph(
+                entier(devis.get("quantite")),
+                style_droite,
+            ),
             Paragraph(
                 f"{montant(devis.get('montant_impression_ht'))} €",
                 style_droite,
@@ -2450,14 +2522,20 @@ def generer_pdf_devis(devis):
         ],
     ]
 
-    montant_livraison = float(devis.get("montant_livraison_ht") or 0)
+    try:
+        montant_livraison = float(
+            devis.get("montant_livraison_ht") or 0
+        )
+    except (TypeError, ValueError):
+        montant_livraison = 0
 
     if montant_livraison:
         lignes_prestations.append([
             Paragraph(
                 "<b>Livraison</b><br/>"
-                f"<font color='#667085' size='8'>"
-                f"{entier(devis.get('points_livraison'))} point(s) de livraison"
+                "<font color='#667085' size='7'>"
+                f"{entier(devis.get('points_livraison'))} "
+                "point(s) de livraison"
                 "</font>",
                 style_normal,
             ),
@@ -2468,11 +2546,19 @@ def generer_pdf_devis(devis):
             ),
         ])
 
-    montant_creation = float(devis.get("montant_creation_ht") or 0)
+    try:
+        montant_creation = float(
+            devis.get("montant_creation_ht") or 0
+        )
+    except (TypeError, ValueError):
+        montant_creation = 0
 
     if devis.get("creation_graphique") or montant_creation:
         lignes_prestations.append([
-            Paragraph("<b>Création graphique</b>", style_normal),
+            Paragraph(
+                "<b>Création graphique</b>",
+                style_normal,
+            ),
             Paragraph("1", style_droite),
             Paragraph(
                 f"{montant(montant_creation)} €",
@@ -2482,24 +2568,35 @@ def generer_pdf_devis(devis):
 
     tableau_prestations = Table(
         lignes_prestations,
-        colWidths=[110 * mm, 25 * mm, 35 * mm],
+        colWidths=[
+            113 * mm,
+            26 * mm,
+            35 * mm,
+        ],
         repeatRows=1,
     )
 
     tableau_prestations.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17233c")),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("BOX", (0, 0), (-1, -1), 0.7, colors.HexColor("#dfe3e8")),
-        ("INNERGRID", (0, 1), (-1, -1), 0.4, colors.HexColor("#edf0f3")),
+
+        ("BOX", (0, 0), (-1, -1), 0.6, colors.HexColor("#dfe3e8")),
+        ("INNERGRID", (0, 1), (-1, -1), 0.35, colors.HexColor("#edf0f3")),
+
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("LEFTPADDING", (0, 0), (-1, -1), 8),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-        ("TOPPADDING", (0, 0), (-1, -1), 8),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+
+        ("LEFTPADDING", (0, 0), (-1, -1), 7),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 7),
+        ("TOPPADDING", (0, 0), (-1, -1), 6),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
     ]))
 
     contenu.append(tableau_prestations)
-    contenu.append(Spacer(1, 5 * mm))
+    contenu.append(Spacer(1, 3 * mm))
+
+    # ---------------------------------------------------------
+    # TOTAUX
+    # ---------------------------------------------------------
 
     lignes_totaux = [
         [
@@ -2511,7 +2608,12 @@ def generer_pdf_devis(devis):
         ],
     ]
 
-    montant_remise = float(devis.get("montant_remise") or 0)
+    try:
+        montant_remise = float(
+            devis.get("montant_remise") or 0
+        )
+    except (TypeError, ValueError):
+        montant_remise = 0
 
     if montant_remise:
         lignes_totaux.append([
@@ -2521,6 +2623,10 @@ def generer_pdf_devis(devis):
                 style_droite,
             ),
         ])
+
+    taux_tva = montant(
+        devis.get("taux_tva")
+    ).replace(",00", "")
 
     lignes_totaux.extend([
         [
@@ -2532,7 +2638,7 @@ def generer_pdf_devis(devis):
         ],
         [
             Paragraph(
-                f"TVA {montant(devis.get('taux_tva')).replace(',00', '')} %",
+                f"TVA {taux_tva} %",
                 style_normal,
             ),
             Paragraph(
@@ -2551,76 +2657,125 @@ def generer_pdf_devis(devis):
 
     tableau_totaux = Table(
         lignes_totaux,
-        colWidths=[55 * mm, 45 * mm],
+        colWidths=[
+            55 * mm,
+            45 * mm,
+        ],
         hAlign="RIGHT",
     )
 
     tableau_totaux.setStyle(TableStyle([
-        ("BOX", (0, 0), (-1, -2), 0.6, colors.HexColor("#dfe3e8")),
+        ("BOX", (0, 0), (-1, -2), 0.5, colors.HexColor("#dfe3e8")),
         ("INNERGRID", (0, 0), (-1, -2), 0.3, colors.HexColor("#edf0f3")),
+
         ("BACKGROUND", (0, -1), (-1, -1), colors.HexColor("#fff1e2")),
-        ("BOX", (0, -1), (-1, -1), 1, colors.HexColor("#f07800")),
-        ("LEFTPADDING", (0, 0), (-1, -1), 9),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 9),
-        ("TOPPADDING", (0, 0), (-1, -1), 8),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        ("BOX", (0, -1), (-1, -1), 0.9, colors.HexColor("#f07800")),
+
+        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+        ("TOPPADDING", (0, 0), (-1, -1), 6),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
     ]))
 
     contenu.append(tableau_totaux)
-    contenu.append(Spacer(1, 8 * mm))
+    contenu.append(Spacer(1, 3 * mm))
 
-    contenu.append(Paragraph("BON POUR ACCORD", style_sous_titre))
+    # ---------------------------------------------------------
+    # SIGNATURES
+    # ---------------------------------------------------------
+
+    contenu.append(
+        Paragraph(
+            "BON POUR ACCORD",
+            style_section,
+        )
+    )
 
     signature_client = [
         Paragraph("<b>Le client</b>", style_normal),
-        Spacer(1, 4 * mm),
-        Paragraph("Nom :", style_petit),
-        Spacer(1, 5 * mm),
-        Paragraph("Date :", style_petit),
-        Spacer(1, 5 * mm),
+        Spacer(1, 2 * mm),
+
         Paragraph(
-            "Signature précédée de la mention « Bon pour accord » :",
+            "Nom : __________________________________",
             style_petit,
         ),
-        Spacer(1, 18 * mm),
+        Spacer(1, 3 * mm),
+
+        Paragraph(
+            "Date : __________________________________",
+            style_petit,
+        ),
+        Spacer(1, 3 * mm),
+
+        Paragraph(
+            "Signature précédée de la mention "
+            "« Bon pour accord » :",
+            style_petit,
+        ),
+        Spacer(1, 9 * mm),
     ]
 
     signature_diffmedia = [
-        Paragraph("<b>DIFFMEDIA</b>", style_normal),
-        Spacer(1, 4 * mm),
-        Paragraph("Nom :", style_petit),
-        Spacer(1, 5 * mm),
-        Paragraph("Date :", style_petit),
-        Spacer(1, 5 * mm),
-        Paragraph("Signature :", style_petit),
-        Spacer(1, 18 * mm),
+        Paragraph(
+            "<b>"
+            "<font color='#17233c'>DIFF</font>"
+            "<font color='#f07800'>MEDIA</font>"
+            "</b>",
+            style_normal,
+        ),
+        Spacer(1, 2 * mm),
+
+        Paragraph(
+            "Nom : __________________________________",
+            style_petit,
+        ),
+        Spacer(1, 3 * mm),
+
+        Paragraph(
+            "Date : __________________________________",
+            style_petit,
+        ),
+        Spacer(1, 3 * mm),
+
+        Paragraph(
+            "Signature :",
+            style_petit,
+        ),
+        Spacer(1, 9 * mm),
     ]
 
     tableau_signature = Table(
         [[signature_client, signature_diffmedia]],
-        colWidths=[85 * mm, 85 * mm],
+        colWidths=[
+            87 * mm,
+            87 * mm,
+        ],
     )
 
     tableau_signature.setStyle(TableStyle([
-        ("BOX", (0, 0), (-1, -1), 0.7, colors.HexColor("#9aa4b2")),
-        ("INNERGRID", (0, 0), (-1, -1), 0.7, colors.HexColor("#9aa4b2")),
+        ("BOX", (0, 0), (-1, -1), 0.6, colors.HexColor("#9aa4b2")),
+        ("INNERGRID", (0, 0), (-1, -1), 0.6, colors.HexColor("#9aa4b2")),
+
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("LEFTPADDING", (0, 0), (-1, -1), 10),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-        ("TOPPADDING", (0, 0), (-1, -1), 10),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+
+        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+        ("TOPPADDING", (0, 0), (-1, -1), 7),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
     ]))
 
+    contenu.append(tableau_signature)
+    contenu.append(Spacer(1, 2 * mm))
+
     contenu.append(
-        KeepTogether([
-            tableau_signature,
-            Spacer(1, 5 * mm),
-            Paragraph(
-                f"Devis {texte(devis.get('numero'))} — "
-                "Document généré par DIFFMEDIA",
-                style_petit,
-            ),
-        ])
+        Paragraph(
+            f"Devis {texte(devis.get('numero'))} — "
+            "Document généré par DIFFMEDIA — "
+            "19 rue Beausoleil, 66300 Ponteilla — "
+            "Tél. 06 25 85 84 60 — "
+            "SIRET 999 911 043 00019",
+            style_petit,
+        )
     )
 
     document.build(contenu)
