@@ -2,23 +2,328 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{{ devis.numero }}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f5f7;
+            color: #17233c;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 28px;
+            background: #ffffff;
+            border-bottom: 1px solid #dfe3e8;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 14px 20px;
+            border-radius: 10px;
+            background: #f78b20;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px 40px;
+        }
+
+        .card {
+            margin-bottom: 22px;
+            padding: 24px;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 8px 24px rgba(23, 35, 60, 0.07);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 21px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px 28px;
+        }
+
+        .field {
+            padding-bottom: 12px;
+            border-bottom: 1px solid #edf0f3;
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 6px;
+            color: #667085;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .value {
+            font-size: 17px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 999px;
+            background: #fff1e2;
+            color: #cf6500;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .amounts {
+            margin-left: auto;
+            max-width: 520px;
+        }
+
+        .amount-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf0f3;
+        }
+
+        .amount-line strong {
+            font-size: 17px;
+        }
+
+        .amount-line.total {
+            margin-top: 6px;
+            padding-top: 18px;
+            border-bottom: none;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .amount-line.total span:last-child {
+            color: #f07800;
+        }
+
+        @media (max-width: 720px) {
+            .header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .back-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>{{ devis.numero }}</h1>
+<header class="header">
+    <div>
+        <h1>💶 Devis {{ devis.numero }}</h1>
+    </div>
 
-<p><strong>Client :</strong> {{ devis.client_societe }}</p>
-<p><strong>Campagne :</strong> {{ devis.campaign_name }}</p>
-<p><strong>Support :</strong> {{ devis.support }}</p>
-<p><strong>Quantité :</strong> {{ devis.quantite }}</p>
-<p><strong>Total HT :</strong> {{ devis.total_ht }} €</p>
-<p><strong>Total TTC :</strong> {{ devis.total_ttc }} €</p>
-<p><strong>Statut :</strong> {{ devis.statut }}</p>
+    <a href="{{ url_for('mes_devis') }}" class="back-button">
+        ← Retour à mes devis
+    </a>
+</header>
 
-<p>
-    <a href="{{ url_for('mes_devis') }}">← Retour à mes devis</a>
-</p>
+<main class="page">
+
+    <section class="card">
+        <h2>Informations générales</h2>
+
+        <div class="grid">
+            <div class="field">
+                <span class="label">Numéro du devis</span>
+                <span class="value">{{ devis.numero }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Statut</span>
+                <span class="status">{{ devis.statut }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Campagne</span>
+                <span class="value">{{ devis.campaign_name }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Support</span>
+                <span class="value">{{ devis.support }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Créé par</span>
+                <span class="value">{{ devis.created_by }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Date de création</span>
+                <span class="value">{{ devis.created_at }}</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Client</h2>
+
+        <div class="grid">
+            <div class="field">
+                <span class="label">Société</span>
+                <span class="value">{{ devis.client_societe or "—" }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Contact</span>
+                <span class="value">{{ devis.client_contact or "—" }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Adresse</span>
+                <span class="value">{{ devis.client_adresse or "—" }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Ville</span>
+                <span class="value">
+                    {{ devis.client_code_postal or "" }}
+                    {{ devis.client_ville or "—" }}
+                </span>
+            </div>
+
+            <div class="field">
+                <span class="label">Email</span>
+                <span class="value">{{ devis.client_email or "—" }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Téléphone</span>
+                <span class="value">{{ devis.client_telephone or "—" }}</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Détail de la campagne</h2>
+
+        <div class="grid">
+            <div class="field">
+                <span class="label">Commerces ciblés</span>
+                <span class="value">{{ devis.commerces_cibles }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Commerces potentiels</span>
+                <span class="value">{{ devis.commerces_potentiels }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Quantité</span>
+                <span class="value">{{ "{:,}".format(devis.quantite).replace(",", " ") }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Points de livraison</span>
+                <span class="value">{{ devis.points_livraison }}</span>
+            </div>
+
+            <div class="field">
+                <span class="label">Création graphique</span>
+                <span class="value">
+                    {% if devis.creation_graphique %}
+                        Oui
+                    {% else %}
+                        Non
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="field">
+                <span class="label">Dernière mise à jour</span>
+                <span class="value">{{ devis.updated_at }}</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Détail financier</h2>
+
+        <div class="amounts">
+            <div class="amount-line">
+                <span>Impression HT</span>
+                <strong>{{ "%.2f"|format(devis.montant_impression_ht) }} €</strong>
+            </div>
+
+            <div class="amount-line">
+                <span>Livraison HT</span>
+                <strong>{{ "%.2f"|format(devis.montant_livraison_ht) }} €</strong>
+            </div>
+
+            <div class="amount-line">
+                <span>Création graphique HT</span>
+                <strong>{{ "%.2f"|format(devis.montant_creation_ht) }} €</strong>
+            </div>
+
+            <div class="amount-line">
+                <span>Sous-total HT</span>
+                <strong>{{ "%.2f"|format(devis.sous_total_ht) }} €</strong>
+            </div>
+
+            <div class="amount-line">
+                <span>Remise</span>
+                <strong>- {{ "%.2f"|format(devis.montant_remise) }} €</strong>
+            </div>
+
+            <div class="amount-line">
+                <span>Total HT</span>
+                <strong>{{ "%.2f"|format(devis.total_ht) }} €</strong>
+            </div>
+
+            <div class="amount-line">
+                <span>TVA {{ "%.0f"|format(devis.taux_tva) }} %</span>
+                <strong>{{ "%.2f"|format(devis.montant_tva) }} €</strong>
+            </div>
+
+            <div class="amount-line total">
+                <span>Total TTC</span>
+                <span>{{ "%.2f"|format(devis.total_ttc) }} €</span>
+            </div>
+        </div>
+    </section>
+
+</main>
 
 </body>
 </html>
