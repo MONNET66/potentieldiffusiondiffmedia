@@ -846,6 +846,9 @@ if (enregistrerDevisButton) {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
+                    produit_id:
+                        document.getElementById("produit_id").value,
+
                     client_societe:
                         document.getElementById("client-societe").value,
                     client_contact:
