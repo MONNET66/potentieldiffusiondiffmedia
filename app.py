@@ -2104,6 +2104,8 @@ def save_quote_from_campaign(token):
     support_key = campaign["support"] or ""
     caracteristiques_support = json.dumps(
         {
+            "id": produit["id"],
+            "version": 1,
             "nom": produit["nom"],
             "format": produit["format"],
             "papier": produit["papier"],
