@@ -15,6 +15,20 @@ import os
 import smtplib
 from email.message import EmailMessage
 from email.utils import formataddr
+
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import mm
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle,
+    KeepTogether,
+)
 from functools import wraps
 from pathlib import Path
 from math import radians, sin, cos, sqrt, atan2
