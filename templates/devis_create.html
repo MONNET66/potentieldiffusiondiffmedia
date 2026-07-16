@@ -304,6 +304,35 @@
             </div>
 
             <div class="summary-card">
+                <div class="summary-label">Produit</div>
+
+                {% if produits_devis|length == 1 %}
+                    <div class="summary-value">
+                        {{ produits_devis[0]["nom"] }}
+                    </div>
+
+                    <input
+                        type="hidden"
+                        id="produit_id"
+                        name="produit_id"
+                        value="{{ produits_devis[0]['id'] }}"
+                    >
+
+                {% elif produits_devis|length > 1 %}
+                    <select id="produit_id" name="produit_id" required>
+                        {% for produit in produits_devis %}
+                            <option value="{{ produit['id'] }}">
+                                {{ produit["nom"] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                {% else %}
+                    <div class="summary-value">Aucun produit configuré</div>
+                {% endif %}
+            </div>
+            
+            <div class="summary-card">
                 <div class="summary-label">Commerces ciblés</div>
                 <div class="summary-value">{{ total_commerces }}</div>
             </div>
