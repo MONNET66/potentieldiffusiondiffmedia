@@ -2006,24 +2006,54 @@ def create_quote_from_campaign(token):
 @app.route("/mes_devis")
 @login_required
 def mes_devis():
+    recherche = (request.args.get("recherche") or "").strip()
+    date_debut = (request.args.get("date_debut") or "").strip()
+    date_fin = (request.args.get("date_fin") or "").strip()
+
+    conditions = []
+    parametres = []
+
+    # Conservation stricte des droits actuels :
+    # l'administrateur voit tout, les autres uniquement leurs devis.
+    if session.get("role") != "admin":
+        conditions.append("created_by = ?")
+        parametres.append(session.get("username"))
+
+    # Recherche par société cliente ou numéro de devis.
+    if recherche:
+        conditions.append("""
+            (
+                LOWER(COALESCE(client_societe, '')) LIKE LOWER(?)
+                OR LOWER(COALESCE(numero, '')) LIKE LOWER(?)
+            )
+        """)
+
+        valeur_recherche = f"%{recherche}%"
+        parametres.extend([
+            valeur_recherche,
+            valeur_recherche
+        ])
+
+    if date_debut:
+        conditions.append("date(created_at) >= date(?)")
+        parametres.append(date_debut)
+
+    if date_fin:
+        conditions.append("date(created_at) <= date(?)")
+        parametres.append(date_fin)
+
+    requete = """
+        SELECT *
+        FROM devis
+    """
+
+    if conditions:
+        requete += " WHERE " + " AND ".join(conditions)
+
+    requete += " ORDER BY created_at DESC, id DESC"
+
     conn = get_campaign_connection()
-
-    if session.get("role") == "admin":
-        devis = conn.execute("""
-            SELECT *
-            FROM devis
-            ORDER BY created_at DESC, id DESC
-        """).fetchall()
-    else:
-        devis = conn.execute("""
-            SELECT *
-            FROM devis
-            WHERE created_by = ?
-            ORDER BY created_at DESC, id DESC
-        """, (
-            session.get("username"),
-        )).fetchall()
-
+    devis = conn.execute(requete, parametres).fetchall()
     conn.close()
 
     devis_prepares = []
@@ -2042,7 +2072,10 @@ def mes_devis():
 
     return render_template(
         "mes_devis.html",
-        devis=devis_prepares
+        devis=devis_prepares,
+        recherche=recherche,
+        date_debut=date_debut,
+        date_fin=date_fin
     )
 
 @app.route("/devis/<numero>")
