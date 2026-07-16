@@ -272,6 +272,16 @@
             📄 Télécharger le PDF
         </a>
 
+        <form method="POST"
+              action="{{ url_for('envoyer_devis_email', numero=devis.numero) }}"
+              style="display:inline;">
+
+            <button type="submit" class="action-button">
+                ✉️ Envoyer par e-mail
+            </button>
+
+        </form>
+
         <a href="{{ url_for('mes_devis') }}" class="back-button">
             ← Retour à mes devis
         </a>
