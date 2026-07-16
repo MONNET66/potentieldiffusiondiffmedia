@@ -2013,6 +2013,15 @@ def voir_devis(numero):
     if devis is None:
         return "Devis introuvable", 404
 
+    devis = dict(devis)
+
+    try:
+        devis["caracteristiques_support"] = json.loads(
+            devis.get("caracteristiques_support") or "{}"
+        )
+    except (json.JSONDecodeError, TypeError):
+        devis["caracteristiques_support"] = {}
+
     return render_template(
         "devis_detail.html",
         devis=devis
