@@ -202,6 +202,27 @@
                 </span>
             </div>
 
+            {% if devis.caracteristiques_support %}
+            <div class="field">
+                <span class="label">Produit</span>
+                <span class="value">
+                    {{ devis.caracteristiques_support.nom }}<br>
+
+                    {% if devis.caracteristiques_support.format %}
+                        Format : {{ devis.caracteristiques_support.format }}<br>
+                    {% endif %}
+
+                    {% if devis.caracteristiques_support.papier %}
+                        Papier : {{ devis.caracteristiques_support.papier }}<br>
+                    {% endif %}
+
+                    {% if devis.caracteristiques_support.impression %}
+                        Impression : {{ devis.caracteristiques_support.impression }}
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+            
             <div class="field">
                 <span class="label">Créé par</span>
                 <span class="value">{{ devis.created_by }}</span>
