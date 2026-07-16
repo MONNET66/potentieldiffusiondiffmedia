@@ -2811,6 +2811,119 @@ def telecharger_devis_pdf(numero):
         },
     )
 
+@app.route("/devis/<numero>/envoyer", methods=["POST"])
+@login_required
+def envoyer_devis_email(numero):
+    devis = charger_devis_autorise(numero)
+
+    if devis is None:
+        return "Devis introuvable", 404
+
+    destinataire = (
+        request.form.get("email")
+        or devis.get("client_email")
+        or ""
+    ).strip()
+
+    if not destinataire:
+        return "Adresse email du client manquante", 400
+
+    pdf = generer_pdf_devis(devis)
+
+    nom_fichier = re.sub(
+        r"[^A-Za-z0-9._-]+",
+        "_",
+        f"devis_{devis.get('numero', numero)}.pdf",
+    )
+
+    smtp_host = os.environ.get("SMTP_HOST", "ssl0.ovh.net")
+    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+    smtp_username = os.environ.get("SMTP_USERNAME")
+    smtp_password = os.environ.get("SMTP_PASSWORD")
+    smtp_from_email = os.environ.get(
+        "SMTP_FROM_EMAIL",
+        smtp_username or "contact@diffmedia.fr",
+    )
+    smtp_from_name = os.environ.get(
+        "SMTP_FROM_NAME",
+        "DIFFMEDIA",
+    )
+
+    if not smtp_username or not smtp_password:
+        return "Configuration SMTP incomplète", 500
+
+    message = EmailMessage()
+    message["Subject"] = (
+        f"Votre devis DIFFMEDIA {devis.get('numero', numero)}"
+    )
+    message["From"] = (
+        f"{smtp_from_name} <{smtp_from_email}>"
+    )
+    message["To"] = destinataire
+
+    nom_client = (
+        devis.get("client_contact")
+        or devis.get("client_societe")
+        or ""
+    )
+
+    message.set_content(
+        f"""Bonjour {nom_client},
+
+Veuillez trouver en pièce jointe votre devis DIFFMEDIA numéro {devis.get('numero', numero)}.
+
+Nous restons à votre disposition pour toute question ou précision.
+
+Cordialement,
+
+DIFFMEDIA
+19 rue Beausoleil
+66300 Ponteilla
+06 25 85 84 60
+contact@diffmedia.fr
+"""
+    )
+
+    message.add_attachment(
+        pdf,
+        maintype="application",
+        subtype="pdf",
+        filename=nom_fichier,
+    )
+
+    try:
+        with smtplib.SMTP(
+            smtp_host,
+            smtp_port,
+            timeout=30,
+        ) as serveur:
+            serveur.ehlo()
+            serveur.starttls()
+            serveur.ehlo()
+            serveur.login(
+                smtp_username,
+                smtp_password,
+            )
+            serveur.send_message(message)
+
+    except Exception as erreur:
+        app.logger.exception(
+            "Erreur lors de l'envoi du devis %s",
+            numero,
+        )
+        return (
+            f"Erreur lors de l'envoi du devis : {erreur}",
+            500,
+        )
+
+    return redirect(
+        url_for(
+            "voir_devis",
+            numero=numero,
+            email_envoye="1",
+        )
+    )
+
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
 def set_campaign_priority(token):
     item_id = request.form.get("item_id")
