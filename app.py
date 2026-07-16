@@ -1058,6 +1058,7 @@ cur.execute("""
         campaign_token TEXT NOT NULL,
         campaign_name TEXT NOT NULL,
         support TEXT NOT NULL,
+        caracteristiques_support TEXT,
 
         client_societe TEXT,
         client_contact TEXT,
