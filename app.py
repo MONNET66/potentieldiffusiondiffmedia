@@ -110,6 +110,127 @@ QUANTITE_PAR_SUPPORT = {
     "sac_galette": 1000,
 }
 
+PRODUITS_DEVIS = {
+    "sac_pain": [
+        {
+            "id": "sac_pain_1_2",
+            "nom": "Sac à pain 1 à 2 baguettes",
+            "format": "12 × 4 × 35 cm",
+            "papier": "Kraft blanc 35 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+        {
+            "id": "sac_pain_2_3",
+            "nom": "Sac à pain 2 à 3 baguettes",
+            "format": "12 × 6 × 38 cm",
+            "papier": "Kraft blanc 35 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+    ],
+
+    "sac_galette": [
+        {
+            "id": "sac_galette",
+            "nom": "Sac galettes",
+            "format": "30 × 3 × 35 cm",
+            "papier": "Kraft blanc ingraissable 40 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+    ],
+
+    "sac_pharmacie": [
+        {
+            "id": "sac_pharmacie",
+            "nom": "Sac pharmacie",
+            "format": "14 × 9,5 × 30 cm",
+            "papier": "Kraft blanc 40 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+    ],
+
+    "set_table": [
+        {
+            "id": "set_table",
+            "nom": "Set de table A3",
+            "format": "42 × 29,7 cm",
+            "papier": "Offset 90 g",
+            "impression": "Quadrichromie recto",
+        },
+    ],
+
+    "sous_bock": [
+        {
+            "id": "sous_bock_carre",
+            "nom": "Sous-bock carré",
+            "format": "9,3 × 9,3 cm",
+            "papier": "Carton pâte 580 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+        {
+            "id": "sous_bock_rond",
+            "nom": "Sous-bock rond",
+            "format": "Diamètre 10 cm",
+            "papier": "Carton pâte 580 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+    ],
+
+    "affiche": [
+        {
+            "id": "affiche_a2",
+            "nom": "Affiche A2",
+            "format": "42 × 59,4 cm",
+            "papier": "Couché brillant 170 g",
+            "impression": "Quadrichromie recto",
+        },
+    ],
+
+    "flyer": [
+        {
+            "id": "flyer_a5",
+            "nom": "Flyer A5",
+            "format": "14,8 × 21 cm",
+            "papier": "Couché brillant 130 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+    ],
+
+    # Préparé pour les futurs supports
+    "sac_primeur": [
+        {
+            "id": "sac_primeur",
+            "nom": "Sac primeur",
+            "format": "20 × 6 × 32 cm",
+            "papier": "Kraft blanc 40 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+    ],
+
+    "boite_pizza": [
+        {
+            "id": "pizza_29",
+            "nom": "Boîte pizza 29 cm",
+            "format": "29 × 29 × 4,2 cm",
+            "papier": "Carton 300 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+        {
+            "id": "pizza_31",
+            "nom": "Boîte pizza 31 cm",
+            "format": "31 × 31 × 4,2 cm",
+            "papier": "Carton 300 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+        {
+            "id": "pizza_33",
+            "nom": "Boîte pizza 33 cm",
+            "format": "33 × 33 × 4,2 cm",
+            "papier": "Carton 300 g",
+            "impression": "Quadrichromie recto / verso",
+        },
+    ],
+}
+
 def compute_item_potentiel_for_support(item, selected_support):
     supports = item.get("supports", [])
 
