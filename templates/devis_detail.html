@@ -289,6 +289,12 @@
 </header>
 
 <main class="page">
+    {% if request.args.get("email_envoye") == "1" %}
+    <div class="card"
+         style="background:#eaf8ee; border:1px solid #9ed3aa; color:#1f6b2c; padding:18px;">
+        ✅ Le devis a bien été envoyé par e-mail.
+    </div>
+    {% endif %}
 
     <section class="card">
         <h2>Informations générales</h2>
