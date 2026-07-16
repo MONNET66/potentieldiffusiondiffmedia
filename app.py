@@ -1863,6 +1863,38 @@ def mes_devis():
         devis=devis
     )
 
+@app.route("/devis/<numero>")
+@login_required
+def voir_devis(numero):
+    conn = get_campaign_connection()
+
+    if session.get("role") == "admin":
+        devis = conn.execute("""
+            SELECT *
+            FROM devis
+            WHERE numero = ?
+        """, (numero,)).fetchone()
+    else:
+        devis = conn.execute("""
+            SELECT *
+            FROM devis
+            WHERE numero = ?
+              AND created_by = ?
+        """, (
+            numero,
+            session.get("username"),
+        )).fetchone()
+
+    conn.close()
+
+    if devis is None:
+        return "Devis introuvable", 404
+
+    return render_template(
+        "devis_detail.html",
+        devis=devis
+    )
+
 @app.route("/campaign/<token>/set_priority", methods=["POST"])
 def set_campaign_priority(token):
     item_id = request.form.get("item_id")
