@@ -11,6 +11,10 @@ import uuid
 import json
 import re
 import html
+import os
+import smtplib
+from email.message import EmailMessage
+from email.utils import formataddr
 from functools import wraps
 from pathlib import Path
 from math import radians, sin, cos, sqrt, atan2
