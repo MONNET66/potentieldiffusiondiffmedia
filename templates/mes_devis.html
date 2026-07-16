@@ -25,6 +25,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 20px;
         }
 
         .header h1 {
@@ -35,9 +36,13 @@
         .btn {
             display: inline-block;
             padding: 11px 18px;
+            border: 0;
             border-radius: 8px;
             text-decoration: none;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
             font-weight: 700;
+            cursor: pointer;
         }
 
         .btn-orange {
@@ -45,10 +50,79 @@
             color: #ffffff;
         }
 
+        .btn-dark {
+            background: #1f2937;
+            color: #ffffff;
+        }
+
+        .btn-light {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
         .page {
             max-width: 1400px;
             margin: 30px auto;
             padding: 0 24px;
+        }
+
+        .filters {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .filters-form {
+            display: grid;
+            grid-template-columns:
+                minmax(260px, 2fr)
+                minmax(170px, 1fr)
+                minmax(170px, 1fr)
+                auto;
+            gap: 14px;
+            align-items: end;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #475569;
+        }
+
+        .field input {
+            width: 100%;
+            height: 43px;
+            padding: 0 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #1f2937;
+            font: inherit;
+        }
+
+        .field input:focus {
+            border-color: #f28c28;
+            outline: 3px solid rgba(242, 140, 40, 0.15);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .results-count {
+            margin-top: 15px;
+            color: #64748b;
+            font-size: 14px;
         }
 
         .card {
@@ -83,6 +157,10 @@
             color: #1f2937;
         }
 
+        .numero a {
+            color: #1f2937;
+        }
+
         .montant {
             font-weight: 800;
             white-space: nowrap;
@@ -104,6 +182,12 @@
             color: #64748b;
         }
 
+        @media (max-width: 1050px) {
+            .filters-form {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
         @media (max-width: 900px) {
             .card {
                 overflow-x: auto;
@@ -111,6 +195,27 @@
 
             table {
                 min-width: 900px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                padding: 18px 20px;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .page {
+                padding: 0 14px;
+            }
+
+            .filters-form {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-actions .btn {
+                flex: 1;
+                text-align: center;
             }
         }
     </style>
@@ -128,6 +233,69 @@
 </div>
 
 <div class="page">
+
+    <div class="filters">
+
+        <form method="get"
+              action="{{ url_for('mes_devis') }}"
+              class="filters-form">
+
+            <div class="field">
+                <label for="recherche">
+                    Client ou numéro de devis
+                </label>
+
+                <input
+                    type="search"
+                    id="recherche"
+                    name="recherche"
+                    value="{{ recherche }}"
+                    placeholder="Ex. Dupont ou DEV-000001"
+                >
+            </div>
+
+            <div class="field">
+                <label for="date_debut">Du</label>
+
+                <input
+                    type="date"
+                    id="date_debut"
+                    name="date_debut"
+                    value="{{ date_debut }}"
+                >
+            </div>
+
+            <div class="field">
+                <label for="date_fin">Au</label>
+
+                <input
+                    type="date"
+                    id="date_fin"
+                    name="date_fin"
+                    value="{{ date_fin }}"
+                >
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit"
+                        class="btn btn-dark">
+                    Rechercher
+                </button>
+
+                <a href="{{ url_for('mes_devis') }}"
+                   class="btn btn-light">
+                    Réinitialiser
+                </a>
+            </div>
+
+        </form>
+
+        <div class="results-count">
+            {{ devis|length }}
+            devis trouvé{% if devis|length != 1 %}s{% endif %}
+        </div>
+
+    </div>
 
     <div class="card">
 
@@ -207,7 +375,7 @@
         {% else %}
 
             <div class="empty">
-                Aucun devis enregistré pour le moment.
+                Aucun devis ne correspond à votre recherche.
             </div>
 
         {% endif %}
