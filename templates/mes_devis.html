@@ -139,6 +139,7 @@
                         <th>N° devis</th>
                         <th>Client</th>
                         <th>Campagne</th>
+                        <th>Produit</th>
                         <th>Quantité</th>
                         <th>Total HT</th>
                         <th>Total TTC</th>
@@ -163,6 +164,14 @@
 
                             <td>
                                 {{ devis_item["campaign_name"] }}
+                            </td>
+
+                            <td>
+                                {% if devis_item["caracteristiques_support"] %}
+                                    {{ devis_item["caracteristiques_support"].get("nom", "Non renseigné") }}
+                                {% else %}
+                                    Non renseigné
+                                {% endif %}
                             </td>
 
                             <td>
