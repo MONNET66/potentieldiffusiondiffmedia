@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ devis.numero }}</title>
+</head>
+<body>
+
+<h1>{{ devis.numero }}</h1>
+
+<p><strong>Client :</strong> {{ devis.client_nom }}</p>
+<p><strong>Campagne :</strong> {{ devis.campaign_name }}</p>
+<p><strong>Support :</strong> {{ devis.support }}</p>
+<p><strong>Quantité :</strong> {{ devis.quantite }}</p>
+<p><strong>Total HT :</strong> {{ devis.total_ht }} €</p>
+<p><strong>Total TTC :</strong> {{ devis.total_ttc }} €</p>
+<p><strong>Statut :</strong> {{ devis.statut }}</p>
+
+<p>
+    <a href="{{ url_for('mes_devis') }}">← Retour à mes devis</a>
+</p>
+
+</body>
+</html>
