@@ -681,25 +681,39 @@ const montantTvaElement = document.getElementById("montant-tva");
 const totalTtcElement = document.getElementById("total-ttc");
     
 const tarifsSacsPain = {
-    10000: 675.00,
-    15000: 800.00,
-    20000: 937.50,
-    25000: 1062.50,
-    30000: 1187.50,
-    35000: 1385.00,
-    40000: 1450.00,
-    45000: 1631.25,
-    50000: 1693.75,
-    55000: 1865.00,
-    60000: 1935.00,
-    65000: 2000.00,
-    70000: 2150.00,
-    75000: 2250.00,
-    80000: 2350.00,
-    85000: 2400.00,
-    90000: 2450.00,
-    95000: 2555.00,
-    100000: 2687.50
+    sac_pain_1_2: {
+        10000: 675.00,
+        15000: 800.00,
+        20000: 937.50,
+        25000: 1062.50,
+        30000: 1187.50,
+        35000: 1385.00,
+        40000: 1450.00,
+        45000: 1631.25,
+        50000: 1693.75,
+        55000: 1865.00,
+        60000: 1935.00,
+        65000: 2000.00,
+        70000: 2150.00,
+        75000: 2250.00,
+        80000: 2350.00,
+        85000: 2400.00,
+        90000: 2450.00,
+        95000: 2555.00,
+        100000: 2687.50
+    },
+
+    sac_pain_2_3: {
+        10000: 770.00,
+        15000: 915.00,
+        20000: 1060.00,
+        25000: 1180.00,
+        30000: 1260.00,
+        35000: 1445.00,
+        40000: 1590.00,
+        45000: 1720.00,
+        50000: 1845.00
+    }
 };
 
 function formatEuros(value) {
@@ -723,7 +737,14 @@ function updateTarifsFixes() {
     let totalImpression = 0;
 
     if (support === "sac_pain") {
-        totalImpression = tarifsSacsPain[quantite] || 0;
+        const produitId =
+            document.getElementById("produit_id").value;
+
+        const grilleProduit =
+            tarifsSacsPain[produitId] || {};
+
+        totalImpression =
+            grilleProduit[quantite] || 0;
     }
 
     if (totalImpressionElement) {
@@ -818,6 +839,16 @@ function updateTarifsFixes() {
 
         if (creationGraphiqueCheckbox) {
             creationGraphiqueCheckbox.addEventListener(
+                "change",
+                updateTarifsFixes
+            );
+        }
+
+        const produitSelect =
+            document.getElementById("produit_id");
+
+        if (produitSelect) {
+            produitSelect.addEventListener(
                 "change",
                 updateTarifsFixes
             );
