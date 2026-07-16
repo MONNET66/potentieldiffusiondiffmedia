@@ -2172,29 +2172,9 @@ def save_quote_from_campaign(token):
         conn.close()
         return {"status": "error", "message": "Quantité invalide."}, 400
 
-    tarifs_sacs_pain = {
-        10000: 675.00,
-        15000: 800.00,
-        20000: 937.50,
-        25000: 1062.50,
-        30000: 1187.50,
-        35000: 1385.00,
-        40000: 1450.00,
-        45000: 1631.25,
-        50000: 1693.75,
-        55000: 1865.00,
-        60000: 1935.00,
-        65000: 2000.00,
-        70000: 2150.00,
-        75000: 2250.00,
-        80000: 2350.00,
-        85000: 2400.00,
-        90000: 2450.00,
-        95000: 2555.00,
-        100000: 2687.50,
-    }
+    tarifs_produit = TARIFS_PRODUITS.get(produit_id, {})
 
-    montant_impression_ht = tarifs_sacs_pain.get(quantite)
+    montant_impression_ht = tarifs_produit.get(quantite)
 
     if montant_impression_ht is None:
         conn.close()
