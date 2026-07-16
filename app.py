@@ -2048,7 +2048,7 @@ def set_campaign_priority(token):
 @login_required
 def save_quote_from_campaign(token):
     data = request.get_json(silent=True) or {}
-
+    
     conn = get_campaign_connection()
 
     campaign = conn.execute(
@@ -2059,6 +2059,24 @@ def save_quote_from_campaign(token):
     if not campaign:
         conn.close()
         return {"status": "error", "message": "Campagne introuvable."}, 404
+
+    produit_id = (data.get("produit_id") or "").strip()
+
+    produit = next(
+        (
+            p
+            for p in PRODUITS_DEVIS.get(campaign["support"], [])
+            if p["id"] == produit_id
+        ),
+        None
+    )
+
+    if produit is None:
+        conn.close()
+        return {
+            "status": "error",
+            "message": "Produit invalide."
+        }, 400
 
     support_key = campaign["support"] or ""
 
