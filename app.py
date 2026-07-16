@@ -1946,6 +1946,7 @@ def create_quote_from_campaign(token):
         total_acceptes=total_acceptes,
         potentiel_reel=potentiel_reel,
         support_label=support_label,
+        produits_devis=PRODUITS_DEVIS.get(campaign["support"], []),
         minimum_fabrication=minimum_fabrication,
         palier_fabrication=palier_fabrication,
         quantite_devisable=quantite_devisable,
