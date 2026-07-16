@@ -33,14 +33,45 @@
             font-size: 28px;
         }
 
+        .actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-button,
         .back-button {
-            display: inline-block;
-            padding: 14px 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+            padding: 13px 18px;
             border-radius: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .action-button {
+            border: none;
+            background: #17233c;
+            color: #ffffff;
+        }
+
+        .action-button.pdf {
+            border: 1px solid #cfd6df;
+            background: #ffffff;
+            color: #17233c;
+        }
+
+        .back-button {
+            border: none;
             background: #f78b20;
             color: #ffffff;
-            text-decoration: none;
-            font-weight: bold;
         }
 
         .page {
@@ -138,9 +169,85 @@
                 grid-template-columns: 1fr;
             }
 
+            .actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .action-button,
             .back-button {
                 width: 100%;
                 text-align: center;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 12mm;
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+                color: #000000;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .no-print,
+            .header {
+                display: none !important;
+            }
+
+            .page {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .card {
+                margin-bottom: 14px;
+                padding: 16px;
+                border: 1px solid #dfe3e8;
+                border-radius: 6px;
+                box-shadow: none;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .card h2 {
+                margin-bottom: 12px;
+                font-size: 17px;
+            }
+
+            .grid {
+                gap: 10px 20px;
+            }
+
+            .field {
+                padding-bottom: 7px;
+            }
+
+            .label {
+                font-size: 9px;
+            }
+
+            .value,
+            .amount-line strong {
+                font-size: 12px;
+            }
+
+            .amount-line {
+                padding: 8px 0;
+            }
+
+            .amount-line.total {
+                font-size: 17px;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
             }
         }
     </style>
@@ -153,9 +260,23 @@
         <h1>💶 Devis {{ devis.numero }}</h1>
     </div>
 
-    <a href="{{ url_for('mes_devis') }}" class="back-button">
-        ← Retour à mes devis
-    </a>
+    <div class="actions no-print">
+        <button type="button"
+                class="action-button"
+                onclick="window.print()">
+            🖨️ Imprimer
+        </button>
+
+        <button type="button"
+                class="action-button pdf"
+                onclick="window.print()">
+            📄 Exporter en PDF
+        </button>
+
+        <a href="{{ url_for('mes_devis') }}" class="back-button">
+            ← Retour à mes devis
+        </a>
+    </div>
 </header>
 
 <main class="page">
