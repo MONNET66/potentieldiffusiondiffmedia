@@ -187,6 +187,44 @@ TARIFS_PRODUITS = {
     95000: 3150.00,
     100000: 3243.75,    
         
+    },
+}
 
+
+CONFIG_SUPPORTS = {
+    "sac_pain": {
+        "famille_livraison": "famille_papier",
+    },
+
+    "sac_galette": {
+        "famille_livraison": "famille_papier",
+    },
+
+    "sac_pharmacie": {
+        "famille_livraison": "famille_papier",
+    },
+
+    "sac_primeur": {
+        "famille_livraison": "famille_papier",
+    },
+
+    "set_table": {
+        "famille_livraison": "famille_papier",
+    },
+
+    "sous_bock": {
+        "famille_livraison": "sous_bock",
+    },
+
+    "affiche": {
+        "famille_livraison": "affiche",
+    },
+
+    "flyer": {
+        "famille_livraison": "flyer",
+    },
+
+    "boite_pizza": {
+        "famille_livraison": "pizza",
     },
 }
