@@ -681,6 +681,8 @@ const montantTvaElement = document.getElementById("montant-tva");
 const totalTtcElement = document.getElementById("total-ttc");
     
 const tarifsProduits = {{ tarifs_produits | tojson }};
+const isMassive = {{ "true" if is_massive else "false" }};
+const nombreVilles = {{ nombre_villes }};
 
 function formatEuros(value) {
     return value.toLocaleString("fr-FR", {
@@ -718,7 +720,13 @@ function updateTarifsFixes() {
             formatEuros(totalImpression);
     }
 
-    const totalLivraison = nombrePoints * 15.50;
+    let totalLivraison;
+
+    if (isMassive) {
+        totalLivraison = nombreVilles * 18.90;
+    } else {
+        totalLivraison = nombrePoints * 15.50;
+    }
 
     if (totalLivraisonElement) {
         totalLivraisonElement.textContent =
