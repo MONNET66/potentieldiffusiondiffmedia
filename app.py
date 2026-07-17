@@ -2881,7 +2881,12 @@ def save_quote_from_campaign(token):
         conn.close()
         return {"status": "error", "message": "Quantité invalide."}, 400
 
-    tarifs_produit = TARIFS_PRODUITS.get(produit_id, {})
+    tarif_key = produit_id
+
+    if produit_id in ("sous_bock_carre", "sous_bock_rond"):
+        tarif_key = "sous_bock"
+
+    tarifs_produit = TARIFS_PRODUITS.get(tarif_key, {})
 
     montant_impression_ht = tarifs_produit.get(quantite)
 
