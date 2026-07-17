@@ -35,7 +35,11 @@ from math import radians, sin, cos, sqrt, atan2
 from urllib.parse import unquote
 from werkzeug.security import check_password_hash
 
-from tarifs import PRODUITS_DEVIS, TARIFS_PRODUITS
+from tarifs import (
+    PRODUITS_DEVIS,
+    TARIFS_PRODUITS,
+    calculer_livraison,
+)
 
 session_http = requests.Session()
 
