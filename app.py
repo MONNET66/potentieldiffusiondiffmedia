@@ -2875,13 +2875,6 @@ def save_quote_from_campaign(token):
         ensure_ascii=False
     )
 
-    if support_key != "sac_pain":
-        conn.close()
-        return {
-            "status": "error",
-            "message": "Le tarif d’impression de ce support n’est pas encore configuré."
-        }, 400
-
     try:
         quantite = int(data.get("quantite") or 0)
     except (TypeError, ValueError):
