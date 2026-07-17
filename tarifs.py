@@ -279,3 +279,98 @@ TARIFS_LIVRAISON_MASSIVE = {
         },
     },
 }
+
+def obtenir_tarif_livraison_massive(
+    produit_id,
+    type_etablissement=None,
+):
+    """
+    Retourne le tarif HT par ville pour une campagne massive.
+
+    Pour le moment, seule la tranche 0 à 100 km est utilisée.
+    Les campings bénéficient d'une grille spéciale uniquement pour :
+    - sac_pain
+    - set_table
+    """
+
+    configuration = CONFIG_SUPPORTS.get(produit_id)
+
+    if configuration is None:
+        raise ValueError(
+            f"Configuration introuvable pour le produit : {produit_id}"
+        )
+
+    # Recherche d'une éventuelle exception.
+    if type_etablissement == "camping":
+        exceptions_camping = (
+            TARIFS_LIVRAISON_MASSIVE
+            .get("exceptions", {})
+            .get("camping", {})
+        )
+
+        grille_exception = exceptions_camping.get(produit_id)
+
+        if grille_exception:
+            return float(grille_exception[0]["prix_ht"])
+
+    # Sinon, utilisation de la grille standard du support.
+    famille_livraison = configuration["famille_livraison"]
+
+    grilles_standard = TARIFS_LIVRAISON_MASSIVE.get(
+        "standard",
+        {},
+    )
+
+    grille_standard = grilles_standard.get(famille_livraison)
+
+    if not grille_standard:
+        raise ValueError(
+            "Grille de livraison massive introuvable pour "
+            f"la famille : {famille_livraison}"
+        )
+
+    return float(grille_standard[0]["prix_ht"])
+
+
+def calculer_frais_livraison_massive(
+    produit_id,
+    villes,
+    type_etablissement=None,
+):
+    """
+    Calcule les frais de livraison d'une campagne massive.
+
+    Règle actuelle :
+    nombre de villes distinctes × tarif HT 0 à 100 km.
+    """
+
+    villes_distinctes = {
+        str(ville).strip().casefold()
+        for ville in villes
+        if ville and str(ville).strip()
+    }
+
+    nombre_villes = len(villes_distinctes)
+
+    if nombre_villes == 0:
+        return {
+            "nombre_villes": 0,
+            "tarif_par_ville_ht": 0.0,
+            "total_livraison_ht": 0.0,
+        }
+
+    tarif_par_ville = obtenir_tarif_livraison_massive(
+        produit_id=produit_id,
+        type_etablissement=type_etablissement,
+    )
+
+    total_livraison = round(
+        nombre_villes * tarif_par_ville,
+        2,
+    )
+
+    return {
+        "nombre_villes": nombre_villes,
+        "tarif_par_ville_ht": tarif_par_ville,
+        "total_livraison_ht": total_livraison,
+    }
