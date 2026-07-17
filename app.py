@@ -2184,16 +2184,7 @@ def generer_pdf_devis(devis):
             style_marque,
         ),
         Paragraph(
-            "Diffusion ciblée et impression de médias tactiques<br/>",
-            style_petit,
-        ),
-        Spacer(1, 2 * mm),
-        Paragraph(
-            "19 rue Beausoleil<br/>"
-            "66300 Ponteilla<br/>"
-            "Tél. : 06 25 85 84 60<br/>"
-            "Email : contact@diffmedia.fr<br/>"
-            "SIRET : 999 911 043 00019",
+            "Diffusion ciblée et impression de médias tactiques",
             style_petit,
         ),
     ]
@@ -2651,6 +2642,7 @@ def generer_pdf_devis(devis):
             "Document généré par DIFFMEDIA — "
             "19 rue Beausoleil, 66300 Ponteilla — "
             "Tél. 06 25 85 84 60 — "
+            "Email : contact@diffmedia.fr — "
             "SIRET 999 911 043 00019",
             style_petit,
         )
