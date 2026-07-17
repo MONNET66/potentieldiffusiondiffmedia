@@ -1781,9 +1781,9 @@ def create_quote_from_campaign(token):
         if (item["accepte"] or "").strip().casefold() == "oui"
     ]
 
-    # Une campagne massive utilise tous les établissements.
-    # Une campagne ciblée utilise les établissements ayant accepté.
-    delivery_items = items if is_massive else accepted_items
+    # Au stade du devis, les campagnes massives et ciblées utilisent
+    # tous les commerces potentiels identifiés sur la carte.
+    delivery_items = items
 
     villes_livraison = sorted({
         str(item["ville"]).strip()
