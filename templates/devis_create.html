@@ -691,6 +691,17 @@ function formatEuros(value) {
     }) + " €";
 }
 
+function getTarifKey(produitId) {
+    const correspondances = {
+        sous_bock_carre: "sous_bock",
+        sous_bock_rond: "sous_bock",
+        affiche_a2: "affiche",
+        flyer_a5: "flyer",
+    };
+
+    return correspondances[produitId] || produitId;
+}
+    
 function updateTarifsFixes() {
     const quantite = Number(quantiteInput.value) || 0;
     const quantiteParCommerce =
@@ -708,8 +719,10 @@ function updateTarifsFixes() {
     if (produitSelect) {
         const produitId = produitSelect.value;
 
+        const tarifKey = getTarifKey(produitId);
+
         const grilleProduit =
-            tarifsProduits[produitId] || {};
+            tarifsProduits[tarifKey] || {};
 
         totalImpression =
             grilleProduit[quantite] || 0;
