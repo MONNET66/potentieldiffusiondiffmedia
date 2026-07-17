@@ -281,12 +281,12 @@
                 <div class="page-type">💶 Devis / Estimation</div>
                 <h1>{{ campaign["name"] }}</h1>
                 <div class="subtitle">
-                    Préparation du devis depuis une campagne ciblée
+                    Préparation du devis depuis une campagne {{ "massive" if is_massive else "ciblée" }}
                 </div>
             </div>
 
             <a class="btn btn-orange"
-               href="{{ url_for('campaign_resume', token=campaign['token']) }}">
+               href="{% if is_massive %}{{ url_for('massive_campaign_detail', campaign_id=campaign['id']) }}{% else %}{{ url_for('campaign_resume', token=campaign['token']) }}{% endif %}">
                 ← Retour à la campagne
             </a>
         </div>
