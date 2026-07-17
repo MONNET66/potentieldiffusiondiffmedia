@@ -316,16 +316,22 @@
                     <button type="button" class="export-btn">Tout classé par priorité</button>
                 </a>
 
-                <a href="/campaign/{{ campaign['token'] }}/export?filter=1">
-                    <button type="button" class="export-btn">Priorité 1</button>
+            <a href="/campaign/{{ campaign['token'] }}/export?filter=1">
+                <button type="button" class="export-btn">Priorité 1</button>
                 </a>
 
                 <a href="/campaign/{{ campaign['token'] }}/export?filter=2">
                     <button type="button" class="export-btn">Priorité 2</button>
-                </a>
+            </a>
 
                 <a href="/campaign/{{ campaign['token'] }}/export?filter=3">
                     <button type="button" class="export-btn">Priorité 3</button>
+                </a>
+
+                <a href="{{ url_for('create_quote_from_campaign', token=campaign['token']) }}">
+                    <button type="button" class="export-btn">
+                        💶 Créer un devis
+                    </button>
                 </a>
             </div>
 
