@@ -228,3 +228,54 @@ CONFIG_SUPPORTS = {
         "famille_livraison": "pizza",
     },
 }
+TARIFS_LIVRAISON_MASSIVE = {
+    "standard": {
+        "famille_papier": [
+            {"min_km": 0, "max_km": 100, "prix_ht": 18.90},
+            {"min_km": 101, "max_km": 150, "prix_ht": 21.70},
+            {"min_km": 151, "max_km": 200, "prix_ht": 24.50},
+            {"min_km": 201, "max_km": 250, "prix_ht": 27.30},
+        ],
+        "sous_bock": [
+            {"min_km": 0, "max_km": 100, "prix_ht": 14.00},
+            {"min_km": 101, "max_km": 150, "prix_ht": 15.40},
+            {"min_km": 151, "max_km": 200, "prix_ht": 16.80},
+            {"min_km": 201, "max_km": 250, "prix_ht": 18.20},
+        ],
+        "affiche": [
+            {"min_km": 0, "max_km": 100, "prix_ht": 12.60},
+            {"min_km": 101, "max_km": 150, "prix_ht": 14.00},
+            {"min_km": 151, "max_km": 200, "prix_ht": 15.40},
+            {"min_km": 201, "max_km": 250, "prix_ht": 16.80},
+        ],
+        "flyer": [
+            {"min_km": 0, "max_km": 100, "prix_ht": 13.30},
+            {"min_km": 101, "max_km": 150, "prix_ht": 14.00},
+            {"min_km": 151, "max_km": 200, "prix_ht": 14.70},
+            {"min_km": 201, "max_km": 250, "prix_ht": 15.40},
+        ],
+        "pizza": [
+            {"min_km": 0, "max_km": 100, "prix_ht": 22.50},
+            {"min_km": 101, "max_km": 150, "prix_ht": 23.50},
+            {"min_km": 151, "max_km": 200, "prix_ht": 24.50},
+            {"min_km": 201, "max_km": 250, "prix_ht": 28.00},
+        ],
+    },
+
+    "exceptions": {
+        "camping": {
+            "sac_pain": [
+                {"min_km": 0, "max_km": 100, "prix_ht": 25.00},
+                {"min_km": 101, "max_km": 150, "prix_ht": 28.00},
+                {"min_km": 151, "max_km": 200, "prix_ht": 30.00},
+                {"min_km": 201, "max_km": None, "prix_ht": 32.00},
+            ],
+            "set_table": [
+                {"min_km": 0, "max_km": 100, "prix_ht": 25.00},
+                {"min_km": 101, "max_km": 150, "prix_ht": 28.00},
+                {"min_km": 151, "max_km": 200, "prix_ht": 30.00},
+                {"min_km": 201, "max_km": None, "prix_ht": 32.00},
+            ],
+        },
+    },
+}
