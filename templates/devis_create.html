@@ -753,10 +753,24 @@ function remplirPaliersQuantite(quantitePreferee) {
         return;
     }
 
+    const grilleProduit = getGrilleProduit();
+
     paliers.forEach(function (palier) {
         const option = document.createElement("option");
         option.value = String(palier);
-        option.textContent = formatQuantite(palier);
+
+        const prix = Number(
+            grilleProduit[String(palier)]
+            ?? grilleProduit[palier]
+            ?? 0
+        );
+
+        option.textContent =
+            formatQuantite(palier)
+            + " — "
+            + formatEuros(prix)
+            + " HT";
+
         quantiteInput.appendChild(option);
     });
 
