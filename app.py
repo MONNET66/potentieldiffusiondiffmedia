@@ -2942,6 +2942,17 @@ def save_quote_from_campaign(token):
         if item["ville"] and str(item["ville"]).strip()
     })
 
+    print(
+        "DEBUG LIVRAISON :",
+        {
+            "is_massive": is_massive,
+            "grille": grille_livraison,
+            "support": support_key,
+            "nb_villes": len(villes_livraison),
+        },
+        flush=True,
+    )
+    
     resultat_livraison = calculer_livraison(
         produit_id=support_key,
         villes=villes_livraison,
