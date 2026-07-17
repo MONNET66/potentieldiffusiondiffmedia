@@ -112,6 +112,18 @@
             margin-top:6px;
         }
 
+        .summary-card select{
+            width:100%;
+            margin-top:6px;
+            padding:10px 12px;
+            border:1px solid #d1d5db;
+            border-radius:10px;
+            background:#ffffff;
+            color:#111827;
+            font-size:16px;
+            font-weight:700;
+        }
+
         .section-title{
             margin:0 0 18px;
             font-size:22px;
@@ -202,6 +214,7 @@
         }
 
         .form-row input,
+        .form-row select,
         .form-row textarea{
             width:100%;
             padding:11px 12px;
@@ -501,13 +514,10 @@
             <div>
                 <div class="form-row">
                     <label>Quantité souhaitée</label>
-                    <input type="number"
-                           id="quantite-souhaitee"
-                           value="{{ quantite_devisable }}"
-                           min="0"
-                           step="{{ palier_fabrication }}"
-                           data-quantite-par-commerce="{{ quantite_par_commerce }}"
-                           {% if not devis_possible %}disabled{% endif %}>
+                    <select id="quantite-souhaitee"
+                            data-quantite-par-commerce="{{ quantite_par_commerce }}"
+                            {% if not devis_possible %}disabled{% endif %}>
+                    </select>
                 </div>
 
                 <div class="service-line">
@@ -665,27 +675,32 @@ function initializeMap() {
 
 <script>
 const quantiteInput = document.getElementById("quantite-souhaitee");
+const produitSelect = document.getElementById("produit_id");
 const pointsElement = document.getElementById("nombre-points-livraison");
 const totalLivraisonElement = document.getElementById("total-livraison");
 const totalCreationElement = document.getElementById("total-creation");
-const creationGraphiqueCheckbox =
-    document.getElementById("creation-graphique");    
+const creationGraphiqueCheckbox = document.getElementById("creation-graphique");
 const totalImpressionElement = document.getElementById("total-impression");
 const sousTotalHtElement = document.getElementById("sous-total-ht");
 const montantRemiseElement = document.getElementById("montant-remise");
 const totalHtElement = document.getElementById("total-ht");
 const montantTvaElement = document.getElementById("montant-tva");
 const totalTtcElement = document.getElementById("total-ttc");
-    
+
 const tarifsProduits = {{ tarifs_produits | tojson }};
 const isMassive = {{ "true" if is_massive else "false" }};
 const nombreVilles = {{ nombre_villes }};
+const quantiteDevisableInitiale = Number({{ quantite_devisable }}) || 0;
 
 function formatEuros(value) {
-    return value.toLocaleString("fr-FR", {
+    return Number(value || 0).toLocaleString("fr-FR", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }) + " €";
+}
+
+function formatQuantite(value) {
+    return Number(value || 0).toLocaleString("fr-FR");
 }
 
 function getTarifKey(produitId) {
@@ -693,153 +708,118 @@ function getTarifKey(produitId) {
         sous_bock_carre: "sous_bock",
         sous_bock_rond: "sous_bock",
         affiche_a2: "affiche",
-        flyer_a5: "flyer",
+        flyer_a5: "flyer"
     };
-
     return correspondances[produitId] || produitId;
 }
-    
+
+function getGrilleProduit() {
+    if (!produitSelect) return {};
+    const tarifKey = getTarifKey(produitSelect.value);
+    return tarifsProduits[tarifKey] || {};
+}
+
+function getPaliersProduit() {
+    return Object.keys(getGrilleProduit())
+        .map(Number)
+        .filter(function (quantite) {
+            return Number.isFinite(quantite) && quantite > 0;
+        })
+        .sort(function (a, b) { return a - b; });
+}
+
+function choisirPalier(paliers, quantitePreferee) {
+    if (paliers.length === 0) return 0;
+    const quantite = Number(quantitePreferee) || 0;
+    if (paliers.includes(quantite)) return quantite;
+    const inferieurs = paliers.filter(function (palier) {
+        return palier <= quantite;
+    });
+    return inferieurs.length ? inferieurs[inferieurs.length - 1] : paliers[0];
+}
+
+function remplirPaliersQuantite(quantitePreferee) {
+    if (!quantiteInput) return;
+    const paliers = getPaliersProduit();
+    quantiteInput.innerHTML = "";
+
+    if (paliers.length === 0) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "Aucun palier tarifaire configuré";
+        quantiteInput.appendChild(option);
+        quantiteInput.disabled = true;
+        updateTarifsFixes();
+        return;
+    }
+
+    paliers.forEach(function (palier) {
+        const option = document.createElement("option");
+        option.value = String(palier);
+        option.textContent = formatQuantite(palier);
+        quantiteInput.appendChild(option);
+    });
+
+    quantiteInput.disabled = {{ "true" if not devis_possible else "false" }};
+    quantiteInput.value = String(choisirPalier(paliers, quantitePreferee));
+    updateTarifsFixes();
+}
+
 function updateTarifsFixes() {
+    if (!quantiteInput) return;
+
     const quantite = Number(quantiteInput.value) || 0;
-    const quantiteParCommerce =
-        Number(quantiteInput.dataset.quantiteParCommerce) || 1;
+    const quantiteParCommerce = Number(quantiteInput.dataset.quantiteParCommerce) || 1;
+    const nombrePoints = Math.floor(quantite / quantiteParCommerce);
 
-    const nombrePoints = Math.floor(
-        quantite / quantiteParCommerce
+    if (pointsElement) pointsElement.textContent = nombrePoints;
+
+    const grilleProduit = getGrilleProduit();
+    const totalImpression = Number(
+        grilleProduit[String(quantite)] ?? grilleProduit[quantite] ?? 0
     );
-
-    let totalImpression = 0;
-
-    const produitSelect =
-        document.getElementById("produit_id");
-
-    if (produitSelect) {
-        const produitId = produitSelect.value;
-
-        const tarifKey = getTarifKey(produitId);
-
-        const grilleProduit =
-            tarifsProduits[tarifKey] || {};
-
-        totalImpression =
-            grilleProduit[quantite] || 0;
-    }
-
     if (totalImpressionElement) {
-        totalImpressionElement.textContent =
-            formatEuros(totalImpression);
+        totalImpressionElement.textContent = formatEuros(totalImpression);
     }
 
-    let totalLivraison;
-
-    if (isMassive) {
-        totalLivraison = nombrePoints * 18.90;
-    } else {
-        totalLivraison = nombrePoints * 15.50;
-    }
-
+    const tarifLivraisonUnitaire = isMassive ? 18.90 : 15.50;
+    const totalLivraison = nombrePoints * tarifLivraisonUnitaire;
     if (totalLivraisonElement) {
-        totalLivraisonElement.textContent =
-            formatEuros(totalLivraison);
+        totalLivraisonElement.textContent = formatEuros(totalLivraison);
     }
 
-    const totalCreation =
-        creationGraphiqueCheckbox && creationGraphiqueCheckbox.checked
-            ? 70
-            : 0;
-
+    const totalCreation = creationGraphiqueCheckbox && creationGraphiqueCheckbox.checked ? 70 : 0;
     if (totalCreationElement) {
-        totalCreationElement.textContent =
-            formatEuros(totalCreation);
+        totalCreationElement.textContent = formatEuros(totalCreation);
     }
 
-    const sousTotalHt =
-        totalImpression
-        + totalLivraison
-        + totalCreation;
-
+    const sousTotalHt = totalImpression + totalLivraison + totalCreation;
     const montantRemise = 0;
     const totalHt = sousTotalHt - montantRemise;
     const montantTva = totalHt * 0.20;
     const totalTtc = totalHt + montantTva;
 
-    if (sousTotalHtElement) {
-        sousTotalHtElement.textContent =
-            formatEuros(sousTotalHt);
-    }
-
-    if (montantRemiseElement) {
-        montantRemiseElement.textContent =
-            formatEuros(montantRemise);
-    }
-
-    if (totalHtElement) {
-        totalHtElement.textContent =
-            formatEuros(totalHt);
-    }
-
-    if (montantTvaElement) {
-        montantTvaElement.textContent =
-            formatEuros(montantTva);
-    }
-
-    if (totalTtcElement) {
-        totalTtcElement.textContent =
-            formatEuros(totalTtc);
-    }
+    if (sousTotalHtElement) sousTotalHtElement.textContent = formatEuros(sousTotalHt);
+    if (montantRemiseElement) montantRemiseElement.textContent = formatEuros(montantRemise);
+    if (totalHtElement) totalHtElement.textContent = formatEuros(totalHt);
+    if (montantTvaElement) montantTvaElement.textContent = formatEuros(montantTva);
+    if (totalTtcElement) totalTtcElement.textContent = formatEuros(totalTtc);
 }
 
-    if (quantiteInput && pointsElement) {
-    function updatePointsLivraison() {
-    const quantite = Number(quantiteInput.value) || 0;
-        const quantiteParCommerce =
-            Number(quantiteInput.dataset.quantiteParCommerce) || 1;
+if (quantiteInput) {
+    quantiteInput.addEventListener("change", updateTarifsFixes);
+}
+if (creationGraphiqueCheckbox) {
+    creationGraphiqueCheckbox.addEventListener("change", updateTarifsFixes);
+}
+if (produitSelect) {
+    produitSelect.addEventListener("change", function () {
+        const quantiteActuelle = Number(quantiteInput && quantiteInput.value) || 0;
+        remplirPaliersQuantite(quantiteActuelle);
+    });
+}
 
-        pointsElement.textContent = Math.floor(
-            quantite / quantiteParCommerce
-        );
-
-        updateTarifsFixes();
-    }
-
-    quantiteInput.addEventListener("change", function () {
-        const minimum = {{ minimum_fabrication }};
-        const palier = {{ palier_fabrication }};
-        let quantite = Number(quantiteInput.value) || 0;
-
-        if (quantite < minimum) {
-            quantite = minimum;
-        } else {
-            quantite = minimum + Math.floor(
-                (quantite - minimum) / palier
-            ) * palier;
-        }
-
-        quantiteInput.value = quantite;
-        updatePointsLivraison();
-        });
-
-        quantiteInput.addEventListener("input", updatePointsLivraison);
-
-        if (creationGraphiqueCheckbox) {
-            creationGraphiqueCheckbox.addEventListener(
-                "change",
-                updateTarifsFixes
-            );
-        }
-
-        const produitSelect =
-            document.getElementById("produit_id");
-
-        if (produitSelect) {
-            produitSelect.addEventListener(
-                "change",
-                updateTarifsFixes
-            );
-        }
-
-        updatePointsLivraison();
-        }
+remplirPaliersQuantite(quantiteDevisableInitiale);
 </script>
     
 <script>
