@@ -1760,10 +1760,6 @@ def create_quote_from_campaign(token):
         conn.close()
         return "Campagne introuvable", 404
 
-    if (campaign["notes"] or "") == "Campagne massive":
-        conn.close()
-        return "Cette version du devis est réservée aux campagnes ciblées.", 400
-
     items = conn.execute("""
         SELECT *
         FROM campaign_items
@@ -1773,10 +1769,29 @@ def create_quote_from_campaign(token):
 
     conn.close()
 
+    is_massive = (
+        (campaign["notes"] or "").strip().casefold()
+        == "campagne massive"
+    )
+
+    grille_livraison = "massive" if is_massive else "ciblee"
+
     accepted_items = [
         item for item in items
-        if (item["accepte"] or "") == "oui"
+        if (item["accepte"] or "").strip().casefold() == "oui"
     ]
+
+    # Une campagne massive utilise tous les établissements.
+    # Une campagne ciblée utilise les établissements ayant accepté.
+    delivery_items = items if is_massive else accepted_items
+
+    villes_livraison = sorted({
+        str(item["ville"]).strip()
+        for item in delivery_items
+        if item["ville"] and str(item["ville"]).strip()
+    })
+
+    nombre_villes = len(villes_livraison)
 
     total_commerces = len(items)
     total_acceptes = len(accepted_items)
@@ -1796,7 +1811,10 @@ def create_quote_from_campaign(token):
     else:
         potentiel_reel = totals_by_label.get(support_label, 0)
 
-    quantite_par_commerce = QUANTITE_PAR_SUPPORT.get(support_key, 0)
+    quantite_par_commerce = QUANTITE_PAR_SUPPORT.get(
+        support_key,
+        0
+    )
 
     commerces_potentiels = (
         int(potentiel_reel / quantite_par_commerce)
@@ -1839,17 +1857,22 @@ def create_quote_from_campaign(token):
 
             devis_possible = True
         else:
-            potentiel_manquant = minimum_fabrication - potentiel_reel
+            potentiel_manquant = (
+                minimum_fabrication - potentiel_reel
+            )
 
     return render_template(
         "devis_create.html",
         campaign=campaign,
-        accepted_items=items,
+        accepted_items=delivery_items,
         total_commerces=total_commerces,
         total_acceptes=total_acceptes,
         potentiel_reel=potentiel_reel,
         support_label=support_label,
-        produits_devis=PRODUITS_DEVIS.get(campaign["support"], []),
+        produits_devis=PRODUITS_DEVIS.get(
+            campaign["support"],
+            []
+        ),
         tarifs_produits=TARIFS_PRODUITS,
         minimum_fabrication=minimum_fabrication,
         palier_fabrication=palier_fabrication,
@@ -1860,6 +1883,9 @@ def create_quote_from_campaign(token):
         unite=unite,
         commerces_potentiels=commerces_potentiels,
         quantite_par_commerce=quantite_par_commerce,
+        grille_livraison=grille_livraison,
+        villes_livraison=villes_livraison,
+        nombre_villes=nombre_villes,
     )
 
 @app.route("/mes_devis")
