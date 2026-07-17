@@ -228,6 +228,64 @@ CONFIG_SUPPORTS = {
         "famille_livraison": "pizza",
     },
 }
+
+TARIFS_LIVRAISON_CIBLEE = {
+    "tarif_par_ville_ht": 15.50,
+}
+
+def obtenir_tarif_livraison_ciblee():
+    """
+    Retourne le tarif HT par ville pour une campagne ciblée.
+    """
+
+    tarif = TARIFS_LIVRAISON_CIBLEE.get(
+        "tarif_par_ville_ht"
+    )
+
+    if tarif is None:
+        raise ValueError(
+            "Le tarif de livraison ciblée n'est pas configuré."
+        )
+
+    return float(tarif)
+
+
+def calculer_frais_livraison_ciblee(villes):
+    """
+    Calcule les frais de livraison d'une campagne ciblée.
+
+    Règle :
+    nombre de villes distinctes × tarif HT par ville.
+    """
+
+    villes_distinctes = {
+        str(ville).strip().casefold()
+        for ville in villes
+        if ville and str(ville).strip()
+    }
+
+    nombre_villes = len(villes_distinctes)
+
+    if nombre_villes == 0:
+        return {
+            "nombre_villes": 0,
+            "tarif_par_ville_ht": 0.0,
+            "total_livraison_ht": 0.0,
+        }
+
+    tarif_par_ville = obtenir_tarif_livraison_ciblee()
+
+    total_livraison = round(
+        nombre_villes * tarif_par_ville,
+        2,
+    )
+
+    return {
+        "nombre_villes": nombre_villes,
+        "tarif_par_ville_ht": tarif_par_ville,
+        "total_livraison_ht": total_livraison,
+    }
+
 TARIFS_LIVRAISON_MASSIVE = {
     "standard": {
         "famille_papier": [
@@ -378,27 +436,29 @@ def calculer_frais_livraison_massive(
 def calculer_livraison(
     produit_id,
     villes,
-    type_campagne,
+    grille,
     type_etablissement=None,
 ):
     """
     Point d'entrée général pour le calcul des frais de livraison.
 
-    Paramètres :
-    - produit_id : identifiant du produit sélectionné ;
-    - villes : liste des villes livrées ;
-    - type_campagne : "massive" ou, plus tard, "ciblee" ;
-    - type_etablissement : permet d'appliquer une exception,
-      par exemple "camping".
+    Grilles disponibles :
+    - "ciblee"
+    - "massive"
     """
 
-    type_campagne_normalise = (
-        str(type_campagne or "")
+    grille_normalisee = (
+        str(grille or "")
         .strip()
         .casefold()
     )
 
-    if type_campagne_normalise == "massive":
+    if grille_normalisee == "ciblee":
+        return calculer_frais_livraison_ciblee(
+            villes=villes,
+        )
+
+    if grille_normalisee == "massive":
         return calculer_frais_livraison_massive(
             produit_id=produit_id,
             villes=villes,
@@ -406,5 +466,5 @@ def calculer_livraison(
         )
 
     raise ValueError(
-        f"Type de campagne non pris en charge : {type_campagne}"
+        f"Grille de livraison non prise en charge : {grille}"
     )
