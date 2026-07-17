@@ -2398,12 +2398,22 @@ def generer_pdf_devis(devis):
         montant_livraison = 0
 
     if montant_livraison:
+        points_livraison_pdf = int(
+            devis.get("points_livraison") or 0
+        )
+
+        tarif_livraison_pdf = (
+            montant_livraison / points_livraison_pdf
+            if points_livraison_pdf
+            else 0
+        )
+
         lignes_prestations.append([
             Paragraph(
                 "<b>Livraison</b><br/>"
                 "<font color='#667085' size='7'>"
-                f"{entier(devis.get('points_livraison'))} "
-                "point(s) de livraison"
+                f"{entier(points_livraison_pdf)} point(s) "
+                f"× {montant(tarif_livraison_pdf)} € HT"
                 "</font>",
                 style_normal,
             ),
