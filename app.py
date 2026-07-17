@@ -1864,6 +1864,7 @@ def create_quote_from_campaign(token):
     return render_template(
         "devis_create.html",
         campaign=campaign,
+        is_massive=is_massive,
         accepted_items=delivery_items,
         total_commerces=total_commerces,
         total_acceptes=total_acceptes,
@@ -2911,46 +2912,47 @@ def save_quote_from_campaign(token):
             "message": "La quantité dépasse le potentiel de la campagne."
         }, 400
 
-        quantite_par_commerce = QUANTITE_PAR_SUPPORT.get(
-            support_key,
-            1000,
-        )
+    quantite_par_commerce = QUANTITE_PAR_SUPPORT.get(
+        support_key,
+        1000,
+    )
 
-        commerces_potentiels = int(
-            potentiel_reel / quantite_par_commerce
-        )
+    commerces_potentiels = int(
+        potentiel_reel / quantite_par_commerce
+    )
 
-        type_campagne = (
-            campaign["type_campagne"]
-            if "type_campagne" in campaign.keys()
-            else ""
-        )
+    is_massive = (
+        (campaign["notes"] or "").strip().casefold()
+        == "campagne massive"
+    )
 
-        grille_livraison = (
-            "massive"
-            if str(type_campagne).strip().casefold() == "massive"
-            else "ciblee"
-        )
+    grille_livraison = "massive" if is_massive else "ciblee"
 
-        villes_livraison = []
-
-        for item in items:
-            ville = (item["ville"] or "").strip()
-
-            if ville:
-                villes_livraison.append(ville)
-
-        resultat_livraison = calculer_livraison(
-            produit_id=support_key,
-            villes=villes_livraison,
-            grille=grille_livraison,
-        )
-
-        points_livraison = resultat_livraison["nombre_villes"]
-
-        montant_livraison_ht = resultat_livraison[
-            "total_livraison_ht"
+    if is_massive:
+        delivery_items = items
+    else:
+        delivery_items = [
+            item for item in items
+            if (item["accepte"] or "").strip().casefold() == "oui"
         ]
+
+    villes_livraison = sorted({
+        str(item["ville"]).strip()
+        for item in delivery_items
+        if item["ville"] and str(item["ville"]).strip()
+    })
+
+    resultat_livraison = calculer_livraison(
+        produit_id=support_key,
+        villes=villes_livraison,
+        grille=grille_livraison,
+    )
+
+    points_livraison = resultat_livraison["nombre_villes"]
+
+    montant_livraison_ht = resultat_livraison[
+        "total_livraison_ht"
+    ]
 
     creation_graphique = bool(
         data.get("creation_graphique")
