@@ -431,6 +431,13 @@
                href="/massive_export/{{ campaign['id'] }}/download">
                 📄 Export Excel
             </a>
+
+            {% if not is_public %}
+                <a class="btn btn-primary"
+                   href="{{ url_for('create_quote_from_campaign', token=campaign['token']) }}">
+                    💶 Créer un devis
+                </a>
+            {% endif %}
             </div>
 
         <div class="notes-box">
