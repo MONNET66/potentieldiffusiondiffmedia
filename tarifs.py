@@ -266,14 +266,14 @@ def calculer_frais_livraison_ciblee(villes):
 
     nombre_villes = len(villes_distinctes)
 
+    tarif_par_ville = obtenir_tarif_livraison_ciblee()
+
     if nombre_villes == 0:
         return {
             "nombre_villes": 0,
-            "tarif_par_ville_ht": 0.0,
+            "tarif_par_ville_ht": tarif_par_ville,
             "total_livraison_ht": 0.0,
         }
-
-    tarif_par_ville = obtenir_tarif_livraison_ciblee()
 
     total_livraison = round(
         nombre_villes * tarif_par_ville,
