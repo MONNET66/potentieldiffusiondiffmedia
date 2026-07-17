@@ -374,3 +374,37 @@ def calculer_frais_livraison_massive(
         "tarif_par_ville_ht": tarif_par_ville,
         "total_livraison_ht": total_livraison,
     }
+
+def calculer_livraison(
+    produit_id,
+    villes,
+    type_campagne,
+    type_etablissement=None,
+):
+    """
+    Point d'entrée général pour le calcul des frais de livraison.
+
+    Paramètres :
+    - produit_id : identifiant du produit sélectionné ;
+    - villes : liste des villes livrées ;
+    - type_campagne : "massive" ou, plus tard, "ciblee" ;
+    - type_etablissement : permet d'appliquer une exception,
+      par exemple "camping".
+    """
+
+    type_campagne_normalise = (
+        str(type_campagne or "")
+        .strip()
+        .casefold()
+    )
+
+    if type_campagne_normalise == "massive":
+        return calculer_frais_livraison_massive(
+            produit_id=produit_id,
+            villes=villes,
+            type_etablissement=type_etablissement,
+        )
+
+    raise ValueError(
+        f"Type de campagne non pris en charge : {type_campagne}"
+    )
