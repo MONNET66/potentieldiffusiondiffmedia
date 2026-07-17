@@ -2966,11 +2966,25 @@ def save_quote_from_campaign(token):
         flush=True,
     )
     
-    points_livraison = resultat_livraison["nombre_villes"]
+    quantite_par_point = QUANTITE_PAR_SUPPORT.get(
+        support_key,
+        0,
+    )
 
-    montant_livraison_ht = resultat_livraison[
-        "total_livraison_ht"
-    ]
+    points_livraison = (
+        int(quantite // quantite_par_point)
+        if quantite_par_point
+        else 0
+    )
+
+    tarif_livraison_unitaire = float(
+        resultat_livraison["tarif_par_ville_ht"]
+    )
+
+    montant_livraison_ht = round(
+        points_livraison * tarif_livraison_unitaire,
+        2,
+    )
 
     creation_graphique = bool(
         data.get("creation_graphique")
