@@ -2945,6 +2945,7 @@ def save_quote_from_campaign(token):
     print(
         "DEBUG LIVRAISON :",
         {
+            "notes": campaign["notes"],
             "is_massive": is_massive,
             "grille": grille_livraison,
             "support": support_key,
@@ -2959,6 +2960,12 @@ def save_quote_from_campaign(token):
         grille=grille_livraison,
     )
 
+    print(
+        "DEBUG RESULTAT LIVRAISON :",
+        resultat_livraison,
+        flush=True,
+    )
+    
     points_livraison = resultat_livraison["nombre_villes"]
 
     montant_livraison_ht = resultat_livraison[
