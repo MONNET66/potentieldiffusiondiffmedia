@@ -827,7 +827,138 @@ def merge_results_lists(data_lists):
     merged.sort(key=lambda x: (x.get("distance_km") is None, x.get("distance_km", 999999), x.get("name", "")))
     return merged
 
+def construire_groupes_livraison(
+    search_filters,
+    campaign_items,
+):
+    """
+    Reconstruit les groupes de livraison à partir des recherches
+    enregistrées dans la campagne.
 
+    Règles :
+    - seuls les commerces réellement présents dans campaign_items
+      sont pris en compte ;
+    - un commerce ne peut appartenir qu'à un seul groupe ;
+    - lorsqu'il apparaît dans plusieurs recherches, il est affecté
+      au premier filtre qui le contient ;
+    - les campings sont séparés des autres établissements afin de
+      permettre l'application de leur éventuelle grille spéciale.
+    """
+
+    if not search_filters or not campaign_items:
+        return []
+
+    campaign_items_par_cle = {}
+
+    for raw_item in campaign_items:
+        item = dict(raw_item)
+        key = make_result_key(item)
+
+        if key not in campaign_items_par_cle:
+            campaign_items_par_cle[key] = item
+
+    cles_deja_affectees = set()
+    groupes_livraison = []
+
+    for criteria in search_filters:
+        if not isinstance(criteria, dict):
+            continue
+
+        resultats_recherche, _, _, _ = execute_search_criteria(
+            criteria
+        )
+
+        commerces_du_groupe = []
+
+        for resultat in resultats_recherche:
+            key = make_result_key(resultat)
+
+            if key in cles_deja_affectees:
+                continue
+
+            campaign_item = campaign_items_par_cle.get(key)
+
+            if campaign_item is None:
+                continue
+
+            commerces_du_groupe.append(campaign_item)
+            cles_deja_affectees.add(key)
+
+        if not commerces_du_groupe:
+            continue
+
+        mode = (
+            str(criteria.get("mode") or "ville")
+            .strip()
+            .casefold()
+        )
+
+        label = (
+            criteria.get("label")
+            or build_search_label(criteria)
+            or "Zone de livraison"
+        )
+
+        rayon_brut = criteria.get("rayon_value") or 0
+
+        try:
+            rayon_km = float(
+                str(rayon_brut)
+                .strip()
+                .replace(",", ".")
+            )
+        except (TypeError, ValueError):
+            rayon_km = 0.0
+
+        commerces_camping = [
+            item
+            for item in commerces_du_groupe
+            if str(item.get("type") or "").strip().casefold()
+            == "camping"
+        ]
+
+        commerces_standard = [
+            item
+            for item in commerces_du_groupe
+            if str(item.get("type") or "").strip().casefold()
+            != "camping"
+        ]
+
+        plusieurs_categories = bool(
+            commerces_camping
+            and commerces_standard
+        )
+
+        if commerces_standard:
+            label_standard = label
+
+            if plusieurs_categories:
+                label_standard = f"{label} - Autres établissements"
+
+            groupes_livraison.append({
+                "label": label_standard,
+                "mode": mode,
+                "rayon_km": rayon_km if mode == "rayon" else 0.0,
+                "points": len(commerces_standard),
+                "type_etablissement": None,
+            })
+
+        if commerces_camping:
+            label_camping = label
+
+            if plusieurs_categories:
+                label_camping = f"{label} - Campings"
+
+            groupes_livraison.append({
+                "label": label_camping,
+                "mode": mode,
+                "rayon_km": rayon_km if mode == "rayon" else 0.0,
+                "points": len(commerces_camping),
+                "type_etablissement": "camping",
+            })
+
+    return groupes_livraison
+    
 def compute_center_from_data(data):
     valid_points = []
     for item in data:
