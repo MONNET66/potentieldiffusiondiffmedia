@@ -3194,6 +3194,19 @@ def save_quote_from_campaign(token):
 
             points_restants -= points_groupe
 
+        # Sécurité pour les campagnes dont les recherches
+        # n'ont pas été enregistrées.
+        if not groupes_livraison and points_livraison > 0:
+            groupes_livraison = [
+                {
+                    "label": "Livraison massive",
+                    "mode": "compatibilite",
+                    "rayon_km": 0.0,
+                    "points": points_livraison,
+                    "type_etablissement": None,
+                }
+            ]
+
     resultat_livraison = calculer_livraison(
         produit_id=support_key,
         villes=villes_livraison,
