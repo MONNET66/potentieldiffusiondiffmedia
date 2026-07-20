@@ -2060,6 +2060,8 @@ if (forcedCampaignName && forcedCampaignName.trim() !== "") {
 
 link.download = campaignName + ".csv";
 
+console.log("DEBUG JS TEMP SEARCHES :", tempSearches);
+	
 fetch("/log_massive_export", {
     method: "POST",
     credentials: "same-origin",
