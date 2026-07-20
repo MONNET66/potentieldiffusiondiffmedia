@@ -1602,6 +1602,7 @@ setTimeout(function () {
 }, 300);
 var markers = L.markerClusterGroup();
 var data = {{ data|tojson|safe }};
+const tempSearches = {{ temp_searches|tojson|safe }};	
 var markerRefs = [];
 
 var globalStats = {
@@ -2066,10 +2067,11 @@ fetch("/log_massive_export", {
         "Content-Type": "application/json"
     },
     body: JSON.stringify({
-        filename: campaignName,
-        nb_commerces: data.length,
-        support: support
-    })
+    	filename: campaignName,
+    	nb_commerces: data.length,
+    	support: support,
+    	search_filters: tempSearches
+	})
 })
 .then(function(response) {
     console.log("Export massif log status:", response.status);
