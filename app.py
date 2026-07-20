@@ -1571,15 +1571,23 @@ def create_campaign():
 
             cur.execute("""
                 INSERT INTO campaigns (
-                    name, notes, created_by, created_at, token, search_zones, support
+                    name,
+                    notes,
+                    created_by,
+                    created_at,
+                    token,
+                    search_zones,
+                    search_filters,
+                    support
                 )
-                VALUES (?, ?, ?, datetime('now'), ?, ?, ?)
+                VALUES (?, ?, ?, datetime('now'), ?, ?, ?, ?)
             """, (
                 campaign_name,
                 campaign_notes,
                 current_user,
                 token,
                 json.dumps(search_zone_labels, ensure_ascii=False),
+                json.dumps(temp_searches, ensure_ascii=False),
                 selected_support
             ))
 
