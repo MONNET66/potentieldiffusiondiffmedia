@@ -2185,6 +2185,18 @@ def voir_devis(numero):
 
     devis = dict(devis)
 
+    print(
+        "DEBUG DEVIS DETAIL :",
+        {
+            "numero": devis.get("numero"),
+            "campaign_id": devis.get("campaign_id"),
+            "points_livraison": devis.get("points_livraison"),
+            "montant_livraison_ht": devis.get("montant_livraison_ht"),
+            "total_ht": devis.get("total_ht"),
+        },
+        flush=True,
+    )
+    
     try:
         devis["caracteristiques_support"] = json.loads(
             devis.get("caracteristiques_support") or "{}"
