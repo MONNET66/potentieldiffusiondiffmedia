@@ -868,6 +868,24 @@ def construire_groupes_livraison(
             criteria
         )
 
+        print(
+            "DEBUG RECONSTRUCTION GROUPE :",
+            {
+                "criteria": criteria,
+                "nb_resultats_recherche": len(resultats_recherche),
+                "nb_campaign_items": len(campaign_items_par_cle),
+                "premiere_cle_recherche": (
+                    make_result_key(resultats_recherche[0])
+                    if resultats_recherche
+                    else None
+                ),
+                "premiere_cle_campagne": (
+                    next(iter(campaign_items_par_cle), None)
+                ),
+            },
+            flush=True,
+        )
+        
         commerces_du_groupe = []
 
         for resultat in resultats_recherche:
