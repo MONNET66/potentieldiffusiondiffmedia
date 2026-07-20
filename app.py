@@ -897,6 +897,17 @@ def construire_groupes_livraison(
             campaign_item = campaign_items_par_cle.get(key)
 
             if campaign_item is None:
+                print(
+                    "DEBUG CLE NON TROUVEE :",
+                    {
+                        "key_recherche": key,
+                        "premiere_cle_campagne": next(
+                            iter(campaign_items_par_cle),
+                            None,
+                        ),
+                    },
+                    flush=True,
+                )
                 continue
 
             commerces_du_groupe.append(campaign_item)
