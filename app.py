@@ -2854,6 +2854,13 @@ def save_quote_from_campaign(token):
         conn.close()
         return {"status": "error", "message": "Campagne introuvable."}, 404
 
+    campaign = dict(campaign)
+
+    try:
+        search_filters = json.loads(campaign.get("search_filters") or "[]")
+    except Exception:
+        search_filters = []
+
     produit_id = (data.get("produit_id") or "").strip()
 
     produit = next(
@@ -2976,6 +2983,7 @@ def save_quote_from_campaign(token):
         produit_id=support_key,
         villes=villes_livraison,
         grille=grille_livraison,
+        search_filters=search_filters,
     )
 
     print(
