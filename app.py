@@ -3712,6 +3712,12 @@ def log_massive_export():
         data.get("search_filters")
         or session.get("temp_searches", [])
     )
+
+    if not temp_searches:
+        last_search_criteria = session.get("last_search_criteria")
+
+        if isinstance(last_search_criteria, dict):
+            temp_searches = [last_search_criteria]
     
     nb_commerces = data.get("nb_commerces", 0)
     support = data.get("support", "")
