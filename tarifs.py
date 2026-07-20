@@ -444,12 +444,18 @@ TARIFS_LIVRAISON_MASSIVE = {
 
 def obtenir_tarif_livraison_massive(
     produit_id,
+    distance_km=0,
     type_etablissement=None,
 ):
     """
-    Retourne le tarif HT par ville pour une campagne massive.
+    Retourne le tarif HT applicable à un point de livraison massif.
 
-    Pour le moment, seule la tranche 0 à 100 km est utilisée.
+    La tranche est déterminée à partir de distance_km :
+    - 0 à 100 km
+    - 101 à 150 km
+    - 151 à 200 km
+    - plus de 200 km
+
     Les campings bénéficient d'une grille spéciale uniquement pour :
     - sac_pain
     - set_table
@@ -462,36 +468,48 @@ def obtenir_tarif_livraison_massive(
             f"Configuration introuvable pour le produit : {produit_id}"
         )
 
-    # Recherche d'une éventuelle exception.
+    try:
+        distance = max(float(distance_km or 0), 0.0)
+    except (TypeError, ValueError):
+        distance = 0.0
+
+    grille_tarifaire = None
+
     if type_etablissement == "camping":
-        exceptions_camping = (
+        grille_tarifaire = (
             TARIFS_LIVRAISON_MASSIVE
             .get("exceptions", {})
             .get("camping", {})
+            .get(produit_id)
         )
 
-        grille_exception = exceptions_camping.get(produit_id)
+    if not grille_tarifaire:
+        famille_livraison = configuration["famille_livraison"]
 
-        if grille_exception:
-            return float(grille_exception[0]["prix_ht"])
+        grille_tarifaire = (
+            TARIFS_LIVRAISON_MASSIVE
+            .get("standard", {})
+            .get(famille_livraison)
+        )
 
-    # Sinon, utilisation de la grille standard du support.
-    famille_livraison = configuration["famille_livraison"]
-
-    grilles_standard = TARIFS_LIVRAISON_MASSIVE.get(
-        "standard",
-        {},
-    )
-
-    grille_standard = grilles_standard.get(famille_livraison)
-
-    if not grille_standard:
+    if not grille_tarifaire:
         raise ValueError(
             "Grille de livraison massive introuvable pour "
-            f"la famille : {famille_livraison}"
+            f"le produit : {produit_id}"
         )
 
-    return float(grille_standard[0]["prix_ht"])
+    for tranche in grille_tarifaire:
+        minimum = float(tranche.get("min_km") or 0)
+        maximum = tranche.get("max_km")
+
+        if distance < minimum:
+            continue
+
+        if maximum is None or distance <= float(maximum):
+            return float(tranche["prix_ht"])
+
+    # Sécurité : si aucune tranche ne correspond, on prend la dernière.
+    return float(grille_tarifaire[-1]["prix_ht"])
 
 
 def calculer_frais_livraison_massive(
@@ -499,14 +517,99 @@ def calculer_frais_livraison_massive(
     villes,
     type_etablissement=None,
     search_filters=None,
+    groupes_livraison=None,
 ):
     """
     Calcule les frais de livraison d'une campagne massive.
 
-    Règle actuelle :
-    nombre de villes distinctes × tarif HT 0 à 100 km.
+    Nouveau fonctionnement :
+    - chaque groupe contient son nombre de points de livraison ;
+    - chaque groupe possède sa propre distance ou son propre rayon ;
+    - le total correspond à la somme :
+      points du groupe × tarif applicable au groupe.
+
+    Compatibilité :
+    si aucun groupe n'est fourni, l'ancien calcul par villes distinctes
+    reste utilisé temporairement.
     """
 
+    groupes = groupes_livraison or []
+
+    if groupes:
+        detail = []
+        total_points = 0
+        total_livraison = 0.0
+
+        for groupe in groupes:
+            try:
+                points = max(int(groupe.get("points") or 0), 0)
+            except (TypeError, ValueError):
+                points = 0
+
+            if points == 0:
+                continue
+
+            mode = (
+                str(groupe.get("mode") or "ville")
+                .strip()
+                .casefold()
+            )
+
+            if mode == "rayon":
+                distance_km = groupe.get(
+                    "rayon_km",
+                    groupe.get("rayon_value", 0),
+                )
+            else:
+                # Une recherche ville ou département utilise
+                # la tranche de base 0 à 100 km.
+                distance_km = 0
+
+            type_groupe = groupe.get(
+                "type_etablissement",
+                type_etablissement,
+            )
+
+            tarif_unitaire = obtenir_tarif_livraison_massive(
+                produit_id=produit_id,
+                distance_km=distance_km,
+                type_etablissement=type_groupe,
+            )
+
+            montant_groupe = round(
+                points * tarif_unitaire,
+                2,
+            )
+
+            detail.append({
+                "label": (
+                    groupe.get("label")
+                    or groupe.get("search_value")
+                    or "Zone de livraison"
+                ),
+                "mode": mode,
+                "distance_km": float(distance_km or 0),
+                "points": points,
+                "tarif_unitaire_ht": tarif_unitaire,
+                "montant_ht": montant_groupe,
+            })
+
+            total_points += points
+            total_livraison += montant_groupe
+
+        return {
+            "nombre_villes": len({
+                str(ville).strip().casefold()
+                for ville in villes
+                if ville and str(ville).strip()
+            }),
+            "nombre_points": total_points,
+            "tarif_par_ville_ht": 0.0,
+            "total_livraison_ht": round(total_livraison, 2),
+            "detail": detail,
+        }
+
+    # Compatibilité temporaire avec le fonctionnement actuel.
     villes_distinctes = {
         str(ville).strip().casefold()
         for ville in villes
@@ -518,12 +621,15 @@ def calculer_frais_livraison_massive(
     if nombre_villes == 0:
         return {
             "nombre_villes": 0,
+            "nombre_points": 0,
             "tarif_par_ville_ht": 0.0,
             "total_livraison_ht": 0.0,
+            "detail": [],
         }
 
     tarif_par_ville = obtenir_tarif_livraison_massive(
         produit_id=produit_id,
+        distance_km=0,
         type_etablissement=type_etablissement,
     )
 
@@ -534,9 +640,19 @@ def calculer_frais_livraison_massive(
 
     return {
         "nombre_villes": nombre_villes,
+        "nombre_points": nombre_villes,
         "tarif_par_ville_ht": tarif_par_ville,
         "total_livraison_ht": total_livraison,
+        "detail": [{
+            "label": "Livraison massive",
+            "mode": "compatibilite",
+            "distance_km": 0.0,
+            "points": nombre_villes,
+            "tarif_unitaire_ht": tarif_par_ville,
+            "montant_ht": total_livraison,
+        }],
     }
+
 
 def calculer_livraison(
     produit_id,
@@ -544,6 +660,7 @@ def calculer_livraison(
     grille,
     type_etablissement=None,
     search_filters=None,
+    groupes_livraison=None,
 ):
     """
     Point d'entrée général pour le calcul des frais de livraison.
@@ -570,9 +687,9 @@ def calculer_livraison(
             villes=villes,
             type_etablissement=type_etablissement,
             search_filters=search_filters,
+            groupes_livraison=groupes_livraison,
         )
 
     raise ValueError(
         f"Grille de livraison non prise en charge : {grille}"
     )
- 
