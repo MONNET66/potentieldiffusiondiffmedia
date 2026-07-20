@@ -3029,6 +3029,12 @@ def save_quote_from_campaign(token):
         return {"status": "error", "message": "Campagne introuvable."}, 404
 
     campaign = dict(campaign)
+    
+    print(
+        "DEBUG SEARCH FILTERS CAMPAGNE :",
+        repr(campaign.get("search_filters")),
+        flush=True,
+    )
 
     try:
         search_filters = json.loads(campaign.get("search_filters") or "[]")
