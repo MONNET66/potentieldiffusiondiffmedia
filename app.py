@@ -1991,6 +1991,45 @@ def create_quote_from_campaign(token):
     items_as_dict = [dict(item) for item in items]
     _, totals_by_label = compute_potentiel_and_supports(items_as_dict)
 
+    tarif_livraison_massive_apercu = 18.90
+
+    if is_massive:
+        try:
+            search_filters = json.loads(
+                campaign["search_filters"] or "[]"
+            )
+        except (json.JSONDecodeError, TypeError):
+            search_filters = []
+
+        groupes_apercu = construire_groupes_livraison(
+            search_filters,
+            items_as_dict,
+        )
+
+        resultat_apercu = calculer_livraison(
+            produit_id=campaign["support"] or "",
+            villes=villes_livraison,
+            grille="massive",
+            search_filters=search_filters,
+            groupes_livraison=groupes_apercu,
+        )
+
+        points_apercu = sum(
+            int(groupe.get("points") or 0)
+            for groupe in groupes_apercu
+        )
+
+        if points_apercu > 0:
+            tarif_livraison_massive_apercu = round(
+                float(
+                    resultat_apercu.get(
+                        "total_livraison_ht",
+                        0,
+                    )
+                ) / points_apercu,
+                2,
+            )
+
     support_key = campaign["support"] or ""
 
     support_label = SUPPORT_LABELS.get(
@@ -2079,6 +2118,7 @@ def create_quote_from_campaign(token):
         grille_livraison=grille_livraison,
         villes_livraison=villes_livraison,
         nombre_villes=nombre_villes,
+        tarif_livraison_massive_apercu=tarif_livraison_massive_apercu,
     )
 
 @app.route("/mes_devis")
