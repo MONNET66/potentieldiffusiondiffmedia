@@ -3110,15 +3110,65 @@ def save_quote_from_campaign(token):
         flush=True,
     )
     
+    quantite_par_point = QUANTITE_PAR_SUPPORT.get(
+        support_key,
+        0,
+    )
+
+    points_livraison = (
+        int(quantite // quantite_par_point)
+        if quantite_par_point
+        else 0
+    )
+
     groupes_livraison = None
 
     if is_massive:
-        groupes_livraison = construire_groupes_livraison(
+        groupes_disponibles = construire_groupes_livraison(
             search_filters=search_filters,
             campaign_items=[
                 dict(item) for item in delivery_items
             ],
         )
+
+        groupes_livraison = []
+        points_restants = points_livraison
+
+        for groupe in groupes_disponibles:
+            if points_restants <= 0:
+                break
+
+            try:
+                capacite_groupe = max(
+                    int(groupe.get("points") or 0),
+                    0,
+                )
+            except (TypeError, ValueError):
+                capacite_groupe = 0
+
+            points_groupe = min(
+                capacite_groupe,
+                points_restants,
+            )
+
+            if points_groupe <= 0:
+                continue
+
+            groupe_facture = dict(groupe)
+            groupe_facture["points"] = points_groupe
+            groupes_livraison.append(groupe_facture)
+
+            points_restants -= points_groupe
+
+        if points_restants > 0:
+            conn.close()
+            return {
+                "status": "error",
+                "message": (
+                    "Le nombre de points disponibles dans les recherches "
+                    "est insuffisant pour cette quantité."
+                ),
+            }, 400
 
     resultat_livraison = calculer_livraison(
         produit_id=support_key,
@@ -3134,19 +3184,10 @@ def save_quote_from_campaign(token):
         flush=True,
     )
 
-    quantite_par_point = QUANTITE_PAR_SUPPORT.get(
-        support_key,
-        0,
-    )
-
     if (
         is_massive
         and "total_livraison_ht" in resultat_livraison
     ):
-        points_livraison = int(
-            resultat_livraison.get("nombre_points", 0)
-        )
-
         montant_livraison_ht = round(
             float(
                 resultat_livraison.get(
@@ -3163,12 +3204,6 @@ def save_quote_from_campaign(token):
         ) if points_livraison else 0.0
 
     else:
-        points_livraison = (
-            int(quantite // quantite_par_point)
-            if quantite_par_point
-            else 0
-        )
-
         tarif_livraison_unitaire = float(
             resultat_livraison["tarif_par_ville_ht"]
         )
