@@ -3131,6 +3131,12 @@ def save_quote_from_campaign(token):
             ],
         )
 
+        print(
+            "DEBUG GROUPES LIVRAISON :",
+            groupes_disponibles,
+            flush=True,
+        )
+
         groupes_livraison = []
         points_restants = points_livraison
 
@@ -3159,16 +3165,6 @@ def save_quote_from_campaign(token):
             groupes_livraison.append(groupe_facture)
 
             points_restants -= points_groupe
-
-        if points_restants > 0:
-            conn.close()
-            return {
-                "status": "error",
-                "message": (
-                    "Le nombre de points disponibles dans les recherches "
-                    "est insuffisant pour cette quantité."
-                ),
-            }, 400
 
     resultat_livraison = calculer_livraison(
         produit_id=support_key,
