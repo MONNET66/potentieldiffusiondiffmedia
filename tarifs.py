@@ -540,6 +540,12 @@ def calculer_frais_livraison_massive(
         total_points = 0
         total_livraison = 0.0
 
+        nombre_groupes_ville = sum(
+            1
+            for g in groupes
+            if str(g.get("mode") or "").strip().casefold() == "ville"
+        )
+
         for groupe in groupes:
             try:
                 points = max(int(groupe.get("points") or 0), 0)
@@ -555,14 +561,31 @@ def calculer_frais_livraison_massive(
                 .casefold()
             )
 
-            if mode == "rayon":
-                distance_km = groupe.get(
-                    "rayon_km",
-                    groupe.get("rayon_value", 0),
+            if mode == "ville":
+                distance_km = 101 if nombre_groupes_ville > 1 else 0
+
+            elif mode == "departement":
+                distance_km = 201
+
+            elif mode == "rayon":
+                try:
+                    rayon_km = float(
+                        groupe.get(
+                            "rayon_km",
+                            groupe.get("rayon_value", 0),
+                        ) or 0
                 )
+                except (TypeError, ValueError):
+                    rayon_km = 0
+
+                if rayon_km <= 50:
+                    distance_km = 101
+                elif rayon_km <= 100:
+                    distance_km = 151
+                else:
+                    distance_km = 201
+
             else:
-                # Une recherche ville ou département utilise
-                # la tranche de base 0 à 100 km.
                 distance_km = 0
 
             type_groupe = groupe.get(
