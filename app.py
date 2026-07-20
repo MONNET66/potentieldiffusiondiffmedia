@@ -844,6 +844,20 @@ def construire_groupes_livraison(
     - les campings sont séparés des autres établissements afin de
       permettre l'application de leur éventuelle grille spéciale.
     """
+
+    print(
+        "DEBUG ENTREE CONSTRUCTION GROUPES :",
+        {
+            "search_filters": search_filters,
+            "nb_search_filters": (
+                len(search_filters)
+                if isinstance(search_filters, list)
+                else None
+            ),
+            "nb_campaign_items": len(campaign_items or []),
+        },
+        flush=True,
+    )
     
     if not search_filters or not campaign_items:
         return []
