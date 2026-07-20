@@ -3707,7 +3707,10 @@ def massive_export_download(campaign_id):
 @login_required
 def log_massive_export():
     data = request.get_json()
-    temp_searches = session.get("temp_searches", [])
+    temp_searches = (
+        data.get("search_filters")
+        or session.get("temp_searches", [])
+    )
     print(
         "DEBUG MASSIVE EXPORT RECHERCHES :",
         {
