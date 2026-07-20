@@ -2059,8 +2059,6 @@ if (forcedCampaignName && forcedCampaignName.trim() !== "") {
 }
 
 link.download = campaignName + ".csv";
-
-alert("Temp searches = " + JSON.stringify(tempSearches));
 	
 fetch("/log_massive_export", {
     method: "POST",
