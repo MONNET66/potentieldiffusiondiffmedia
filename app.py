@@ -1628,6 +1628,15 @@ def index():
     available_supports = get_available_supports(selected_types)
     temp_searches = session.get("temp_searches", [])
 
+    print(
+        "DEBUG RENDER INDEX :",
+        {
+            "temp_searches": temp_searches,
+            "nb_temp_searches": len(temp_searches),
+        },
+        flush=True,
+    )
+    
     return render_template(
         "index.html", data=data, lat=lat, lon=lon, nb=nb_commerces,
         potentiel=potentiel, supports=supports, stats=stats, selected_type=selected_type,
