@@ -3488,9 +3488,16 @@ def log_massive_export():
 
     cur.execute("""
         INSERT INTO campaigns (
-            name, notes, created_by, created_at, token, search_zones, support
+            name,
+            notes,
+            created_by,
+            created_at,
+            token,
+            search_zones,
+            search_filters,
+            support
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         filename,
         "Campagne massive",
@@ -3498,6 +3505,7 @@ def log_massive_export():
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         token,
         "[]",
+        json.dumps([], ensure_ascii=False),
         support
     ))
 
