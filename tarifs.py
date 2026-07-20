@@ -498,6 +498,7 @@ def calculer_frais_livraison_massive(
     produit_id,
     villes,
     type_etablissement=None,
+    search_filters=None,
 ):
     """
     Calcule les frais de livraison d'une campagne massive.
@@ -542,6 +543,7 @@ def calculer_livraison(
     villes,
     grille,
     type_etablissement=None,
+    search_filters=None,
 ):
     """
     Point d'entrée général pour le calcul des frais de livraison.
@@ -567,6 +569,7 @@ def calculer_livraison(
             produit_id=produit_id,
             villes=villes,
             type_etablissement=type_etablissement,
+            search_filters=search_filters,
         )
 
     raise ValueError(
