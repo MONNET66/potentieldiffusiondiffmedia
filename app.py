@@ -1072,7 +1072,10 @@ cur.execute("""
         notes TEXT,
         created_by TEXT NOT NULL,
         created_at TEXT NOT NULL,
-        token TEXT UNIQUE
+        token TEXT UNIQUE,
+        search_zones TEXT,
+        search_filters TEXT,
+        support TEXT
     )
     """)
 conn.commit()
