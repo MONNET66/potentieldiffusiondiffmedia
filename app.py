@@ -3723,9 +3723,9 @@ def log_massive_export():
     print(
         "DEBUG MASSIVE EXPORT RECHERCHES :",
         {
+            "payload_complet": data,
+            "search_filters_payload": data.get("search_filters"),
             "temp_searches": temp_searches,
-            "nb_temp_searches": len(temp_searches),
-            "cles_payload": list(data.keys()),
         },
         flush=True,
     )
