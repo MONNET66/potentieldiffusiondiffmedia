@@ -3708,6 +3708,15 @@ def massive_export_download(campaign_id):
 def log_massive_export():
     data = request.get_json()
     temp_searches = session.get("temp_searches", [])
+    print(
+        "DEBUG MASSIVE EXPORT RECHERCHES :",
+        {
+            "temp_searches": temp_searches,
+            "nb_temp_searches": len(temp_searches),
+            "cles_payload": list(data.keys()),
+        },
+        flush=True,
+    )
 
     nb_commerces = data.get("nb_commerces", 0)
     support = data.get("support", "")
