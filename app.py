@@ -844,16 +844,6 @@ def construire_groupes_livraison(
     - les campings sont séparés des autres établissements afin de
       permettre l'application de leur éventuelle grille spéciale.
     """
-
-    print(
-        "DEBUG ENTREE GROUPES :",
-        {
-            "search_filters": search_filters,
-            "nb_search_filters": len(search_filters or []),
-            "nb_campaign_items": len(campaign_items or []),
-        },
-        flush=True,
-    )
     
     if not search_filters or not campaign_items:
         return []
@@ -1627,15 +1617,6 @@ def index():
     
     available_supports = get_available_supports(selected_types)
     temp_searches = session.get("temp_searches", [])
-
-    print(
-        "DEBUG RENDER INDEX :",
-        {
-            "temp_searches": temp_searches,
-            "nb_temp_searches": len(temp_searches),
-        },
-        flush=True,
-    )
     
     return render_template(
         "index.html", data=data, lat=lat, lon=lon, nb=nb_commerces,
@@ -3224,12 +3205,6 @@ def save_quote_from_campaign(token):
         groupes_livraison=groupes_livraison,
     )
 
-    print(
-        "DEBUG RESULTAT LIVRAISON :",
-        resultat_livraison,
-        flush=True,
-    )
-
     if (
         is_massive
         and "total_livraison_ht" in resultat_livraison
@@ -3242,20 +3217,6 @@ def save_quote_from_campaign(token):
                 )
             ),
             2,
-        )
-
-        print(
-            "DEBUG ENREGISTREMENT DEVIS :",
-            {
-                "points_livraison": points_livraison,
-                "montant_livraison_ht": montant_livraison_ht,
-                "tarif_calcule": (
-                    montant_livraison_ht / points_livraison
-                    if points_livraison
-                    else 0
-                ),
-            },
-            flush=True,
         )
         
         tarif_livraison_unitaire = round(
@@ -3720,16 +3681,7 @@ def log_massive_export():
         data.get("search_filters")
         or session.get("temp_searches", [])
     )
-    print(
-        "DEBUG MASSIVE EXPORT RECHERCHES :",
-        {
-            "payload_complet": data,
-            "search_filters_payload": data.get("search_filters"),
-            "temp_searches": temp_searches,
-        },
-        flush=True,
-    )
-
+    
     nb_commerces = data.get("nb_commerces", 0)
     support = data.get("support", "")
 
