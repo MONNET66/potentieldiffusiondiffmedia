@@ -3707,6 +3707,7 @@ def massive_export_download(campaign_id):
 @login_required
 def log_massive_export():
     data = request.get_json()
+    temp_searches = session.get("temp_searches", [])
 
     nb_commerces = data.get("nb_commerces", 0)
     support = data.get("support", "")
@@ -3765,8 +3766,15 @@ def log_massive_export():
         session.get("username"),
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         token,
-        "[]",
-        json.dumps([], ensure_ascii=False),
+        json.dumps(
+            [
+                build_search_label(criteria)
+                for criteria in temp_searches
+                if isinstance(criteria, dict)
+            ],
+            ensure_ascii=False,
+        ),
+        json.dumps(temp_searches, ensure_ascii=False),
         support
     ))
 
