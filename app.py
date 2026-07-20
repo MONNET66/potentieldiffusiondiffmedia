@@ -288,10 +288,17 @@ def init_campaign_items_table():
 def init_campaigns_extra_columns():
     conn = get_campaign_connection()
     cur = conn.cursor()
+
     try:
         cur.execute("ALTER TABLE campaigns ADD COLUMN search_zones TEXT")
     except Exception:
         pass
+
+    try:
+        cur.execute("ALTER TABLE campaigns ADD COLUMN search_filters TEXT")
+    except Exception:
+        pass
+
     conn.commit()
     conn.close()
 
