@@ -845,6 +845,16 @@ def construire_groupes_livraison(
       permettre l'application de leur éventuelle grille spéciale.
     """
 
+    print(
+        "DEBUG ENTREE GROUPES :",
+        {
+            "search_filters": search_filters,
+            "nb_search_filters": len(search_filters or []),
+            "nb_campaign_items": len(campaign_items or []),
+        },
+        flush=True,
+    )
+    
     if not search_filters or not campaign_items:
         return []
 
