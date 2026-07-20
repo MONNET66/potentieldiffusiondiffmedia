@@ -3110,57 +3110,57 @@ def save_quote_from_campaign(token):
         flush=True,
     )
     
-        groupes_livraison = None
+    groupes_livraison = None
 
-        if is_massive:
-            groupes_livraison = construire_groupes_livraison(
-                search_filters=search_filters,
-                campaign_items=[
-                    dict(item) for item in delivery_items
-                ],
-            )
-
-        resultat_livraison = calculer_livraison(
-            produit_id=support_key,
-            villes=villes_livraison,
-            grille=grille_livraison,
+    if is_massive:
+        groupes_livraison = construire_groupes_livraison(
             search_filters=search_filters,
-            groupes_livraison=groupes_livraison,
+            campaign_items=[
+                dict(item) for item in delivery_items
+            ],
         )
 
-        print(
-            "DEBUG RESULTAT LIVRAISON :",
-            resultat_livraison,
-            flush=True,
+    resultat_livraison = calculer_livraison(
+        produit_id=support_key,
+        villes=villes_livraison,
+        grille=grille_livraison,
+        search_filters=search_filters,
+        groupes_livraison=groupes_livraison,
+    )
+
+    print(
+        "DEBUG RESULTAT LIVRAISON :",
+        resultat_livraison,
+        flush=True,
+    )
+
+    quantite_par_point = QUANTITE_PAR_SUPPORT.get(
+        support_key,
+        0,
+    )
+
+    if (
+        is_massive
+        and "total_livraison_ht" in resultat_livraison
+    ):
+        points_livraison = int(
+            resultat_livraison.get("nombre_points", 0)
         )
 
-        quantite_par_point = QUANTITE_PAR_SUPPORT.get(
-            support_key,
-            0,
+        montant_livraison_ht = round(
+            float(
+                resultat_livraison.get(
+                    "total_livraison_ht",
+                    0,
+                )
+            ),
+            2,
         )
 
-        if (
-            is_massive
-            and "total_livraison_ht" in resultat_livraison
-        ):
-            points_livraison = int(
-                resultat_livraison.get("nombre_points", 0)
-            )
-
-            montant_livraison_ht = round(
-                float(
-                    resultat_livraison.get(
-                        "total_livraison_ht",
-                        0,
-                    )
-                ),
-                2,
-            )
-
-            tarif_livraison_unitaire = round(
-                montant_livraison_ht / points_livraison,
-                2,
-            ) if points_livraison else 0.0
+        tarif_livraison_unitaire = round(
+            montant_livraison_ht / points_livraison,
+            2,
+        ) if points_livraison else 0.0
 
     else:
         points_livraison = (
