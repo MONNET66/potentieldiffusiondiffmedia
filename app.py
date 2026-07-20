@@ -3222,6 +3222,20 @@ def save_quote_from_campaign(token):
             2,
         )
 
+        print(
+            "DEBUG ENREGISTREMENT DEVIS :",
+            {
+                "points_livraison": points_livraison,
+                "montant_livraison_ht": montant_livraison_ht,
+                "tarif_calcule": (
+                    montant_livraison_ht / points_livraison
+                    if points_livraison
+                    else 0
+                ),
+            },
+            flush=True,
+        )
+        
         tarif_livraison_unitaire = round(
             montant_livraison_ht / points_livraison,
             2,
