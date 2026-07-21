@@ -532,7 +532,11 @@
                 <div class="service-line">
                     <div>
                         <div class="service-name">
-                            ☑ Livraison
+                            {% if grille_livraison == "ciblee" %}
+                                ☑ Recrutement et livraison
+                            {% else %}
+                                ☑ Livraison
+                            {% endif %}
                         </div>
                         <div class="service-description">
                             <span id="nombre-points-livraison">
