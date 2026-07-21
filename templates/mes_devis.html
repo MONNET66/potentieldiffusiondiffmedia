@@ -314,6 +314,10 @@
                         <th>Statut</th>
                         <th>Créé par</th>
                         <th>Date</th>
+
+                        {% if session.get("role") == "admin" %}
+                            <th>Actions</th>
+                        {% endif %}
                     </tr>
                 </thead>
 
