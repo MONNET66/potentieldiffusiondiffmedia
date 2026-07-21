@@ -4130,8 +4130,17 @@ def delete_commerce():
             WHERE rowid = ?
         """, (commerce_id,))
 
+        updated_rows = cur.rowcount
+
         conn.commit()
         conn.close()
+
+        if updated_rows == 0:
+            return jsonify({
+                "status": "error",
+                "message": f"Aucun commerce trouvé pour l'identifiant {commerce_id}"
+            })
+
         return jsonify({"status": "ok"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
