@@ -379,11 +379,6 @@
                 </div>
             </div>
 
-            {% if session.role == "user" %}
-                <a href="/mon_dashboard" class="back-btn">← Retour</a>
-            {% else %}
-                <a href="/dashboard_equipe" class="back-btn">← Retour</a>
-            {% endif %}
         </div>
 
         <div class="info-grid">
@@ -437,8 +432,16 @@
                    href="{{ url_for('create_quote_from_campaign', token=campaign['token']) }}">
                     💶 Créer un devis
                 </a>
+
+                <a class="btn btn-light" href="/mes_devis">
+                    🧾 Mes devis
+                </a>
+
+                <a class="btn btn-light" href="/?reset_search=1">
+                    🔎 Nouvelle recherche
+                </a>
             {% endif %}
-            </div>
+        </div>
 
         <div class="notes-box">
             <div class="notes-icon">📝</div>
