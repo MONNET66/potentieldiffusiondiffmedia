@@ -2644,9 +2644,15 @@ def generer_pdf_devis(devis):
             else 0
         )
 
+        libelle_livraison = (
+            "Recrutement et livraison"
+            if devis.get("grille_livraison") == "ciblee"
+            else "Livraison"
+        )
+        
         lignes_prestations.append([
             Paragraph(
-                "<b>Livraison</b><br/>"
+                f"<b>{libelle_livraison}</b><br/>"
                 "<font color='#667085' size='7'>"
                 f"{entier(points_livraison_pdf)} point(s) "
                 f"× {montant(tarif_livraison_pdf)} € HT"
