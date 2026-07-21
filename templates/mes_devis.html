@@ -371,7 +371,32 @@
                             <td>
                                 {{ devis_item["created_at"] }}
                             </td>
-                        </tr>
+
+                            {% if session.get("role") == "admin" %}
+                                <td>
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('supprimer_devis', devis_id=devis_item['id']) }}"
+                                        onsubmit="return confirm('Supprimer définitivement le devis {{ devis_item['numero'] }} ?');"
+                                    >
+                                        <button
+                                            type="submit"
+                                            style="
+                                                border: none;
+                                                border-radius: 8px;
+                                                padding: 8px 12px;
+                                                background: #dc2626;
+                                                color: white;
+                                                font-weight: 700;
+                                                cursor: pointer;
+                                            "
+                                        >
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </td>
+                            {% endif %}
+                            </tr>
                     {% endfor %}
                 </tbody>
             </table>
