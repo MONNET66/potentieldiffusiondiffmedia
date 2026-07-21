@@ -4488,18 +4488,82 @@ def mon_equipe():
 
     if request.method == "POST":
         member_id = request.form.get("member_id")
+        username = (request.form.get("username") or "").strip()
         display_name = (request.form.get("display_name") or "").strip()
 
+        if not member_id or not username:
+            conn.close()
+            return """
+                Identifiant obligatoire.
+                <br><br>
+                <a href="/mon_equipe">← Retour à mon équipe</a>
+            """, 400
+
+        if len(username) > 50 or not all(
+            caractere.isalnum() or caractere in "._-"
+            for caractere in username
+        ):
+            conn.close()
+            return """
+                L'identifiant doit contenir uniquement des lettres,
+                des chiffres, des points, des tirets ou des underscores.
+                <br><br>
+                <a href="/mon_equipe">← Retour à mon équipe</a>
+            """, 400
+
         if session.get("role") == "admin":
-            cur.execute(
-                "UPDATE users SET display_name = ? WHERE id = ? AND role = 'user'",
-                (display_name, member_id)
-            )
+            member = cur.execute(
+                """
+                SELECT id
+                FROM users
+                WHERE id = ?
+                  AND role = 'user'
+                """,
+                (member_id,)
+            ).fetchone()
         else:
-            cur.execute(
-                "UPDATE users SET display_name = ? WHERE id = ? AND manager_id = ? AND role = 'user'",
-                (display_name, member_id, session.get("user_id"))
-            )
+            member = cur.execute(
+                """
+                SELECT id
+                FROM users
+                WHERE id = ?
+                  AND manager_id = ?
+                  AND role = 'user'
+                """,
+                (member_id, session.get("user_id"))
+            ).fetchone()
+
+        if not member:
+            conn.close()
+            return "Accès refusé", 403
+
+        username_existant = cur.execute(
+            """
+            SELECT id
+            FROM users
+            WHERE LOWER(username) = LOWER(?)
+              AND id != ?
+            """,
+            (username, member_id)
+        ).fetchone()
+
+        if username_existant:
+            conn.close()
+            return """
+                Cet identifiant est déjà utilisé par un autre compte.
+                <br><br>
+                <a href="/mon_equipe">← Retour à mon équipe</a>
+            """, 400
+
+        cur.execute(
+            """
+            UPDATE users
+            SET username = ?,
+                display_name = ?
+            WHERE id = ?
+            """,
+            (username, display_name, member_id)
+        )
 
         conn.commit()
         conn.close()
@@ -4526,22 +4590,50 @@ def mon_equipe():
     rows = ""
     for member in members:
         manager_name = member["manager_username"] or session.get("username", "")
+        username = member["username"] or ""
         display_name = member["display_name"] or ""
 
         rows += f"""
             <tr>
-                <td><span class="manager-badge">👤 {manager_name}</span></td>
                 <td>
-                    <a class="commercial-link" href="/commercial/{member['id']}">{member['username']}</a>
+                    <span class="manager-badge">
+                        👤 {manager_name}
+                    </span>
                 </td>
+
                 <td>
-                    <form method="POST" class="edit-form" id="form-{member['id']}">
-                        <input type="hidden" name="member_id" value="{member['id']}">
-                        <input type="text" name="display_name" value="{display_name}">
+                    <form method="POST"
+                          class="edit-form"
+                          id="form-{member['id']}">
+
+                        <input type="hidden"
+                               name="member_id"
+                               value="{member['id']}">
+
+                        <input class="edit-input"
+                               type="text"
+                               name="username"
+                               value="{username}"
+                               maxlength="50"
+                               autocomplete="off"
+                               required>
                     </form>
                 </td>
+
                 <td>
-                    <button type="submit" form="form-{member['id']}" class="save-btn">💾 Enregistrer</button>
+                    <input class="edit-input"
+                           type="text"
+                           name="display_name"
+                           value="{display_name}"
+                           form="form-{member['id']}">
+                </td>
+
+                <td>
+                    <button type="submit"
+                            form="form-{member['id']}"
+                            class="save-btn">
+                        💾 Enregistrer
+                    </button>
                 </td>
             </tr>
         """
@@ -4668,7 +4760,7 @@ def mon_equipe():
             font-weight: 500;
         }}
 
-        .edit-form input {{
+        .edit-input {{
             width: 75%;
             padding: 12px 14px;
             border: 1px solid #d1d5db;
@@ -4760,8 +4852,8 @@ def mon_equipe():
             <div>
                 <div class="info-title">Information</div>
                 <div class="info-text">
-                    Modifiez le nom affiché de vos commerciaux. Ce nom sera visible dans toute l'application.<br>
-                    L'identifiant commercial sert à la connexion des utilisateurs.
+                    Vous pouvez modifier l'identifiant de connexion et le nom affiché de vos commerciaux.<br>
+                    Après modification, le commercial devra utiliser son nouvel identifiant pour se connecter.
                 </div>
             </div>
         </div>
