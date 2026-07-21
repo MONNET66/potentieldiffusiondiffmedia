@@ -2644,10 +2644,25 @@ def generer_pdf_devis(devis):
             else 0
         )
 
+        conn_campaign = get_campaign_connection()
+
+        campagne_liee = conn_campaign.execute(
+            "SELECT notes FROM campaigns WHERE id = ?",
+            (devis.get("campaign_id"),)
+        ).fetchone()
+
+        conn_campaign.close()
+
+        is_massive_pdf = (
+            campagne_liee
+            and (campagne_liee["notes"] or "").strip().casefold()
+            == "campagne massive"
+        )
+
         libelle_livraison = (
-            "Recrutement et livraison"
-            if devis.get("grille_livraison") == "ciblee"
-            else "Livraison"
+            "Livraison"
+            if is_massive_pdf
+            else "Recrutement et livraison"
         )
         
         lignes_prestations.append([
