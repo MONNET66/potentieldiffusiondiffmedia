@@ -896,14 +896,10 @@ if (enregistrerDevisButton) {
                 );
             }
 
-            alert(
-                "Devis enregistré avec succès : "
-                + payload.result.numero
-            );
-
-            enregistrerDevisButton.textContent =
-                "✅ Devis enregistré";
+            window.location.href =
+                "/devis/" + encodeURIComponent(payload.result.numero);
         })
+                })
         .catch(function (error) {
             alert(error.message);
 
@@ -913,8 +909,11 @@ if (enregistrerDevisButton) {
         });
     });
 }
-    
 </script>
-    
+
 </body>
 </html>
+
+    
+
+    
