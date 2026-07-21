@@ -2132,11 +2132,48 @@ def mes_devis():
     conditions = []
     parametres = []
 
-    # Conservation stricte des droits actuels :
-    # l'administrateur voit tout, les autres uniquement leurs devis.
-    if session.get("role") != "admin":
+    role = session.get("role")
+    username_connecte = session.get("username")
+
+    if role == "user":
+        # Le commercial voit uniquement ses propres devis.
         conditions.append("created_by = ?")
-        parametres.append(session.get("username"))
+        parametres.append(username_connecte)
+
+    elif role == "manager":
+        # Le manager voit ses devis et ceux de ses commerciaux.
+        auth_conn = get_auth_connection()
+
+        commerciaux = auth_conn.execute(
+            """
+            SELECT username
+            FROM users
+            WHERE manager_id = ?
+              AND role = 'user'
+            """,
+            (session.get("user_id"),)
+        ).fetchall()
+
+        auth_conn.close()
+
+        usernames_autorises = [username_connecte]
+        usernames_autorises.extend(
+            commercial["username"]
+            for commercial in commerciaux
+        )
+
+        placeholders = ", ".join(
+            "?" for _ in usernames_autorises
+        )
+
+        conditions.append(
+            f"created_by IN ({placeholders})"
+        )
+
+        parametres.extend(usernames_autorises)
+
+    # L'administrateur ne reçoit aucune condition :
+    # il voit donc tous les devis.
 
     # Recherche par société cliente ou numéro de devis.
     if recherche:
@@ -2220,22 +2257,67 @@ def supprimer_devis(devis_id):
 def voir_devis(numero):
     conn = get_campaign_connection()
 
-    if session.get("role") == "admin":
-        devis = conn.execute("""
+    role = session.get("role")
+    username_connecte = session.get("username")
+
+    if role == "admin":
+        devis = conn.execute(
+            """
             SELECT *
             FROM devis
             WHERE numero = ?
-        """, (numero,)).fetchone()
+            """,
+            (numero,)
+        ).fetchone()
+
+    elif role == "manager":
+        auth_conn = get_auth_connection()
+
+        commerciaux = auth_conn.execute(
+            """
+            SELECT username
+            FROM users
+            WHERE manager_id = ?
+              AND role = 'user'
+            """,
+            (session.get("user_id"),)
+        ).fetchall()
+
+        auth_conn.close()
+
+        usernames_autorises = [username_connecte]
+        usernames_autorises.extend(
+            commercial["username"]
+            for commercial in commerciaux
+        )
+
+        placeholders = ", ".join(
+            "?" for _ in usernames_autorises
+        )
+
+        devis = conn.execute(
+            f"""
+            SELECT *
+            FROM devis
+            WHERE numero = ?
+              AND created_by IN ({placeholders})
+            """,
+            [numero, *usernames_autorises]
+        ).fetchone()
+
     else:
-        devis = conn.execute("""
+        devis = conn.execute(
+            """
             SELECT *
             FROM devis
             WHERE numero = ?
               AND created_by = ?
-        """, (
-            numero,
-            session.get("username"),
-        )).fetchone()
+            """,
+            (
+                numero,
+                username_connecte,
+            )
+        ).fetchone()
 
     conn.close()
 
