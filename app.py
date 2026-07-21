@@ -632,10 +632,11 @@ def get_results_for_city(city_value, selected_types):
         words = [w for w in requested_city_clean.split() if len(w) >= 3]
 
         if words:
-            extra_sql = " AND " + " AND ".join(["LOWER(ville) LIKE ?" for _ in words])
+            extra_sql = " AND " + " AND ".join(["normalize_search_text(ville) LIKE ?" for _ in words])
             params.extend([f"%{word}%" for word in words])
 
     conn = get_db_connection()
+    conn.create_function("normalize_search_text", 1, normalize_search_text)
     cursor = conn.cursor()
 
     cursor.execute(f"""
