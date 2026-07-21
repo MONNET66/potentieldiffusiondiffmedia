@@ -600,6 +600,15 @@ body{
                href="{{ url_for('create_quote_from_campaign', token=campaign['token']) }}">
                 💶 Créer un devis
             </a>
+            <a class="btn btn-light"
+               href="{{ url_for('mes_devis') }}">
+                🧾 Mes devis
+            </a>
+
+            <a class="btn btn-light"
+               href="{{ url_for('index', reset_search=1) }}">
+                🔎 Nouvelle recherche
+            </a>
         </div>
 
     </div>
