@@ -2197,6 +2197,24 @@ def mes_devis():
         date_fin=date_fin
     )
 
+@app.route("/devis/<int:devis_id>/supprimer", methods=["POST"])
+@login_required
+def supprimer_devis(devis_id):
+    if session.get("role") != "admin":
+        return "Accès refusé", 403
+
+    conn = get_campaign_connection()
+
+    conn.execute(
+        "DELETE FROM devis WHERE id = ?",
+        (devis_id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("mes_devis"))
+
 @app.route("/devis/<numero>")
 @login_required
 def voir_devis(numero):
