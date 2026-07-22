@@ -653,6 +653,7 @@ def get_results_for_city(city_value, selected_types):
     """, params)
 
     rows = cursor.fetchall()
+    print("DEBUG get_results_for_city :", raw_value, "=>", len(rows), "lignes SQL")
     conn.close()
 
     filtered_rows = []
