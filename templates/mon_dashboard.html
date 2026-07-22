@@ -770,6 +770,20 @@
                 <span class="sidebar-icon">💶</span>
                 <span class="sidebar-link-text">Mes devis</span>
             </a>
+
+            {% if session.get("role") in ["manager", "admin"] %}
+                <div class="sidebar-section-label sidebar-section-spaced">Équipe</div>
+
+                <a href="{{ url_for('mon_equipe') }}" class="sidebar-link">
+                    <span class="sidebar-icon">👥</span>
+                    <span class="sidebar-link-text">Mon équipe</span>
+                </a>
+
+                <a href="{{ url_for('dashboard_equipe') }}" class="sidebar-link">
+                    <span class="sidebar-icon">📊</span>
+                    <span class="sidebar-link-text">Dashboard équipe</span>
+                </a>
+            {% endif %}
         </nav>
 
         <div class="sidebar-footer">
@@ -778,7 +792,15 @@
 
                 <div class="sidebar-user-info">
                     <strong>{{ session.get("username", "") }}</strong>
-                    <span>Commercial</span>
+                    <span>
+                        {% if session.get("role") == "admin" %}
+                            Administrateur
+                        {% elif session.get("role") == "manager" %}
+                            Manager
+                        {% else %}
+                            Commercial
+                        {% endif %}
+                    </span>
                 </div>
             </div>
 
