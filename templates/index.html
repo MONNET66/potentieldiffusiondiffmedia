@@ -846,6 +846,187 @@
     		flex-wrap:wrap;
 		}
 
+
+        /* =========================================================
+           MODALES DE CRÉATION DE CAMPAGNE
+           ========================================================= */
+
+        .campaign-create-card {
+            width: calc(100% - 32px);
+            max-width: 520px;
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+        }
+
+        .campaign-create-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 24px 26px;
+            border-bottom: 1px solid #e8edf3;
+            background:
+                linear-gradient(135deg, rgba(249, 115, 22, 0.11), rgba(255, 255, 255, 0)),
+                #ffffff;
+        }
+
+        .campaign-create-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 48px;
+            width: 48px;
+            height: 48px;
+            border: 1px solid #fed7aa;
+            border-radius: 14px;
+            background: #fff7ed;
+            font-size: 23px;
+        }
+
+        .campaign-create-header .modal-title {
+            margin: 1px 0 5px;
+            color: #172033;
+            font-size: 22px;
+            line-height: 1.25;
+            letter-spacing: -0.025em;
+        }
+
+        .campaign-create-subtitle {
+            margin: 0;
+            color: #667085;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .campaign-create-body {
+            padding: 25px 26px 26px;
+        }
+
+        .campaign-create-body .modal-label {
+            margin-bottom: 8px;
+            color: #344054;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .campaign-create-body .modal-input {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 19px;
+            padding: 13px 14px;
+            border: 1px solid #dce3eb;
+            border-radius: 11px;
+            outline: none;
+            background: #ffffff;
+            color: #172033;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .campaign-create-body textarea.modal-input {
+            min-height: 112px;
+            line-height: 1.55;
+            resize: vertical;
+        }
+
+        .campaign-create-body .modal-input:hover {
+            border-color: #bcc6d3;
+        }
+
+        .campaign-create-body .modal-input:focus {
+            border-color: #f97316;
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
+        }
+
+        .campaign-create-help {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: -4px 0 20px;
+            padding: 12px 14px;
+            border: 1px solid #e8edf3;
+            border-radius: 11px;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .campaign-create-help-icon {
+            flex: 0 0 auto;
+            color: #f97316;
+            font-weight: 900;
+        }
+
+        .campaign-create-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 11px;
+            margin-top: 4px;
+            padding-top: 21px;
+            border-top: 1px solid #e8edf3;
+        }
+
+        .campaign-modal-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 45px;
+            padding: 11px 17px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .campaign-modal-btn-primary {
+            border: none;
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            box-shadow: 0 9px 20px rgba(249, 115, 22, 0.22);
+            color: #ffffff;
+        }
+
+        .campaign-modal-btn-primary:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #ea580c, #f97316);
+            box-shadow: 0 12px 24px rgba(249, 115, 22, 0.27);
+        }
+
+        .campaign-modal-btn-secondary {
+            border: 1px solid #dce3eb;
+            background: #ffffff;
+            color: #475467;
+        }
+
+        .campaign-modal-btn-secondary:hover {
+            transform: translateY(-1px);
+            background: #f8fafc;
+        }
+
+        @media (max-width: 520px) {
+            .campaign-create-header,
+            .campaign-create-body {
+                padding-right: 20px;
+                padding-left: 20px;
+            }
+
+            .campaign-create-actions {
+                align-items: stretch;
+                flex-direction: column-reverse;
+            }
+
+            .campaign-modal-btn {
+                width: 100%;
+            }
+        }
+
 		.campaign-action-wrap {
     		display: inline-flex;
     		align-items: center;
@@ -1702,39 +1883,125 @@
     </div>
 </div>
 
-	<div id="campaignModal" class="modal-overlay">
-    	<form method="POST" action="/create_campaign" class="modal-card">
-        	<h2 class="modal-title">🎯 Nouvelle campagne ciblée</h2>
 
-        	<label class="modal-label">Nom de la campagne</label>
-        	<input class="modal-input" name="campaign_name" required>
+    <div id="campaignModal" class="modal-overlay">
+        <form
+            method="POST"
+            action="/create_campaign"
+            class="modal-card campaign-create-card"
+        >
+            <div class="campaign-create-header">
+                <div class="campaign-create-icon">🎯</div>
 
-        	<label class="modal-label">Notes</label>
-        	<textarea class="modal-input" name="campaign_notes" rows="4"></textarea>
+                <div>
+                    <h2 class="modal-title">Nouvelle campagne ciblée</h2>
+                    <p class="campaign-create-subtitle">
+                        Créez une campagne à partir des commerces sélectionnés
+                        dans votre étude de potentiel.
+                    </p>
+                </div>
+            </div>
 
-        	<div class="modal-actions">
-            	<button class="export-btn" type="submit">Créer la campagne</button>
-            	<button class="export-btn" type="button" onclick="closeCampaignModal()">Annuler</button>
-        	</div>
-    	</form>
-	</div>
+            <div class="campaign-create-body">
+                <label class="modal-label" for="campaignName">
+                    Nom de la campagne
+                </label>
 
-<div id="massiveCampaignModal" class="modal-overlay">
-    <form onsubmit="confirmMassiveCampaignName(); return false;" class="modal-card">
-        <h2 class="modal-title">🚀 Nouvelle campagne massive</h2>
+                <input
+                    class="modal-input"
+                    id="campaignName"
+                    name="campaign_name"
+                    placeholder="Exemple : Campagne Boulangeries Nantes"
+                    required
+                >
 
-        <label class="modal-label">Nom de la campagne</label>
-        <input class="modal-input" id="massiveCampaignNameInput" required>
+                <label class="modal-label" for="campaignNotes">
+                    Notes
+                </label>
 
-        <div class="modal-help">
-            Le nombre de commerces sera calculé automatiquement.
-        </div>
+                <textarea
+                    class="modal-input"
+                    id="campaignNotes"
+                    name="campaign_notes"
+                    rows="4"
+                    placeholder="Objectif, remarques ou informations complémentaires..."
+                ></textarea>
 
-        <div class="modal-actions">
-            <button class="export-btn" type="submit">Créer la campagne</button>
-            <button class="export-btn" type="button" onclick="closeMassiveCampaignModal()">Annuler</button>
-        </div>
-    </form>
+                <div class="campaign-create-actions">
+                    <button
+                        class="campaign-modal-btn campaign-modal-btn-secondary"
+                        type="button"
+                        onclick="closeCampaignModal()"
+                    >
+                        Annuler
+                    </button>
+
+                    <button
+                        class="campaign-modal-btn campaign-modal-btn-primary"
+                        type="submit"
+                    >
+                        Créer la campagne
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="massiveCampaignModal" class="modal-overlay">
+        <form
+            onsubmit="confirmMassiveCampaignName(); return false;"
+            class="modal-card campaign-create-card"
+        >
+            <div class="campaign-create-header">
+                <div class="campaign-create-icon">🚀</div>
+
+                <div>
+                    <h2 class="modal-title">Nouvelle campagne massive</h2>
+                    <p class="campaign-create-subtitle">
+                        Créez automatiquement une campagne à partir de l’ensemble
+                        des commerces correspondant à vos critères.
+                    </p>
+                </div>
+            </div>
+
+            <div class="campaign-create-body">
+                <label class="modal-label" for="massiveCampaignNameInput">
+                    Nom de la campagne
+                </label>
+
+                <input
+                    class="modal-input"
+                    id="massiveCampaignNameInput"
+                    placeholder="Nom de la campagne"
+                    required
+                >
+
+                <div class="campaign-create-help">
+                    <span class="campaign-create-help-icon">ℹ</span>
+                    <span>
+                        Le nombre de commerces sera calculé automatiquement
+                        à partir de votre recherche.
+                    </span>
+                </div>
+
+                <div class="campaign-create-actions">
+                    <button
+                        class="campaign-modal-btn campaign-modal-btn-secondary"
+                        type="button"
+                        onclick="closeMassiveCampaignModal()"
+                    >
+                        Annuler
+                    </button>
+
+                    <button
+                        class="campaign-modal-btn campaign-modal-btn-primary"
+                        type="submit"
+                    >
+                        Créer la campagne
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 
     <div class="main-workspace">
