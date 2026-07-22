@@ -721,6 +721,27 @@ body.sidebar-collapsed .sidebar-link{
 
 body.sidebar-collapsed .sidebar-icon{width:34px;flex-basis:34px}
 
+    .public-topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 32px;
+    background:#fff;
+    border-bottom:1px solid #e5e7eb;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.public-logo{
+    height:52px;
+    width:auto;
+}
+
+.public-topbar .btn{
+    pointer-events:none;
+}
+    
 
 /* Vue publique envoyée au client :
    navigation interne masquée, fonctionnalités de campagne conservées */
@@ -794,6 +815,16 @@ body.public-view .resume-hero{
 </head>
 
 <body class="{% if request.args.get('public') == '1' or not session.get('user_id') %}public-view{% endif %}">
+
+{% if request.args.get('public') == '1' or not session.get('user_id') %}
+<header class="public-topbar">
+    <img class="public-logo"
+         src="{{ url_for('static', filename='logo.png') }}"
+         alt="Diffmedia">
+    <span class="btn btn-light">Présentation de campagne</span>
+</header>
+{% endif %}
+
 <div class="app-shell">
     <aside class="sidebar" id="appSidebar">
         <div class="sidebar-brand">
