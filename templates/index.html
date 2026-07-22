@@ -925,14 +925,25 @@
     		transition: width .22s ease, opacity .18s ease;
 		}
 
+		.sidebar-brand {
+    		display: flex;
+    		align-items: center;
+    		justify-content: space-between;
+    		gap: 12px;
+    		padding: 20px 14px 18px 18px;
+    		border-bottom: 1px solid var(--dm-sidebar-border);
+    		background: transparent;
+		}
+		
         .sidebar-logo {
-    		width: 205px;
-    		max-height: 66px;
+    		width: 225px;
+    		max-width: calc(100% - 48px);
     		height: auto;
+    		max-height: 70px;
     		object-fit: contain;
     		object-position: left center;
     		display: block;
-    		flex-shrink: 0;
+    		flex-shrink: 1;
     		transition: width .22s ease, opacity .18s ease;
 		}
 
@@ -1304,7 +1315,7 @@
 <div class="app-shell">
     <aside class="sidebar" id="appSidebar">
         <div class="sidebar-brand">
-            <img class="sidebar-logo" src="{{ url_for('static', filename='logo_diffmedia_sidebar.png') }}" alt="Diffmedia">
+            <img class="sidebar-logo" src="{{ url_for('static', filename='logo_diffmedia_sidebar_transparent.png') }}" alt="Diffmedia">
             <button
                 type="button"
                 class="sidebar-collapse-btn"
