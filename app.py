@@ -673,6 +673,15 @@ def get_results_for_city(city_value, selected_types):
                 or all(word in ville_db for word in searched_words)
             )
 
+        print(
+            "DEBUG FILTRE :",
+            row["ville"],
+            "| ville_db =", ville_db,
+            "| requested =", requested_city_clean,
+            "| city_match =", city_match,
+            "| cp_match =", cp_match,
+        )
+
         if requested_cp:
             cp_match = (cp_db == requested_cp)
 
