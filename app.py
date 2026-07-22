@@ -3184,7 +3184,13 @@ def set_campaign_priority(token):
     """, (priority, item_id, campaign["id"]))
     conn.commit()
     conn.close()
-    return redirect(url_for("campaign_resume", token=token) + f"#commerce-{item_id}")
+    return redirect(
+    url_for(
+        "campaign_resume",
+        token=token,
+        public=request.args.get("public")
+    ) + f"#commerce-{item_id}"
+)
 
 @app.route("/devis/enregistrer/campagne/<token>", methods=["POST"])
 @login_required
@@ -3644,7 +3650,13 @@ def update_campaign_item(token):
         main_conn.commit()
         main_conn.close()
 
-    return redirect(url_for("campaign_resume", token=token) + f"#commerce-{item_id}")
+    return redirect(
+    url_for(
+        "campaign_resume",
+        token=token,
+        public=request.args.get("public")
+    ) + f"#commerce-{item_id}"
+)
 
 
 init_campaign_items_table()
