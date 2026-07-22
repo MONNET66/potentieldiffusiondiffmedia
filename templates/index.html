@@ -925,13 +925,15 @@
         }
 
         .sidebar-logo {
-            width: 184px;
-            max-height: 52px;
-            object-fit: contain;
-            object-position: left center;
-            display: block;
-            transition: width .22s ease, opacity .18s ease;
-        }
+    		width: 205px;
+    		max-height: 66px;
+    		height: auto;
+    		object-fit: contain;
+    		object-position: left center;
+    		display: block;
+    		flex-shrink: 0;
+    		transition: width .22s ease, opacity .18s ease;
+		}
 
         .sidebar-collapse-btn {
             width: 31px;
@@ -1301,7 +1303,7 @@
 <div class="app-shell">
     <aside class="sidebar" id="appSidebar">
         <div class="sidebar-brand">
-            <img class="sidebar-logo" src="{{ url_for('static', filename='logo.png') }}" alt="Diffmedia">
+            <img class="sidebar-logo" src="{{ url_for('static', filename='logo_diffmedia_sombre.png') }}" alt="Diffmedia">
             <button
                 type="button"
                 class="sidebar-collapse-btn"
