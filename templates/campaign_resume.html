@@ -793,7 +793,7 @@ body.public-view .resume-hero{
 </style>
 </head>
 
-<body class="{% if not session.get('user_id') %}public-view{% endif %}">
+<body class="{% if request.args.get('public') == '1' or not session.get('user_id') %}public-view{% endif %}">
 <div class="app-shell">
     <aside class="sidebar" id="appSidebar">
         <div class="sidebar-brand">
@@ -960,7 +960,7 @@ body.public-view .resume-hero{
            
             <button class="btn btn-light"
                     type="button"
-                    data-link="{{ url_for('campaign_resume', token=campaign['token'], _external=True) }}"
+                    data-link="{{ url_for('campaign_resume', token=campaign['token'], public=1, _external=True) }}"
                     onclick="copyCampaignLink(this)">
                 📋 Copier le lien
             </button>
@@ -1136,7 +1136,7 @@ body.public-view .resume-hero{
 
                             {% for p in [0, 1, 2, 3] %}
                                 <form method="POST"
-                                      action="{{ url_for('set_campaign_priority', token=campaign['token']) }}"
+                                      action="{{ url_for('set_campaign_priority', token=campaign['token'], public=request.args.get('public')) }}"
                                       class="priority-form">
                                     <input type="hidden" name="item_id" value="{{ item['id'] }}">
                                     <input type="hidden" name="priority" value="{{ p }}">
@@ -1149,7 +1149,7 @@ body.public-view .resume-hero{
                         </div>
 
                         <form method="POST"
-                              action="{{ url_for('update_campaign_item', token=campaign['token']) }}"
+                              action="{{ url_for('update_campaign_item', token=campaign['token'], public=request.args.get('public')) }}"
                               class="work-form">
 
                             <input type="hidden" name="item_id" value="{{ item['id'] }}">
