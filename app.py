@@ -568,7 +568,24 @@ def build_results_from_rows(rows):
         except (TypeError, ValueError):
             continue
         commerce_type = row["type"]
-        key = (normalize_name(nom), normalize_name(row["ville"]), str(row["code_postal"] or "").strip(), commerce_type)
+
+        adresse_key = normalize_name(row["adresse"] or "")
+
+        if adresse_key:
+            key = (
+                adresse_key,
+                normalize_name(row["ville"]),
+                str(row["code_postal"] or "").strip(),
+                commerce_type,
+            )
+        else:
+            key = (
+                normalize_name(nom),
+                normalize_name(row["ville"]),
+                str(row["code_postal"] or "").strip(),
+                commerce_type,
+            )
+
         if key in seen_keys:
             continue
         seen_keys.add(key)
@@ -799,7 +816,22 @@ def get_results_in_radius(city_value, radius_km, selected_types):
 
 
 def make_result_key(item):
-    return (normalize_name(item.get("name")), normalize_name(item.get("ville")), str(item.get("code_postal") or "").strip(), item.get("type") or "")
+    adresse_key = normalize_name(item.get("adresse") or "")
+
+    if adresse_key:
+        return (
+            adresse_key,
+            normalize_name(item.get("ville") or ""),
+            str(item.get("code_postal") or "").strip(),
+            item.get("type") or "",
+        )
+
+    return (
+        normalize_name(item.get("name") or ""),
+        normalize_name(item.get("ville") or ""),
+        str(item.get("code_postal") or "").strip(),
+        item.get("type") or "",
+    )
 
 
 def merge_results_lists(data_lists):
