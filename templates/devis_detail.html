@@ -3,36 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>{{ devis.numero }}</title>
 
     <style>
+        :root {
+            --dm-orange: #ff7417;
+            --dm-orange-dark: #e95e00;
+            --dm-orange-soft: #fff3e8;
+            --dm-navy: #111a2c;
+            --dm-bg: #f3f6fa;
+            --dm-card: #ffffff;
+            --dm-text: #111827;
+            --dm-muted: #64748b;
+            --dm-border: #e4e9f0;
+            --dm-sidebar-width: 338px;
+            --dm-sidebar-collapsed-width: 84px;
+            --dm-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+        }
+
         * {
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f3f5f7;
-            color: #17233c;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--dm-bg);
+            color: var(--dm-text);
         }
 
-        .header {
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        .app-shell {
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            width: var(--dm-sidebar-width);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            padding: 20px 28px;
-            background: #ffffff;
-            border-bottom: 1px solid #dfe3e8;
+            flex-direction: column;
+            z-index: 1000;
+            color: #ffffff;
+            background: linear-gradient(180deg, #1d2331 0%, #111a2c 52%, #101827 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            transition: width 0.22s ease, transform 0.22s ease;
         }
 
-        .header h1 {
-            margin: 0;
+        .sidebar-brand {
+            min-height: 106px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 20px 16px 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-logo {
+            width: 225px;
+            max-width: calc(100% - 48px);
+            max-height: 70px;
+            object-fit: contain;
+            object-position: left center;
+            display: block;
+            transition: width 0.22s ease, opacity 0.18s ease;
+        }
+
+        .sidebar-collapse-btn {
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 13px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            font-size: 28px;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 0.18s ease, transform 0.22s ease;
+        }
+
+        .sidebar-collapse-btn:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .sidebar-scroll {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 20px 12px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 27px;
+        }
+
+        .sidebar-section-label {
+            margin: 0 14px 10px;
+            color: #78869d;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-link {
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 4px 0;
+            padding: 13px 16px;
+            border-radius: 15px;
+            color: #d8e0ec;
+            text-decoration: none;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.07);
+            color: #ffffff;
+            transform: translateX(2px);
+        }
+
+        .sidebar-link.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, #ff8a32, var(--dm-orange));
+            box-shadow: 0 12px 26px rgba(255, 116, 23, 0.27);
+        }
+
+        .sidebar-icon {
+            width: 32px;
+            flex: 0 0 32px;
+            display: grid;
+            place-items: center;
+            font-size: 20px;
+        }
+
+        .sidebar-link-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .sidebar-avatar {
+            width: 48px;
+            height: 48px;
+            flex: 0 0 48px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            background: rgba(255, 116, 23, 0.19);
+            font-size: 22px;
+        }
+
+        .sidebar-user-info {
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-user-info strong {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sidebar-user-info span {
+            color: #8794aa;
+            font-size: 12px;
+        }
+
+        .sidebar-logout {
+            color: #fda4af;
+        }
+
+        .app-main {
+            min-height: 100vh;
+            width: calc(100% - var(--dm-sidebar-width));
+            margin-left: var(--dm-sidebar-width);
+            transition: width 0.22s ease, margin-left 0.22s ease;
+        }
+
+        .topbar {
+            min-height: 112px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 28px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--dm-border);
+            position: sticky;
+            top: 0;
+            z-index: 800;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        .topbar-icon {
+            width: 58px;
+            height: 58px;
+            flex: 0 0 58px;
+            display: grid;
+            place-items: center;
+            border-radius: 17px;
+            background: var(--dm-orange-soft);
             font-size: 28px;
         }
 
+        .topbar-title h1 {
+            margin: 0;
+            font-size: 31px;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+        }
+
+        .topbar-title p {
+            margin: 6px 0 0;
+            color: var(--dm-muted);
+            font-size: 14px;
+        }
+
+        .topbar-actions,
         .actions {
             display: flex;
             align-items: center;
@@ -43,141 +273,448 @@
 
         .action-button,
         .back-button {
+            min-height: 44px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 46px;
-            padding: 13px 18px;
-            border-radius: 10px;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            font-weight: bold;
+            gap: 7px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 900;
             text-decoration: none;
             cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .action-button:hover,
+        .back-button:hover {
+            transform: translateY(-1px);
         }
 
         .action-button {
-            border: none;
-            background: #17233c;
+            background: #263247;
             color: #ffffff;
         }
 
         .action-button.pdf {
-            border: 1px solid #cfd6df;
+            border: 1px solid var(--dm-border);
             background: #ffffff;
-            color: #17233c;
+            color: #273349;
         }
 
         .back-button {
-            border: none;
-            background: #f78b20;
+            background: linear-gradient(135deg, #ff8d31, var(--dm-orange));
             color: #ffffff;
+            box-shadow: 0 7px 16px rgba(255, 116, 23, 0.22);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--dm-border);
+            border-radius: 12px;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 21px;
         }
 
         .page {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px 40px;
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 24px 26px 38px;
+        }
+
+        .page::before {
+            content: "";
+            display: block;
+            height: 0;
+        }
+
+        .page > .card:first-child[style] {
+            border-radius: 15px !important;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.08);
+        }
+
+        .quote-hero {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            padding: 28px;
+            border: 1px solid var(--dm-border);
+            border-radius: 21px;
+            background: linear-gradient(135deg, #ffffff 0%, #fffaf5 100%);
+            box-shadow: var(--dm-shadow);
+        }
+
+        .quote-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 6px;
+            background: linear-gradient(180deg, #ff9a3c, var(--dm-orange));
+        }
+
+        .quote-hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) auto;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .quote-kicker {
+            margin-bottom: 7px;
+            color: var(--dm-orange-dark);
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .quote-title {
+            margin: 0;
+            font-size: clamp(30px, 4vw, 44px);
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+        }
+
+        .quote-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .quote-meta-item,
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .status {
+            background: var(--dm-orange-soft);
+            color: #c96800;
+        }
+
+        .quote-total-box {
+            min-width: 250px;
+            padding: 21px 24px;
+            border: 1px solid #fed7aa;
+            border-radius: 18px;
+            background: #ffffff;
+            text-align: right;
+            box-shadow: 0 10px 26px rgba(249, 115, 22, 0.09);
+        }
+
+        .quote-total-label {
+            color: var(--dm-muted);
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .quote-total-value {
+            margin-top: 6px;
+            color: var(--dm-orange-dark);
+            font-size: 34px;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: -0.035em;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            min-width: 0;
+            min-height: 118px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px;
+            border: 1px solid var(--dm-border);
+            border-radius: 17px;
+            background: #ffffff;
+            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+        }
+
+        .kpi-icon {
+            width: 52px;
+            height: 52px;
+            flex: 0 0 52px;
+            display: grid;
+            place-items: center;
+            border-radius: 15px;
+            background: var(--dm-orange-soft);
+            font-size: 24px;
+        }
+
+        .kpi-label {
+            color: var(--dm-muted);
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.045em;
+        }
+
+        .kpi-value {
+            margin-top: 5px;
+            font-size: 21px;
+            font-weight: 900;
+            overflow-wrap: anywhere;
         }
 
         .card {
-            margin-bottom: 22px;
+            margin-bottom: 20px;
             padding: 24px;
-            border-radius: 16px;
+            border: 1px solid var(--dm-border);
+            border-radius: 18px;
             background: #ffffff;
-            box-shadow: 0 8px 24px rgba(23, 35, 60, 0.07);
+            box-shadow: var(--dm-shadow);
         }
 
         .card h2 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 21px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 20px;
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .card:nth-of-type(1) h2::before {
+            content: "📋";
+        }
+
+        .card:nth-of-type(2) h2::before {
+            content: "🏢";
+        }
+
+        .card:nth-of-type(3) h2::before {
+            content: "📊";
+        }
+
+        .card:nth-of-type(4) h2::before {
+            content: "💰";
         }
 
         .grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px 28px;
+            gap: 16px 24px;
         }
 
         .field {
-            padding-bottom: 12px;
-            border-bottom: 1px solid #edf0f3;
+            padding: 15px 16px;
+            border: 1px solid #edf0f3;
+            border-radius: 13px;
+            background: #fbfcfe;
         }
 
         .label {
             display: block;
-            margin-bottom: 6px;
-            color: #667085;
-            font-size: 13px;
-            font-weight: bold;
+            margin-bottom: 7px;
+            color: var(--dm-muted);
+            font-size: 11px;
+            font-weight: 900;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .value {
-            font-size: 17px;
-            font-weight: 600;
+            display: block;
+            font-size: 16px;
+            font-weight: 800;
+            line-height: 1.45;
             overflow-wrap: anywhere;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 7px 13px;
-            border-radius: 999px;
-            background: #fff1e2;
-            color: #cf6500;
-            font-size: 14px;
-            font-weight: bold;
         }
 
         .amounts {
             margin-left: auto;
-            max-width: 520px;
+            max-width: 620px;
+            padding: 5px 20px 14px;
+            border: 1px solid var(--dm-border);
+            border-radius: 16px;
+            background: #fbfcfe;
         }
 
         .amount-line {
             display: flex;
             justify-content: space-between;
             gap: 20px;
-            padding: 12px 0;
+            padding: 14px 0;
             border-bottom: 1px solid #edf0f3;
         }
 
         .amount-line strong {
-            font-size: 17px;
+            font-size: 16px;
+            white-space: nowrap;
         }
 
         .amount-line.total {
-            margin-top: 6px;
-            padding-top: 18px;
-            border-bottom: none;
+            margin: 10px -8px -2px;
+            padding: 20px 16px;
+            border: 1px solid #fed7aa;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #fff8f1, #fff3e8);
             font-size: 22px;
-            font-weight: bold;
+            font-weight: 900;
         }
 
         .amount-line.total span:last-child {
-            color: #f07800;
+            color: var(--dm-orange-dark);
+            font-size: 27px;
         }
 
-        @media (max-width: 720px) {
-            .header {
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 950;
+            display: none;
+            background: rgba(15, 23, 42, 0.48);
+        }
+
+        body.sidebar-collapsed .sidebar {
+            width: var(--dm-sidebar-collapsed-width);
+        }
+
+        body.sidebar-collapsed .app-main {
+            width: calc(100% - var(--dm-sidebar-collapsed-width));
+            margin-left: var(--dm-sidebar-collapsed-width);
+        }
+
+        body.sidebar-collapsed .sidebar-logo {
+            width: 0;
+            opacity: 0;
+        }
+
+        body.sidebar-collapsed .sidebar-brand {
+            justify-content: center;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        body.sidebar-collapsed .sidebar-collapse-btn {
+            transform: rotate(180deg);
+        }
+
+        body.sidebar-collapsed .sidebar-section-label,
+        body.sidebar-collapsed .sidebar-link-text,
+        body.sidebar-collapsed .sidebar-user-info {
+            display: none;
+        }
+
+        body.sidebar-collapsed .sidebar-link {
+            justify-content: center;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        @media (max-width: 1180px) {
+            .topbar {
                 align-items: flex-start;
                 flex-direction: column;
             }
 
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .actions {
-                width: 100%;
+            .topbar-actions {
                 justify-content: flex-start;
             }
 
-            .action-button,
-            .back-button {
+            .kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 960px) {
+            :root {
+                --dm-sidebar-width: 300px;
+            }
+
+            .sidebar {
+                width: var(--dm-sidebar-width) !important;
+                transform: translateX(-100%);
+            }
+
+            body.mobile-sidebar-open .sidebar {
+                transform: translateX(0);
+            }
+
+            body.mobile-sidebar-open .sidebar-overlay {
+                display: block;
+            }
+
+            .app-main,
+            body.sidebar-collapsed .app-main {
                 width: 100%;
-                text-align: center;
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: grid;
+                place-items: center;
+            }
+
+            .sidebar-collapse-btn {
+                display: none;
+            }
+
+            .page {
+                padding: 18px 14px 30px;
+            }
+
+            .quote-hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quote-total-box {
+                width: 100%;
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .topbar {
+                padding: 16px 18px;
+            }
+
+            .topbar-title h1 {
+                font-size: 25px;
+            }
+
+            .topbar-actions,
+            .topbar-actions form,
+            .topbar-actions .action-button,
+            .topbar-actions .back-button {
+                width: 100%;
+            }
+
+            .grid,
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card,
+            .quote-hero {
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+
+            .amounts {
+                padding-left: 13px;
+                padding-right: 13px;
             }
         }
 
@@ -194,15 +731,27 @@
                 print-color-adjust: exact;
             }
 
-            .no-print,
-            .header {
+            .sidebar,
+            .topbar,
+            .sidebar-overlay,
+            .no-print {
                 display: none !important;
+            }
+
+            .app-main {
+                width: 100% !important;
+                margin: 0 !important;
             }
 
             .page {
                 max-width: none;
                 margin: 0;
                 padding: 0;
+            }
+
+            .quote-hero,
+            .kpi-grid {
+                display: none !important;
             }
 
             .card {
@@ -225,7 +774,11 @@
             }
 
             .field {
-                padding-bottom: 7px;
+                padding: 7px 0;
+                border: none;
+                border-bottom: 1px solid #edf0f3;
+                border-radius: 0;
+                background: transparent;
             }
 
             .label {
@@ -255,48 +808,192 @@
 
 <body>
 
-<header class="header">
-    <div>
-        <h1>💶 Devis {{ devis.numero }}</h1>
-    </div>
+<div class="app-shell">
+    <aside class="sidebar" id="appSidebar">
+        <div class="sidebar-brand">
+            <img class="sidebar-logo"
+                 src="{{ url_for('static', filename='logo_diffmedia_sidebar_transparent.png') }}"
+                 alt="Diffmedia">
 
-    <div class="actions no-print">
-        <button type="button"
-                class="action-button"
-                onclick="window.print()">
-            🖨️ Imprimer
-        </button>
-
-        <a href="{{ url_for('telecharger_devis_pdf', numero=devis.numero) }}"
-           class="action-button pdf">
-            📄 Télécharger le PDF
-        </a>
-
-        <form method="POST"
-              action="{{ url_for('envoyer_devis_email', numero=devis.numero) }}"
-              style="display:inline;">
-
-            <button type="submit" class="action-button">
-                ✉️ Envoyer par e-mail
+            <button type="button"
+                    class="sidebar-collapse-btn"
+                    id="sidebarCollapseBtn"
+                    aria-label="Réduire le menu">
+                ‹
             </button>
+        </div>
 
-        </form>
+        <div class="sidebar-scroll">
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Navigation</div>
 
-        <a href="{{ url_for('mes_devis') }}" class="back-button">
-            ← Retour à mes devis
-        </a>
-    </div>
-</header>
+                <a class="sidebar-link"
+                   href="{{ url_for('index', reset_search=1) }}">
+                    <span class="sidebar-icon">🔎</span>
+                    <span class="sidebar-link-text">Nouvelle étude</span>
+                </a>
 
-<main class="page">
-    {% if request.args.get("email_envoye") == "1" %}
-    <div class="card"
-         style="background:#eaf8ee; border:1px solid #9ed3aa; color:#1f6b2c; padding:18px;">
-        ✅ Le devis a bien été envoyé par e-mail.
-    </div>
-    {% endif %}
+                <a class="sidebar-link active"
+                   href="{{ url_for('mes_devis') }}">
+                    <span class="sidebar-icon">💶</span>
+                    <span class="sidebar-link-text">Mes devis</span>
+                </a>
+            </div>
 
-    <section class="card">
+            {% if session.role in ["manager", "admin"] %}
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Équipe</div>
+
+                <a class="sidebar-link"
+                   href="{{ url_for('mon_equipe') }}">
+                    <span class="sidebar-icon">👥</span>
+                    <span class="sidebar-link-text">Mon équipe</span>
+                </a>
+
+                <a class="sidebar-link"
+                   href="{{ url_for('dashboard_equipe') }}">
+                    <span class="sidebar-icon">📊</span>
+                    <span class="sidebar-link-text">Dashboard équipe</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">👤</div>
+
+                <div class="sidebar-user-info">
+                    <strong>{{ session.username }}</strong>
+                    <span>
+                        {% if session.role == "admin" %}
+                            Administrateur
+                        {% elif session.role == "manager" %}
+                            Manager
+                        {% else %}
+                            Commercial
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <a class="sidebar-link sidebar-logout"
+               href="{{ url_for('logout') }}">
+                <span class="sidebar-icon">🚪</span>
+                <span class="sidebar-link-text">Déconnexion</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="app-main">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button type="button"
+                        class="mobile-menu-btn"
+                        id="mobileMenuBtn"
+                        aria-label="Ouvrir le menu">
+                    ☰
+                </button>
+
+                <div class="topbar-icon">💶</div>
+
+                <div class="topbar-title">
+                    <h1>Devis {{ devis.numero }}</h1>
+                    <p>Consultation, impression et envoi de la proposition commerciale.</p>
+                </div>
+            </div>
+
+            <div class="topbar-actions no-print">
+                <button type="button"
+                        class="action-button"
+                        onclick="window.print()">
+                    🖨️ Imprimer
+                </button>
+
+                <a href="{{ url_for('telecharger_devis_pdf', numero=devis.numero) }}"
+                   class="action-button pdf">
+                    📄 Télécharger le PDF
+                </a>
+
+                <form method="POST"
+                      action="{{ url_for('envoyer_devis_email', numero=devis.numero) }}"
+                      style="display:inline;">
+                    <button type="submit" class="action-button">
+                        ✉️ Envoyer par e-mail
+                    </button>
+                </form>
+
+                <a href="{{ url_for('mes_devis') }}" class="back-button">
+                    ← Mes devis
+                </a>
+            </div>
+        </header>
+
+        <div class="page">
+            {% if request.args.get("email_envoye") == "1" %}
+            <div class="card"
+                 style="background:#eaf8ee; border:1px solid #9ed3aa; color:#1f6b2c; padding:18px;">
+                ✅ Le devis a bien été envoyé par e-mail.
+            </div>
+            {% endif %}
+
+            <section class="quote-hero">
+                <div class="quote-hero-grid">
+                    <div>
+                        <div class="quote-kicker">Proposition commerciale</div>
+                        <h2 class="quote-title">{{ devis.numero }}</h2>
+
+                        <div class="quote-meta">
+                            <span class="status">{{ devis.statut }}</span>
+                            <span class="quote-meta-item">🏢 {{ devis.client_societe or "Client non renseigné" }}</span>
+                            <span class="quote-meta-item">📅 {{ devis.created_at }}</span>
+                        </div>
+                    </div>
+
+                    <div class="quote-total-box">
+                        <div class="quote-total-label">Total TTC</div>
+                        <div class="quote-total-value">{{ "%.2f"|format(devis.total_ttc) }} €</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="kpi-grid">
+                <article class="kpi-card">
+                    <div class="kpi-icon">📦</div>
+                    <div>
+                        <div class="kpi-label">Quantité</div>
+                        <div class="kpi-value">{{ "{:,}".format(devis.quantite).replace(",", " ") }}</div>
+                    </div>
+                </article>
+
+                <article class="kpi-card">
+                    <div class="kpi-icon">🏪</div>
+                    <div>
+                        <div class="kpi-label">Commerces potentiels</div>
+                        <div class="kpi-value">{{ devis.commerces_potentiels }}</div>
+                    </div>
+                </article>
+
+                <article class="kpi-card">
+                    <div class="kpi-icon">📍</div>
+                    <div>
+                        <div class="kpi-label">Points de livraison</div>
+                        <div class="kpi-value">{{ devis.points_livraison }}</div>
+                    </div>
+                </article>
+
+                <article class="kpi-card">
+                    <div class="kpi-icon">👤</div>
+                    <div>
+                        <div class="kpi-label">Créé par</div>
+                        <div class="kpi-value">{{ devis.created_by }}</div>
+                    </div>
+                </article>
+            </section>
+
+<section class="card">
         <h2>Informations générales</h2>
 
         <div class="grid">
@@ -493,7 +1190,48 @@
         </div>
     </section>
 
-</main>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const body = document.body;
+    const sidebarCollapseBtn = document.getElementById("sidebarCollapseBtn");
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+    if (
+        localStorage.getItem("diffmediaSidebarCollapsed") === "1"
+        && window.innerWidth > 960
+    ) {
+        body.classList.add("sidebar-collapsed");
+    }
+
+    if (sidebarCollapseBtn) {
+        sidebarCollapseBtn.addEventListener("click", function () {
+            body.classList.toggle("sidebar-collapsed");
+
+            localStorage.setItem(
+                "diffmediaSidebarCollapsed",
+                body.classList.contains("sidebar-collapsed") ? "1" : "0"
+            );
+        });
+    }
+
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener("click", function () {
+            body.classList.add("mobile-sidebar-open");
+        });
+    }
+
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener("click", function () {
+            body.classList.remove("mobile-sidebar-open");
+        });
+    }
+});
+</script>
 
 </body>
 </html>
