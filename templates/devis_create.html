@@ -856,6 +856,8 @@
                         {{ produits_devis[0]["nom"] }}
                     </div>
 
+                    {% if produits_devis|length == 1 %}
+
                     <input
                         type="hidden"
                         id="produit_id"
@@ -863,19 +865,41 @@
                         value="{{ produits_devis[0]['id'] }}"
                     >
 
+                    {% if produits_devis[0]["nom"]|lower|replace("sacs ", "sac ") != support_label|lower|replace("sacs ", "sac ") %}
+                        <div class="summary-card">
+                            <div class="summary-label">Produit</div>
+
+                            <div class="summary-value">
+                                {{ produits_devis[0]["nom"] }}
+                            </div>
+                        </div>
+                    {% endif %}
+
                 {% elif produits_devis|length > 1 %}
-                    <select id="produit_id" name="produit_id" required>
-                        {% for produit in produits_devis %}
-                            <option value="{{ produit['id'] }}">
-                                {{ produit["nom"] }}
-                            </option>
-                        {% endfor %}
-                    </select>
+
+                    <div class="summary-card">
+                        <div class="summary-label">Produit</div>
+
+                        <select id="produit_id" name="produit_id" required>
+                            {% for produit in produits_devis %}
+                                <option value="{{ produit['id'] }}">
+                                    {{ produit["nom"] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
                 {% else %}
-                    <div class="summary-value">Aucun produit configuré</div>
+
+                    <div class="summary-card">
+                        <div class="summary-label">Produit</div>
+
+                        <div class="summary-value">
+                            Aucun produit configuré
+                        </div>
+                    </div>
+
                 {% endif %}
-            </div>
             
             <div class="summary-card">
                 <div class="summary-label">Commerces ciblés</div>
