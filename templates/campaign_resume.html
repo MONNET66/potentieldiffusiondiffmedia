@@ -721,6 +721,37 @@ body.sidebar-collapsed .sidebar-link{
 
 body.sidebar-collapsed .sidebar-icon{width:34px;flex-basis:34px}
 
+
+/* Vue publique envoyée au client :
+   navigation interne masquée, fonctionnalités de campagne conservées */
+body.public-view .sidebar,
+body.public-view .sidebar-overlay,
+body.public-view .topbar,
+body.public-view .resume-actions{
+    display:none !important;
+}
+
+body.public-view .app-main,
+body.public-view.sidebar-collapsed .app-main{
+    width:100%;
+    margin-left:0;
+}
+
+body.public-view .page{
+    max-width:1500px;
+    padding-top:28px;
+}
+
+body.public-view .resume-hero{
+    margin-top:0;
+}
+
+@media(max-width:900px){
+    body.public-view .page{
+        padding-top:18px;
+    }
+}
+
 @media(max-width:1180px){
     .resume-info-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .commerce-list{grid-template-columns:1fr}
@@ -762,7 +793,7 @@ body.sidebar-collapsed .sidebar-icon{width:34px;flex-basis:34px}
 </style>
 </head>
 
-<body>
+<body class="{% if not session.get('user_id') %}public-view{% endif %}">
 <div class="app-shell">
     <aside class="sidebar" id="appSidebar">
         <div class="sidebar-brand">
