@@ -1,208 +1,1174 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <meta charset="utf-8" />
-    <h3>Créer une campagne ciblée</h3>
+    <meta charset="utf-8">
+    <title>Créer une campagne — Diffmedia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
+        :root {
+            --navy: #0d1b2a;
+            --navy-light: #16283d;
+            --orange: #ff7417;
+            --orange-dark: #e96108;
+            --background: #f3f6fa;
+            --card: #ffffff;
+            --text: #172033;
+            --muted: #667085;
+            --border: #e1e7ef;
+            --success: #18794e;
+            --success-bg: #ecfdf3;
+            --success-border: #abefc6;
+            --danger: #b42318;
+            --danger-bg: #fef3f2;
+            --danger-border: #fecdca;
+            --info: #9a5400;
+            --info-bg: #fff8eb;
+            --info-border: #fedf89;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            background: #eceff3;
+            min-height: 100%;
         }
 
-        .header {
+        body {
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--text);
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Arial,
+                sans-serif;
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .app-shell {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 18px;
-            background: #f4f4f4;
-            border-bottom: 1px solid #ddd;
+            min-height: 100vh;
         }
 
-        .header-left {
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            width: var(--sidebar-width);
+            min-height: 100vh;
+            padding: 24px 18px;
+            overflow: hidden;
+            background:
+                radial-gradient(
+                    circle at 15% 5%,
+                    rgba(255, 116, 23, 0.12),
+                    transparent 25%
+                ),
+                linear-gradient(
+                    180deg,
+                    #111d2b 0%,
+                    var(--navy) 100%
+                );
+            color: #ffffff;
+            box-shadow: 8px 0 28px rgba(13, 27, 42, 0.12);
+        }
+
+        .sidebar::after {
+            content: "";
+            position: absolute;
+            right: -180px;
+            bottom: -170px;
+            width: 360px;
+            height: 360px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .sidebar-brand {
+            position: relative;
+            z-index: 1;
+            padding: 4px 8px 28px;
+        }
+
+        .sidebar-logo {
+            display: block;
+            width: 100%;
+            max-width: 225px;
+            height: auto;
+        }
+
+        .sidebar-label {
+            margin: 10px 12px;
+            color: rgba(255, 255, 255, 0.42);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .nav-item {
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logout-btn {
-            background: #f97316;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-        }
-
-        .logout-btn:hover {
-            background: #ea580c;
-        }
-
-        .header img {
-            height: 60px;
-        }
-
-        .header h2 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        .page {
-            padding: 24px;
-        }
-
-        .box {
-            background: white;
-            max-width: 700px;
-            padding: 24px;
+            min-height: 48px;
+            padding: 11px 14px;
+            border: 1px solid transparent;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease;
         }
 
-        .box h3 {
-            margin-top: 0;
-            margin-bottom: 18px;
+        .nav-item:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.07);
+            transform: translateX(2px);
         }
 
-        .form-group {
-            margin-bottom: 16px;
+        .nav-item.active {
+            color: #ffffff;
+            border-color: rgba(255, 116, 23, 0.25);
+            background: rgba(255, 116, 23, 0.15);
+        }
+
+        .nav-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 21px;
+            height: 21px;
+        }
+
+        .nav-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .sidebar-footer {
+            position: relative;
+            z-index: 1;
+            margin-top: auto;
+            padding: 20px 10px 4px;
+        }
+
+        .user-card {
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .user-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: rgba(255, 116, 23, 0.17);
+            color: var(--orange);
+        }
+
+        .user-avatar svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .user-info {
+            min-width: 0;
+        }
+
+        .user-name {
+            overflow: hidden;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-role {
+            margin-top: 3px;
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 11px;
+        }
+
+        .logout-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 12px;
+            padding: 9px 10px;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition:
+                color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .logout-link:hover {
+            color: #ffffff;
+            background: rgba(255, 116, 23, 0.18);
+        }
+
+        .logout-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ZONE PRINCIPALE */
+
+        .main-content {
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            margin-left: var(--sidebar-width);
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 76px;
+            padding: 14px 34px;
+            border-bottom: 1px solid rgba(225, 231, 239, 0.9);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(14px);
+        }
+
+        .topbar-title {
+            min-width: 0;
+        }
+
+        .topbar-title h1 {
+            margin: 0;
+            color: var(--text);
+            font-size: 20px;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+        }
+
+        .topbar-title p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #475467;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .topbar-user-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: 1px solid #f4d4be;
+            border-radius: 10px;
+            background: #fff7f2;
+            color: var(--orange);
+        }
+
+        .topbar-user-icon svg {
+            width: 19px;
+            height: 19px;
+        }
+
+        .page-content {
+            width: 100%;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 38px 34px 60px;
+        }
+
+        /* EN-TÊTE DE PAGE */
+
+        .page-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .page-heading-main {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-heading-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            width: 54px;
+            height: 54px;
+            border: 1px solid #fed7bc;
+            border-radius: 15px;
+            background: #fff4ec;
+            color: var(--orange);
+        }
+
+        .page-heading-icon svg {
+            width: 27px;
+            height: 27px;
+        }
+
+        .page-heading h2 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.2;
+            letter-spacing: -0.035em;
+        }
+
+        .page-heading p {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* CARTE FORMULAIRE */
+
+        .form-card {
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--card);
+            box-shadow: 0 16px 40px rgba(31, 42, 61, 0.07);
+        }
+
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border);
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 116, 23, 0.055),
+                    rgba(255, 255, 255, 0)
+                ),
+                #ffffff;
+        }
+
+        .form-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.3;
+        }
+
+        .form-card-header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+            padding: 8px 12px;
+            border: 1px solid #fed7bc;
+            border-radius: 999px;
+            background: #fff7f2;
+            color: #c84c00;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .step-badge::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--orange);
+            box-shadow: 0 0 0 4px rgba(255, 116, 23, 0.12);
+        }
+
+        .form-card-body {
+            padding: 28px;
+        }
+
+        /* MESSAGES */
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 14px 16px;
+            border: 1px solid;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        .message svg {
+            flex: 0 0 auto;
+            width: 20px;
+            height: 20px;
+            margin-top: 1px;
+        }
+
+        .message-info {
+            border-color: var(--info-border);
+            background: var(--info-bg);
+            color: var(--info);
+        }
+
+        .message-success {
+            border-color: var(--success-border);
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .message-error {
+            border-color: var(--danger-border);
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .campaign-link {
+            display: inline-block;
+            max-width: 100%;
+            margin-top: 5px;
+            overflow-wrap: anywhere;
+            color: inherit;
+            font-weight: 700;
+        }
+
+        /* FORMULAIRE */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 22px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            color: #344054;
+            font-size: 14px;
+            font-weight: 800;
         }
 
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
+        .field-help {
+            margin: 7px 0 0;
+            color: #98a2b3;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .field-icon {
+            position: absolute;
+            top: 17px;
+            left: 17px;
+            width: 20px;
+            height: 20px;
+            color: #98a2b3;
+            pointer-events: none;
+        }
+
+        input,
+        textarea {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            outline: none;
+            background: #ffffff;
+            color: var(--text);
             font-size: 15px;
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background-color 0.2s ease;
+        }
+
+        input {
+            height: 54px;
+            padding: 0 17px 0 50px;
+        }
+
+        textarea {
+            min-height: 145px;
+            padding: 15px 17px 15px 50px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #a4adba;
+        }
+
+        input:hover,
+        textarea:hover {
+            border-color: #bcc6d3;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--orange);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(255, 116, 23, 0.12);
+        }
+
+        /* BOUTONS */
+
+        .form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
         }
 
         .btn {
-            display: inline-block;
-            background: orange;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 16px;
-            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            min-height: 48px;
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 800;
             text-decoration: none;
             cursor: pointer;
-            margin-right: 10px;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(
+                135deg,
+                var(--orange),
+                #ff8b3d
+            );
+            box-shadow: 0 10px 22px rgba(255, 116, 23, 0.22);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(
+                135deg,
+                var(--orange-dark),
+                var(--orange)
+            );
+            box-shadow: 0 13px 26px rgba(255, 116, 23, 0.27);
         }
 
         .btn-secondary {
-            background: #6b7280;
+            border: 1px solid var(--border);
+            background: #ffffff;
+            color: #475467;
         }
 
         .btn-secondary:hover {
-            background: #4b5563;
+            transform: translateY(-1px);
+            border-color: #c7d0dc;
+            background: #f8fafc;
         }
 
-        .info {
-            background: #fff7e6;
-            border: 1px solid #f5d28c;
-            color: #8a5a00;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 18px;
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+            :root {
+                --sidebar-width: 230px;
+            }
+
+            .sidebar {
+                padding-right: 14px;
+                padding-left: 14px;
+            }
+
+            .topbar,
+            .page-content {
+                padding-right: 24px;
+                padding-left: 24px;
+            }
         }
 
-        .success {
-            background: #e8f7e8;
-            border: 1px solid #b7e1b7;
-            color: #256029;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 18px;
+        @media (max-width: 720px) {
+            .app-shell {
+                display: block;
+            }
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                min-height: auto;
+                padding: 16px;
+            }
+
+            .sidebar-brand {
+                padding: 0;
+            }
+
+            .sidebar-logo {
+                max-width: 205px;
+            }
+
+            .sidebar-label,
+            .sidebar-nav,
+            .sidebar-footer,
+            .sidebar::after {
+                display: none;
+            }
+
+            .main-content {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .topbar {
+                position: relative;
+                min-height: 68px;
+                padding: 13px 18px;
+            }
+
+            .topbar-title p,
+            .topbar-user span {
+                display: none;
+            }
+
+            .page-content {
+                padding: 26px 18px 40px;
+            }
+
+            .page-heading {
+                margin-bottom: 22px;
+            }
+
+            .page-heading h2 {
+                font-size: 24px;
+            }
+
+            .page-heading-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .form-card-header,
+            .form-card-body {
+                padding: 21px;
+            }
+
+            .form-card-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .form-actions {
+                align-items: stretch;
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+            }
         }
 
-        .error {
-            background: #fdeaea;
-            border: 1px solid #f5b5b5;
-            color: #a12626;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 18px;
+        @media (max-width: 420px) {
+            .page-heading-main {
+                align-items: flex-start;
+            }
+
+            .page-heading-icon {
+                display: none;
+            }
+
+            .form-card {
+                border-radius: 16px;
+            }
+
+            .form-card-header,
+            .form-card-body {
+                padding: 18px;
+            }
+
+            input {
+                padding-left: 45px;
+            }
+
+            textarea {
+                padding-left: 45px;
+            }
+
+            .field-icon {
+                left: 15px;
+            }
         }
     </style>
 </head>
+
 <body>
+    <div class="app-shell">
 
-<div class="header">
-    <div class="header-left">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-        <h2>Etude de potentiel</h2>
-    </div>
-
-    <div class="header-right">
-        <span>👤 {{ current_user }}</span>
-        <a href="{{ url_for('logout') }}" class="logout-btn">Déconnexion</a>
-    </div>
-</div>
-
-<div class="page">
-    <div class="box">
-        <h3>Créer une campagne ciblée</h3>
-
-        <div class="info">
-            Étape 4 : cette page enregistre maintenant une campagne dans la base.
-        </div>
-
-        {% if success %}
-            <div class="success">{{ success }}</div>
-        {% endif %}
-        
-        {% if campaign_link %}
-            <div class="success">
-                Lien client : <br>
-                <a href="{{ campaign_link }}" target="_blank">{{ campaign_link }}</a>
-            </div>
-        {% endif %}
-
-        {% if error %}
-            <div class="error">{{ error }}</div>
-        {% endif %}
-
-        <form method="POST">
-            <div class="form-group">
-                <label for="campaign_name">Nom de la campagne</label>
-                <input
-                    type="text"
-                    id="campaign_name"
-                    name="campaign_name"
-                    placeholder="Exemple : Campagne Boulangeries Nantes"
-                    value="{{ campaign_name }}"
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img
+                    class="sidebar-logo"
+                    src="{{ url_for('static', filename='logo_diffmedia_sidebar_transparent.png') }}"
+                    alt="Diffmedia"
                 >
             </div>
 
-            <div class="form-group">
-                <label for="campaign_notes">Notes</label>
-                <textarea
-                    id="campaign_notes"
-                    name="campaign_notes"
-                    rows="4"
-                    placeholder="Notes internes, remarques, objectif de la campagne..."
-                >{{ campaign_notes }}</textarea>
+            <div class="sidebar-label">Navigation</div>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('index') }}" class="nav-item">
+                    <span class="nav-icon">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M3 11.5 12 4l9 7.5"></path>
+                            <path d="M5 10v10h14V10"></path>
+                        </svg>
+                    </span>
+
+                    <span>Étude de potentiel</span>
+                </a>
+
+                <div class="nav-item active">
+                    <span class="nav-icon">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                            <path d="M16 3v4"></path>
+                            <path d="M8 3v4"></path>
+                            <path d="M3 11h18"></path>
+                            <path d="M12 14v4"></path>
+                            <path d="M10 16h4"></path>
+                        </svg>
+                    </span>
+
+                    <span>Créer une campagne</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-card">
+                    <div class="user-line">
+                        <div class="user-avatar">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.9"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <circle cx="12" cy="8" r="4"></circle>
+                                <path d="M4 21a8 8 0 0 1 16 0"></path>
+                            </svg>
+                        </div>
+
+                        <div class="user-info">
+                            <div class="user-name">{{ current_user }}</div>
+                            <div class="user-role">Espace Diffmedia</div>
+                        </div>
+                    </div>
+
+                    <a href="{{ url_for('logout') }}" class="logout-link">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.9"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <path d="M10 17l5-5-5-5"></path>
+                            <path d="M15 12H3"></path>
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        </svg>
+
+                        <span>Déconnexion</span>
+                    </a>
+                </div>
             </div>
+        </aside>
 
-            <button type="submit" class="btn">Enregistrer la campagne</button>
-            <a href="{{ url_for('index') }}" class="btn btn-secondary">Retour à la carte</a>
-        </form>
+        <main class="main-content">
+
+            <header class="topbar">
+                <div class="topbar-title">
+                    <h1>Création de campagne</h1>
+                    <p>Enregistrez une nouvelle campagne ciblée.</p>
+                </div>
+
+                <div class="topbar-user">
+                    <div class="topbar-user-icon">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.9"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 21a8 8 0 0 1 16 0"></path>
+                        </svg>
+                    </div>
+
+                    <span>{{ current_user }}</span>
+                </div>
+            </header>
+
+            <div class="page-content">
+
+                <div class="page-heading">
+                    <div class="page-heading-main">
+                        <div class="page-heading-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"></path>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <h2>Créer une campagne ciblée</h2>
+                            <p>
+                                Renseignez les informations générales de votre
+                                nouvelle campagne.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="form-card">
+                    <div class="form-card-header">
+                        <div>
+                            <h3>Informations de la campagne</h3>
+                            <p>
+                                Les informations pourront être consultées
+                                depuis la fiche de la campagne.
+                            </p>
+                        </div>
+
+                        <div class="step-badge">Étape 4</div>
+                    </div>
+
+                    <div class="form-card-body">
+
+                        <div class="message message-info">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 16v-4"></path>
+                                <path d="M12 8h.01"></path>
+                            </svg>
+
+                            <span>
+                                Étape 4 : cette page enregistre maintenant une
+                                campagne dans la base.
+                            </span>
+                        </div>
+
+                        {% if success %}
+                            <div class="message message-success">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="m8 12 2.7 2.7L16.5 9"></path>
+                                </svg>
+
+                                <span>{{ success }}</span>
+                            </div>
+                        {% endif %}
+
+                        {% if campaign_link %}
+                            <div class="message message-success">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+
+                                <span>
+                                    Lien client :<br>
+                                    <a
+                                        href="{{ campaign_link }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="campaign-link"
+                                    >
+                                        {{ campaign_link }}
+                                    </a>
+                                </span>
+                            </div>
+                        {% endif %}
+
+                        {% if error %}
+                            <div class="message message-error">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 8v4"></path>
+                                    <path d="M12 16h.01"></path>
+                                </svg>
+
+                                <span>{{ error }}</span>
+                            </div>
+                        {% endif %}
+
+                        <form method="POST">
+                            <div class="form-grid">
+
+                                <div class="form-group">
+                                    <label for="campaign_name">
+                                        Nom de la campagne
+                                    </label>
+
+                                    <div class="input-wrapper">
+                                        <svg
+                                            class="field-icon"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="1.8"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            aria-hidden="true"
+                                        >
+                                            <path d="M4 4h16v16H4z"></path>
+                                            <path d="M8 9h8"></path>
+                                            <path d="M8 13h6"></path>
+                                        </svg>
+
+                                        <input
+                                            type="text"
+                                            id="campaign_name"
+                                            name="campaign_name"
+                                            placeholder="Exemple : Campagne Boulangeries Nantes"
+                                            value="{{ campaign_name }}"
+                                        >
+                                    </div>
+
+                                    <p class="field-help">
+                                        Choisissez un nom facilement identifiable
+                                        dans votre liste de campagnes.
+                                    </p>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="campaign_notes">Notes</label>
+
+                                    <div class="input-wrapper">
+                                        <svg
+                                            class="field-icon"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="1.8"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            aria-hidden="true"
+                                        >
+                                            <path d="M4 4h16v16H4z"></path>
+                                            <path d="M8 9h8"></path>
+                                            <path d="M8 13h8"></path>
+                                            <path d="M8 17h5"></path>
+                                        </svg>
+
+                                        <textarea
+                                            id="campaign_notes"
+                                            name="campaign_notes"
+                                            rows="4"
+                                            placeholder="Notes internes, remarques, objectif de la campagne..."
+                                        >{{ campaign_notes }}</textarea>
+                                    </div>
+
+                                    <p class="field-help">
+                                        Ajoutez si nécessaire des remarques ou des
+                                        informations utiles au suivi.
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            <div class="form-actions">
+                                <a
+                                    href="{{ url_for('index') }}"
+                                    class="btn btn-secondary"
+                                >
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="m15 18-6-6 6-6"></path>
+                                    </svg>
+
+                                    <span>Retour à la carte</span>
+                                </a>
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+                                        <path d="M17 21v-8H7v8"></path>
+                                        <path d="M7 3v5h8"></path>
+                                    </svg>
+
+                                    <span>Enregistrer la campagne</span>
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
     </div>
-</div>
-
 </body>
 </html>
