@@ -1,95 +1,343 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mes campagnes</title>
 
     <style>
+        :root {
+            --dm-orange: #ff7417;
+            --dm-orange-dark: #e95e00;
+            --dm-orange-soft: #fff3e8;
+            --dm-navy: #111a2c;
+            --dm-bg: #f3f6fa;
+            --dm-card: #ffffff;
+            --dm-text: #111827;
+            --dm-muted: #64748b;
+            --dm-border: #e4e9f0;
+            --dm-sidebar-width: 338px;
+            --dm-sidebar-collapsed-width: 84px;
+            --dm-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #eceff3;
             margin: 0;
+            background: var(--dm-bg);
+            color: var(--dm-text);
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-        .header {
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        .app-shell {
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 1000;
+            width: var(--dm-sidebar-width);
             display: flex;
+            flex-direction: column;
+            color: #fff;
+            background: linear-gradient(180deg, #1d2331 0%, #111a2c 52%, #101827 100%);
+            border-right: 1px solid rgba(255,255,255,.08);
+            transition: width .22s ease, transform .22s ease;
+        }
+
+        .sidebar-brand {
+            min-height: 106px;
+            display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            padding: 12px 18px;
-            background: #f4f4f4;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
             gap: 12px;
+            padding: 20px 16px 18px 20px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
         }
 
-        .header img {
-            height: 54px;
+        .sidebar-logo {
+            width: 225px;
+            max-width: calc(100% - 48px);
+            max-height: 70px;
+            object-fit: contain;
+            object-position: left center;
+            display: block;
+            transition: width .22s ease, opacity .18s ease;
         }
 
-        .header h2 {
-            margin: 0;
-            font-size: 24px;
+        .sidebar-collapse-btn {
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255,255,255,.16);
+            border-radius: 13px;
+            background: rgba(255,255,255,.08);
+            color: #fff;
+            font-size: 28px;
+            line-height: 1;
+            cursor: pointer;
+            transition: background .18s ease, transform .22s ease;
         }
 
-        .header-actions {
+        .sidebar-collapse-btn:hover {
+            background: rgba(255,255,255,.14);
+        }
+
+        .sidebar-scroll {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 20px 12px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 27px;
+        }
+
+        .sidebar-section-label {
+            margin: 0 14px 10px;
+            color: #78869d;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-link {
+            min-height: 52px;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 14px;
+            margin: 4px 0;
+            padding: 13px 16px;
+            border-radius: 15px;
+            color: #d8e0ec;
+            text-decoration: none;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: background .16s ease, color .16s ease, transform .16s ease;
         }
 
-        .top-btn {
-            background: #f97316;
-            color: white;
-            padding: 8px 14px;
-            border-radius: 8px;
-            text-decoration: none;
+        .sidebar-link:hover {
+            background: rgba(255,255,255,.07);
+            color: #fff;
+            transform: translateX(2px);
+        }
+
+        .sidebar-link.active {
+            color: #fff;
+            background: linear-gradient(135deg, #ff8a32, var(--dm-orange));
+            box-shadow: 0 12px 26px rgba(255,116,23,.27);
+        }
+
+        .sidebar-icon {
+            width: 32px;
+            flex: 0 0 32px;
+            display: grid;
+            place-items: center;
+            font-size: 20px;
+        }
+
+        .sidebar-link-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px 12px;
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 16px;
+            background: rgba(255,255,255,.07);
+        }
+
+        .sidebar-avatar {
+            width: 48px;
+            height: 48px;
+            flex: 0 0 48px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            background: rgba(255,116,23,.19);
+            font-size: 22px;
+        }
+
+        .sidebar-user-info {
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-user-info strong {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sidebar-user-info span {
+            color: #8794aa;
+            font-size: 12px;
+        }
+
+        .sidebar-logout {
+            color: #fda4af;
+        }
+
+        .app-main {
+            min-height: 100vh;
+            width: calc(100% - var(--dm-sidebar-width));
+            margin-left: var(--dm-sidebar-width);
+            transition: width .22s ease, margin-left .22s ease;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 800;
+            min-height: 108px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 28px;
+            background: #fff;
+            border-bottom: 1px solid var(--dm-border);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        .topbar-icon {
+            width: 58px;
+            height: 58px;
+            flex: 0 0 58px;
+            display: grid;
+            place-items: center;
+            border-radius: 17px;
+            background: var(--dm-orange-soft);
+            font-size: 28px;
+        }
+
+        .topbar-title h1 {
+            margin: 0;
+            font-size: 31px;
+            line-height: 1.08;
+            letter-spacing: -.03em;
+        }
+
+        .topbar-title p {
+            margin: 6px 0 0;
+            color: var(--dm-muted);
             font-size: 14px;
         }
 
-        .top-btn:hover {
-            background: #ea580c;
+        .mobile-menu-btn {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--dm-border);
+            border-radius: 12px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 21px;
         }
 
         .page {
-            padding: 24px;
-        }
-
-        .box {
-            background: white;
-            max-width: 1100px;
+            max-width: 1500px;
             margin: 0 auto;
-            padding: 24px;
-            border-radius: 14px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 24px 26px 38px;
         }
 
-        h1 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-size: 30px;
+        .hero {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            padding: 28px;
+            border: 1px solid var(--dm-border);
+            border-radius: 21px;
+            background: linear-gradient(135deg, #fff 0%, #fffaf5 100%);
+            box-shadow: var(--dm-shadow);
         }
 
-        .subtitle {
-            color: #666;
-            margin-bottom: 24px;
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 6px;
+            background: linear-gradient(180deg, #ff9a3c, var(--dm-orange));
+        }
+
+        .page-type {
+            margin-bottom: 7px;
+            color: var(--dm-orange-dark);
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .hero h2 {
+            margin: 0;
+            font-size: clamp(30px, 4vw, 44px);
+            line-height: 1.05;
+            letter-spacing: -.04em;
+        }
+
+        .hero p {
+            margin: 10px 0 0;
+            color: var(--dm-muted);
+            font-size: 15px;
+        }
+
+        .campaign-list {
+            display: grid;
+            gap: 16px;
         }
 
         .campaign {
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 14px;
-            background: #f9fafb;
+            padding: 22px;
+            border: 1px solid var(--dm-border);
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: var(--dm-shadow);
         }
 
         .campaign-row {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 24px;
+            gap: 28px;
         }
 
         .campaign-main {
@@ -98,23 +346,30 @@
         }
 
         .campaign-name {
-            font-weight: bold;
-            font-size: 20px;
-            margin-bottom: 12px;
-            word-break: break-word;
+            margin-bottom: 14px;
+            font-size: 23px;
+            font-weight: 900;
+            letter-spacing: -.02em;
+            overflow-wrap: anywhere;
+        }
+
+        .campaign-meta-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            margin-bottom: 14px;
         }
 
         .campaign-meta {
-            font-size: 14px;
-            color: #444;
-            margin-bottom: 6px;
-        }
-
-        .campaign-token {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: #f8fafc;
+            color: #475569;
             font-size: 13px;
-            color: #666;
-            margin-top: 10px;
-            word-break: break-all;
+            font-weight: 700;
         }
 
         .zones-block {
@@ -122,10 +377,12 @@
         }
 
         .zones-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #374151;
-            margin-bottom: 8px;
+            margin-bottom: 9px;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .04em;
         }
 
         .zones-list {
@@ -137,209 +394,448 @@
         .zone-chip {
             display: inline-flex;
             align-items: center;
-            background: #f97316;
-            color: white;
-            padding: 7px 12px;
+            padding: 7px 11px;
             border-radius: 999px;
+            background: var(--dm-orange-soft);
+            color: var(--dm-orange-dark);
+            border: 1px solid #fed7aa;
             font-size: 13px;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+            font-weight: 900;
+        }
+
+        .campaign-token {
+            margin-top: 15px;
+            padding: 10px 12px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 11px;
+            background: #fbfcfe;
+            color: #64748b;
+            font-size: 12px;
+            word-break: break-all;
         }
 
         .priority-badges {
             display: flex;
-            gap: 10px;
+            gap: 9px;
             flex-wrap: wrap;
-            margin-top: 12px;
+            margin-top: 14px;
         }
 
         .badge {
-            display: inline-block;
-            padding: 6px 10px;
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 11px;
             border-radius: 999px;
+            color: #fff;
             font-size: 13px;
-            font-weight: bold;
-            color: white;
+            font-weight: 900;
         }
 
-        .badge-p1 {
-            background: #3b82f6;
-        }
-
-        .badge-p2 {
-            background: #f59e0b;
-        }
-
-        .badge-p3 {
-            background: #ef4444;
-        }
+        .badge-p1 { background: #3b82f6; }
+        .badge-p2 { background: #f59e0b; }
+        .badge-p3 { background: #ef4444; }
 
         .campaign-actions {
+            width: 230px;
             display: flex;
             flex-direction: column;
             gap: 10px;
             flex-shrink: 0;
-            min-width: 220px;
         }
 
         .btn {
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            width: 100%;
             padding: 10px 14px;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 11px;
             text-decoration: none;
             font-size: 14px;
-            display: block;
-            text-align: center;
-            box-sizing: border-box;
-            width: 100%;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform .15s ease, opacity .15s ease, box-shadow .15s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
         }
 
         .btn-open {
-            background: orange;
-            color: white;
+            background: linear-gradient(135deg, #ff8d31, var(--dm-orange));
+            color: #fff;
+            box-shadow: 0 7px 16px rgba(255,116,23,.22);
         }
 
         .btn-copy {
-            background: #4b5563;
-            color: white;
+            background: #eef2f7;
+            color: #273349;
         }
 
         .btn-delete {
-            background: #ef4444;
-            color: white;
-        }
-
-        .btn-open:hover,
-        .btn-copy:hover,
-        .btn-delete:hover {
-            opacity: 0.92;
+            background: #fff1f2;
+            color: #be123c;
+            border: 1px solid #fecdd3;
         }
 
         .copy-msg {
-            font-size: 13px;
-            color: green;
-            margin-top: 10px;
             display: none;
+            margin-top: 12px;
+            color: #15803d;
+            font-size: 13px;
+            font-weight: 800;
         }
 
         .empty {
-            color: #666;
+            padding: 32px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 16px;
+            background: #fff;
+            color: var(--dm-muted);
+            text-align: center;
             font-style: italic;
-            padding: 16px 0;
         }
 
         .delete-form {
             margin: 0;
         }
 
-        @media (max-width: 900px) {
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 950;
+            display: none;
+            background: rgba(15,23,42,.48);
+        }
+
+        body.sidebar-collapsed .sidebar {
+            width: var(--dm-sidebar-collapsed-width);
+        }
+
+        body.sidebar-collapsed .app-main {
+            width: calc(100% - var(--dm-sidebar-collapsed-width));
+            margin-left: var(--dm-sidebar-collapsed-width);
+        }
+
+        body.sidebar-collapsed .sidebar-logo {
+            width: 0;
+            opacity: 0;
+        }
+
+        body.sidebar-collapsed .sidebar-brand {
+            justify-content: center;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        body.sidebar-collapsed .sidebar-collapse-btn {
+            transform: rotate(180deg);
+        }
+
+        body.sidebar-collapsed .sidebar-section-label,
+        body.sidebar-collapsed .sidebar-link-text,
+        body.sidebar-collapsed .sidebar-user-info {
+            display: none;
+        }
+
+        body.sidebar-collapsed .sidebar-link {
+            justify-content: center;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        @media (max-width: 960px) {
+            :root {
+                --dm-sidebar-width: 300px;
+            }
+
+            .sidebar {
+                width: var(--dm-sidebar-width) !important;
+                transform: translateX(-100%);
+            }
+
+            body.mobile-sidebar-open .sidebar {
+                transform: translateX(0);
+            }
+
+            body.mobile-sidebar-open .sidebar-overlay {
+                display: block;
+            }
+
+            .app-main,
+            body.sidebar-collapsed .app-main {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: grid;
+                place-items: center;
+            }
+
+            .sidebar-collapse-btn {
+                display: none;
+            }
+
+            .page {
+                padding: 18px 14px 30px;
+            }
+        }
+
+        @media (max-width: 800px) {
             .campaign-row {
                 flex-direction: column;
             }
 
             .campaign-actions {
                 width: 100%;
-                min-width: 0;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .topbar {
+                align-items: flex-start;
+                padding: 16px 18px;
+            }
+
+            .topbar-title h1 {
+                font-size: 25px;
+            }
+
+            .hero,
+            .campaign {
+                padding: 20px 16px;
+                border-radius: 16px;
             }
         }
     </style>
 </head>
+
 <body>
 
-<div class="header">
-    <div class="header-left">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
-        <h2>Mes campagnes</h2>
-    </div>
+<div class="app-shell">
 
-    <div class="header-actions">
-        <a href="/" class="top-btn">Accueil</a>
-        <a href="/logout" class="top-btn">Déconnexion</a>
-    </div>
-</div>
+    <aside class="sidebar" id="appSidebar">
+        <div class="sidebar-brand">
+            <img class="sidebar-logo"
+                 src="{{ url_for('static', filename='logo_diffmedia_sidebar_transparent.png') }}"
+                 alt="Diffmedia">
 
-<div class="page">
-    <div class="box">
-        <h1>Mes campagnes</h1>
-        <div class="subtitle">Liste des campagnes créées</div>
+            <button type="button"
+                    class="sidebar-collapse-btn"
+                    id="sidebarCollapseBtn"
+                    aria-label="Réduire le menu">
+                ‹
+            </button>
+        </div>
 
-        {% if campaigns %}
-            {% for c in campaigns %}
-            <div class="campaign">
-                <div class="campaign-row">
+        <div class="sidebar-scroll">
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Navigation</div>
 
-                    <div class="campaign-main">
-                        <div class="campaign-name">{{ c["name"] }}</div>
+                <a class="sidebar-link"
+                   href="{{ url_for('index', reset_search=1) }}">
+                    <span class="sidebar-icon">🔎</span>
+                    <span class="sidebar-link-text">Nouvelle étude</span>
+                </a>
 
-                        <div class="campaign-meta">👤 Créée par : {{ c["created_by"] }}</div>
-                        <div class="campaign-meta">📅 Date : {{ c["created_at"] }}</div>
+                <a class="sidebar-link active"
+                   href="/campaigns">
+                    <span class="sidebar-icon">📁</span>
+                    <span class="sidebar-link-text">Mes campagnes</span>
+                </a>
 
-                        {% if c["last_update"] %}
-                        <div class="campaign-meta">
-                            ⏱️ Dernière modification client : {{ c["last_update"] }}
-                        </div>
-                        {% endif %}
+                <a class="sidebar-link"
+                   href="{{ url_for('mes_devis') }}">
+                    <span class="sidebar-icon">💶</span>
+                    <span class="sidebar-link-text">Mes devis</span>
+                </a>
+            </div>
 
-                        {% if c["search_zones_list"] %}
-                        <div class="zones-block">
-                            <div class="zones-title">Zones utilisées :</div>
-                            <div class="zones-list">
-                                {% for zone in c["search_zones_list"] %}
-                                    <span class="zone-chip">{{ zone }}</span>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
+            {% if session.role in ["manager", "admin"] %}
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Équipe</div>
 
-                        <div class="campaign-token">
-                            🔑 Token : {{ c["token"] }}
-                        </div>
+                <a class="sidebar-link"
+                   href="{{ url_for('mon_equipe') }}">
+                    <span class="sidebar-icon">👥</span>
+                    <span class="sidebar-link-text">Mon équipe</span>
+                </a>
 
-                        <div class="priority-badges">
-                            <span class="badge badge-p1">P1 : {{ c["count_p1"] or 0 }}</span>
-                            <span class="badge badge-p2">P2 : {{ c["count_p2"] or 0 }}</span>
-                            <span class="badge badge-p3">P3 : {{ c["count_p3"] or 0 }}</span>
-                        </div>
+                <a class="sidebar-link"
+                   href="{{ url_for('dashboard_equipe') }}">
+                    <span class="sidebar-icon">📊</span>
+                    <span class="sidebar-link-text">Dashboard équipe</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
 
-                        <div class="copy-msg" id="copy-msg-{{ loop.index }}">
-                            Lien copié.
-                        </div>
-                    </div>
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">👤</div>
 
-                    <div class="campaign-actions">
-                        {% if c["notes"] == "Campagne massive" %}
-                            <a href="/campaign/{{ c['token'] }}/export" class="btn btn-open">
-                                Télécharger la campagne
-                            </a>
+                <div class="sidebar-user-info">
+                    <strong>{{ session.username }}</strong>
+                    <span>
+                        {% if session.role == "admin" %}
+                            Administrateur
+                        {% elif session.role == "manager" %}
+                            Manager
                         {% else %}
-                            <a href="/campaign/{{ c['token'] }}" class="btn btn-open">
-                                Ouvrir la campagne
-                            </a>
+                            Commercial
                         {% endif %}
-
-                        <button
-                            type="button"
-                            class="btn btn-copy"
-                            onclick="copyCampaignLink('{{ request.host_url.rstrip('/') }}/campaign/{{ c['token'] }}', 'copy-msg-{{ loop.index }}')">
-                            Copier le lien client
-                        </button>
-
-                        <form method="POST" action="/campaign/{{ c['token'] }}/delete" onsubmit="return confirmDelete()" class="delete-form">
-                            <button type="submit" class="btn btn-delete">
-                                Supprimer
-                            </button>
-                        </form>
-                    </div>
-
+                    </span>
                 </div>
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty">Aucune campagne enregistrée.</div>
-        {% endif %}
 
-    </div>
+            <a class="sidebar-link sidebar-logout"
+               href="/logout">
+                <span class="sidebar-icon">🚪</span>
+                <span class="sidebar-link-text">Déconnexion</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="app-main">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <button type="button"
+                        class="mobile-menu-btn"
+                        id="mobileMenuBtn"
+                        aria-label="Ouvrir le menu">
+                    ☰
+                </button>
+
+                <div class="topbar-icon">📁</div>
+
+                <div class="topbar-title">
+                    <h1>Mes campagnes</h1>
+                    <p>Retrouvez, ouvrez et partagez les campagnes enregistrées.</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="page">
+
+            <section class="hero">
+                <div class="page-type">Campagnes enregistrées</div>
+                <h2>Suivi de vos campagnes</h2>
+                <p>Consultez les zones, priorités et liens clients associés à chaque campagne.</p>
+            </section>
+
+            {% if campaigns %}
+                <div class="campaign-list">
+                    {% for c in campaigns %}
+                    <article class="campaign">
+                        <div class="campaign-row">
+
+                            <div class="campaign-main">
+                                <div class="campaign-name">{{ c["name"] }}</div>
+
+                                <div class="campaign-meta-grid">
+                                    <div class="campaign-meta">
+                                        👤 Créée par : {{ c["created_by"] }}
+                                    </div>
+
+                                    <div class="campaign-meta">
+                                        📅 Date : {{ c["created_at"] }}
+                                    </div>
+
+                                    {% if c["last_update"] %}
+                                    <div class="campaign-meta">
+                                        ⏱️ Dernière modification client : {{ c["last_update"] }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                {% if c["search_zones_list"] %}
+                                <div class="zones-block">
+                                    <div class="zones-title">Zones utilisées</div>
+
+                                    <div class="zones-list">
+                                        {% for zone in c["search_zones_list"] %}
+                                            <span class="zone-chip">{{ zone }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="campaign-token">
+                                    🔑 Token : {{ c["token"] }}
+                                </div>
+
+                                <div class="priority-badges">
+                                    <span class="badge badge-p1">
+                                        P1 : {{ c["count_p1"] or 0 }}
+                                    </span>
+
+                                    <span class="badge badge-p2">
+                                        P2 : {{ c["count_p2"] or 0 }}
+                                    </span>
+
+                                    <span class="badge badge-p3">
+                                        P3 : {{ c["count_p3"] or 0 }}
+                                    </span>
+                                </div>
+
+                                <div class="copy-msg"
+                                     id="copy-msg-{{ loop.index }}">
+                                    Lien copié.
+                                </div>
+                            </div>
+
+                            <div class="campaign-actions">
+
+                                {% if c["notes"] == "Campagne massive" %}
+                                    <a href="/campaign/{{ c['token'] }}/export"
+                                       class="btn btn-open">
+                                        ⬇️ Télécharger la campagne
+                                    </a>
+                                {% else %}
+                                    <a href="/campaign/{{ c['token'] }}"
+                                       class="btn btn-open">
+                                        📂 Ouvrir la campagne
+                                    </a>
+                                {% endif %}
+
+                                <button
+                                    type="button"
+                                    class="btn btn-copy"
+                                    onclick="copyCampaignLink('{{ request.host_url.rstrip('/') }}/campaign/{{ c['token'] }}', 'copy-msg-{{ loop.index }}')">
+                                    🔗 Copier le lien client
+                                </button>
+
+                                <form method="POST"
+                                      action="/campaign/{{ c['token'] }}/delete"
+                                      onsubmit="return confirmDelete()"
+                                      class="delete-form">
+
+                                    <button type="submit"
+                                            class="btn btn-delete">
+                                        🗑️ Supprimer
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty">
+                    Aucune campagne enregistrée.
+                </div>
+            {% endif %}
+
+        </div>
+    </main>
 </div>
 
 <script>
@@ -351,6 +847,45 @@ function copyCampaignLink(link, messageId) {
 function confirmDelete() {
     return confirm("Supprimer cette campagne ?");
 }
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const body = document.body;
+    const sidebarCollapseBtn = document.getElementById("sidebarCollapseBtn");
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+    if (
+        localStorage.getItem("diffmediaSidebarCollapsed") === "1"
+        && window.innerWidth > 960
+    ) {
+        body.classList.add("sidebar-collapsed");
+    }
+
+    if (sidebarCollapseBtn) {
+        sidebarCollapseBtn.addEventListener("click", function () {
+            body.classList.toggle("sidebar-collapsed");
+
+            localStorage.setItem(
+                "diffmediaSidebarCollapsed",
+                body.classList.contains("sidebar-collapsed") ? "1" : "0"
+            );
+        });
+    }
+
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener("click", function () {
+            body.classList.add("mobile-sidebar-open");
+        });
+    }
+
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener("click", function () {
+            body.classList.remove("mobile-sidebar-open");
+        });
+    }
+});
 </script>
 
 </body>
