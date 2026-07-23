@@ -2039,6 +2039,41 @@
             }
         }
 
+
+        /* Correction de l’alignement des fenêtres de recherche */
+        #typesSearchCell {
+            min-width: 0;
+        }
+
+        #typesSearchCell .types-dropdown,
+        #typesSearchCell .types-button,
+        #typesSearchCell .types-panel {
+            width: 100%;
+        }
+
+        #typesSearchCell .types-button {
+            display: block;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .search-field .search-cell,
+        .search-field select,
+        .search-field input,
+        .search-field .types-button {
+            width: 100%;
+        }
+
+        /*
+         * Les champs restants se redistribuent automatiquement lorsque
+         * "Types de commerces" est masqué en recherche par support.
+         */
+        .search-bar {
+            grid-auto-flow: row;
+        }
+
     </style>
 </head>
 
@@ -2176,8 +2211,8 @@
             <div class="welcome-kicker">Bonjour {{ current_user }} !</div>
             <h2>Trouvez les commerces<br>où <span>diffuser</span> vos messages.</h2>
             <p>
-                Recherchez les meilleurs points de diffusion parmi plus de
-                65&nbsp;000 commerces partenaires en France métropolitaine.
+                Recherchez des points de diffusion parmi plus de
+                65&nbsp;000 commerces en France métropolitaine.
             </p>
 
             <div class="welcome-stats">
@@ -3877,7 +3912,12 @@ function updateSearchModeDisplay() {
     if (selectedMode === "support") {
         typesCell.style.display = "none";
     } else {
-        typesCell.style.display = "flex";
+        /*
+         * Le conteneur doit rester un bloc vertical :
+         * le libellé au-dessus, puis la fenêtre de sélection.
+         * "flex" plaçait le libellé à côté et écrasait la largeur du menu.
+         */
+        typesCell.style.display = "block";
     }
 }
 
