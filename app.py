@@ -5370,7 +5370,7 @@ def mon_equipe():
             <header class="top-nav">
                 <div class="nav-brand">
                     <div class="brand-icon">
-                        <img src="{{ url_for('static', filename='logo.png') }}" alt="Diffmedia">
+                        <img src="/static/logo.png" alt="Diffmedia">
                     </div>
 
                     <div class="brand-text">
