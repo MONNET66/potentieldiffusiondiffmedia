@@ -2076,7 +2076,7 @@
 
 
         /* =========================================================
-           FINITIONS V2 — BOUTON ET MENUS HOMOGÈNES
+           VERSION V3 STABLE — MENUS NATIFS ET CARTE DE FRANCE
            ========================================================= */
 
         .search-submit-zone {
@@ -2089,25 +2089,25 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            min-height: 45px;
+            padding: 0 46px 0 22px;
             overflow: hidden;
-            padding: 0 44px 0 20px;
             text-align: center;
         }
 
         .search-button-label {
             display: block;
-            min-width: 0;
+            width: 100%;
             overflow: hidden;
+            text-align: center;
             text-overflow: ellipsis;
             white-space: nowrap;
-            text-align: center;
         }
 
         .search-button-icon {
             position: absolute;
-            right: 17px;
             top: 50%;
+            right: 17px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -2116,165 +2116,133 @@
             line-height: 1;
         }
 
-        /* Le menu "Types de commerces" devient la référence visuelle. */
-        .types-panel,
-        .dm-select-menu {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            left: 0;
-            z-index: 5000;
+        /*
+         * Tous les menus simples restent des SELECT natifs :
+         * même hauteur, même bordure et comportement fiable.
+         */
+        .search-card .search-cell select {
             width: 100%;
-            min-width: 230px;
-            max-height: 330px;
-            overflow-x: hidden;
-            overflow-y: auto;
-            padding: 8px;
-            border: 1px solid #dce3eb;
-            border-radius: 14px;
-            background: #ffffff;
-            box-shadow: 0 18px 42px rgba(15, 23, 42, .16);
-        }
-
-        .types-panel {
-            display: none;
-        }
-
-        .types-panel.open {
-            display: block;
-        }
-
-        .types-panel::-webkit-scrollbar,
-        .dm-select-menu::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .types-panel::-webkit-scrollbar-track,
-        .dm-select-menu::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .types-panel::-webkit-scrollbar-thumb,
-        .dm-select-menu::-webkit-scrollbar-thumb {
-            border: 2px solid #ffffff;
-            border-radius: 999px;
-            background: #94a3b8;
-        }
-
-        .type-option,
-        .dm-select-option {
+            min-width: 0;
             min-height: 43px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 10px;
-            border-radius: 9px;
-            color: #172033;
-            font-size: 14px;
-            line-height: 1.3;
-            cursor: pointer;
-            transition: background .14s ease, color .14s ease;
-        }
-
-        .type-option:hover,
-        .dm-select-option:hover {
-            background: #fff7ed;
-            color: #c2410c;
-        }
-
-        .dm-select-option.selected {
-            background: #fff1e8;
-            color: #c2410c;
-            font-weight: 900;
-        }
-
-        .dm-select-option.selected::before {
-            content: "✓";
-            flex: 0 0 18px;
-            color: var(--dm-orange);
-            font-weight: 900;
-        }
-
-        .dm-select {
-            position: relative;
-            width: 100%;
-        }
-
-        .dm-native-select {
-            position: absolute !important;
-            width: 1px !important;
-            height: 1px !important;
-            margin: -1px !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-            clip: rect(0 0 0 0) !important;
-            clip-path: inset(50%) !important;
-            white-space: nowrap !important;
-            border: 0 !important;
-        }
-
-        .dm-select-trigger {
-            position: relative;
-            width: 100%;
-            min-height: 43px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 11px 36px 11px 12px;
-            overflow: hidden;
-            border: none;
+            padding: 11px 38px 11px 12px;
+            border: 0;
+            outline: 0;
             border-radius: 10px;
+            background-color: transparent;
+            color: #111827;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .search-card .search-cell input {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .search-card .search-cell:focus-within {
+            border-color: var(--dm-orange);
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, .11);
+        }
+
+        /*
+         * Le seul menu multisélection reste Types de commerces.
+         * Il prend exactement la largeur de son champ et garde son aspect liste.
+         */
+        #typesSearchCell {
+            display: block;
+            min-width: 0;
+        }
+
+        #typesSearchCell .types-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        #typesSearchCell .types-button {
+            width: 100%;
+            min-width: 0;
+            min-height: 43px;
+            display: block;
+            padding: 11px 38px 11px 12px;
+            overflow: hidden;
+            border: 0;
             background: transparent;
             color: #111827;
             font-family: inherit;
             font-size: 12px;
             font-weight: 700;
             text-align: left;
-            cursor: pointer;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .dm-select-trigger::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            right: 14px;
-            width: 7px;
-            height: 7px;
-            border-right: 2px solid #334155;
-            border-bottom: 2px solid #334155;
-            transform: translateY(-68%) rotate(45deg);
-            transition: transform .16s ease;
+        #typesSearchCell .types-panel {
+            right: 0;
+            left: 0;
+            width: 100%;
+            min-width: 245px;
+            max-height: 330px;
+            padding: 8px;
+            overflow-x: hidden;
+            border: 1px solid #dce3eb;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 18px 42px rgba(15, 23, 42, .16);
         }
 
-        .dm-select.open .dm-select-trigger::after {
-            transform: translateY(-30%) rotate(225deg);
+        #typesSearchCell .type-option {
+            width: 100%;
+            min-height: 42px;
+            padding: 9px 10px;
+            border-radius: 9px;
+            background: transparent;
         }
 
-        .dm-select-value {
+        #typesSearchCell .type-option:hover {
+            background: #fff7ed;
+        }
+
+        #typesSearchCell .type-option label {
             min-width: 0;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .dm-select-menu {
-            display: none;
+        #typesSearchCell .types-panel::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .dm-select.open .dm-select-menu {
-            display: block;
+        #typesSearchCell .types-panel::-webkit-scrollbar-thumb {
+            border: 2px solid #ffffff;
+            border-radius: 999px;
+            background: #94a3b8;
         }
 
-        .search-cell:focus-within {
-            border-color: var(--dm-orange);
-            box-shadow: 0 0 0 4px rgba(249, 115, 22, .11);
+        .france-visual {
+            min-height: 280px;
         }
 
-        /*
-         * Sur les écrans où tous les critères ne peuvent pas tenir,
-         * les champs passent proprement à la ligne au lieu d’écraser le bouton.
-         */
+        .france-visual svg {
+            width: min(100%, 510px);
+            height: 100%;
+        }
+
+        .france-shape {
+            fill: url(#dmDots);
+            stroke: #b7cbe0;
+            stroke-width: 2.4;
+            stroke-linejoin: round;
+        }
+
+        .france-points circle {
+            fill: #ff7417;
+            stroke: #ffffff;
+            stroke-width: 3;
+        }
+
         @media (max-width: 1750px) {
             .search-bar {
                 grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2297,11 +2265,10 @@
             }
 
             .search-button {
-                padding-right: 44px;
+                padding-right: 46px;
             }
 
-            .types-panel,
-            .dm-select-menu {
+            #typesSearchCell .types-panel {
                 min-width: 100%;
             }
         }
@@ -2488,31 +2455,58 @@
                 <path
                     class="france-shape"
                     filter="url(#dmFranceShadow)"
-                    d="M174 33
-                       L259 24 L314 57 L365 70 L392 112
-                       L420 150 L403 196 L423 237 L385 264
-                       L362 313 L317 346 L271 334 L229 365
-                       L194 329 L143 324 L118 283 L75 265
-                       L87 218 L57 180 L85 145 L80 101
-                       L130 88 Z">
+                    d="M167 35
+                       L233 26
+                       L276 42
+                       L310 63
+                       L353 66
+                       L382 93
+                       L411 128
+                       L399 160
+                       L421 192
+                       L401 223
+                       L409 253
+                       L381 274
+                       L367 308
+                       L333 329
+                       L308 352
+                       L276 341
+                       L247 361
+                       L221 343
+                       L193 352
+                       L173 329
+                       L137 326
+                       L119 298
+                       L91 286
+                       L82 254
+                       L60 231
+                       L74 201
+                       L58 175
+                       L80 151
+                       L72 121
+                       L96 101
+                       L92 82
+                       L126 80
+                       L144 57 Z">
                 </path>
 
                 <g class="france-points">
-                    <circle cx="155" cy="82" r="7"/>
-                    <circle cx="250" cy="65" r="10"/>
-                    <circle cx="326" cy="92" r="6"/>
-                    <circle cx="121" cy="146" r="5"/>
-                    <circle cx="203" cy="131" r="12"/>
-                    <circle cx="286" cy="138" r="8"/>
-                    <circle cx="360" cy="155" r="6"/>
-                    <circle cx="150" cy="211" r="8"/>
-                    <circle cx="238" cy="207" r="14"/>
-                    <circle cx="328" cy="219" r="10"/>
-                    <circle cx="112" cy="270" r="5"/>
-                    <circle cx="191" cy="279" r="9"/>
-                    <circle cx="275" cy="282" r="12"/>
-                    <circle cx="344" cy="290" r="7"/>
-                    <circle cx="231" cy="330" r="6"/>
+                    <circle cx="151" cy="78" r="6"/>
+                    <circle cx="225" cy="68" r="10"/>
+                    <circle cx="302" cy="84" r="6"/>
+                    <circle cx="353" cy="114" r="5"/>
+                    <circle cx="118" cy="137" r="5"/>
+                    <circle cx="191" cy="132" r="12"/>
+                    <circle cx="269" cy="137" r="8"/>
+                    <circle cx="350" cy="166" r="6"/>
+                    <circle cx="130" cy="207" r="8"/>
+                    <circle cx="224" cy="204" r="14"/>
+                    <circle cx="310" cy="215" r="10"/>
+                    <circle cx="103" cy="269" r="5"/>
+                    <circle cx="175" cy="276" r="9"/>
+                    <circle cx="257" cy="284" r="12"/>
+                    <circle cx="329" cy="286" r="7"/>
+                    <circle cx="217" cy="329" r="6"/>
                 </g>
             </svg>
         </div>
@@ -4312,120 +4306,6 @@ document.querySelectorAll('input[name="search_mode"]').forEach(function (radio) 
         if (activeTab) activeTab.classList.add("active");
     });
 });
-</script>
-
-
-<script>
-(function initialiseDiffmediaSelects() {
-    function closeAllSelects(exceptElement) {
-        document.querySelectorAll(".dm-select.open").forEach(function (wrapper) {
-            if (wrapper !== exceptElement) {
-                wrapper.classList.remove("open");
-            }
-        });
-    }
-
-    function refreshCustomSelect(select, wrapper) {
-        const selectedOption =
-            select.options[select.selectedIndex] || select.options[0];
-        const valueElement = wrapper.querySelector(".dm-select-value");
-
-        if (valueElement && selectedOption) {
-            valueElement.textContent = selectedOption.textContent.trim();
-        }
-
-        wrapper.querySelectorAll(".dm-select-option").forEach(function (optionButton) {
-            optionButton.classList.toggle(
-                "selected",
-                optionButton.dataset.value === select.value
-            );
-        });
-    }
-
-    function createCustomSelect(select) {
-        if (!select || select.dataset.dmSelectReady === "1") return;
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "dm-select";
-
-        const trigger = document.createElement("button");
-        trigger.type = "button";
-        trigger.className = "dm-select-trigger";
-        trigger.setAttribute("aria-haspopup", "listbox");
-        trigger.setAttribute("aria-expanded", "false");
-
-        const valueElement = document.createElement("span");
-        valueElement.className = "dm-select-value";
-        trigger.appendChild(valueElement);
-
-        const menu = document.createElement("div");
-        menu.className = "dm-select-menu";
-        menu.setAttribute("role", "listbox");
-
-        Array.from(select.options).forEach(function (option) {
-            const optionButton = document.createElement("button");
-            optionButton.type = "button";
-            optionButton.className = "dm-select-option";
-            optionButton.dataset.value = option.value;
-            optionButton.textContent = option.textContent.trim();
-            optionButton.setAttribute("role", "option");
-
-            if (option.disabled) {
-                optionButton.disabled = true;
-            }
-
-            optionButton.addEventListener("click", function () {
-                select.value = option.value;
-                select.dispatchEvent(new Event("change", { bubbles: true }));
-
-                refreshCustomSelect(select, wrapper);
-                wrapper.classList.remove("open");
-                trigger.setAttribute("aria-expanded", "false");
-            });
-
-            menu.appendChild(optionButton);
-        });
-
-        select.parentNode.insertBefore(wrapper, select);
-        wrapper.appendChild(select);
-        wrapper.appendChild(trigger);
-        wrapper.appendChild(menu);
-
-        select.classList.add("dm-native-select");
-        select.dataset.dmSelectReady = "1";
-
-        trigger.addEventListener("click", function (event) {
-            event.stopPropagation();
-
-            const willOpen = !wrapper.classList.contains("open");
-            closeAllSelects(wrapper);
-            wrapper.classList.toggle("open", willOpen);
-            trigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
-        });
-
-        select.addEventListener("change", function () {
-            refreshCustomSelect(select, wrapper);
-        });
-
-        refreshCustomSelect(select, wrapper);
-    }
-
-    document.querySelectorAll(".search-card .search-cell select").forEach(
-        createCustomSelect
-    );
-
-    document.addEventListener("click", function (event) {
-        if (!event.target.closest(".dm-select")) {
-            closeAllSelects();
-        }
-    });
-
-    document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-            closeAllSelects();
-        }
-    });
-})();
 </script>
 
 </body>
