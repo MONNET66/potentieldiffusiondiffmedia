@@ -4830,20 +4830,20 @@ def mon_equipe():
                 }}
 
                 .brand-icon {{
-                    width: 42px;
+                    width: 118px;
                     height: 42px;
-                    border-radius: 13px;
-                    background: linear-gradient(
-                        135deg,
-                        var(--orange),
-                        #fb923c
-                    );
-                    color: white;
                     display: flex;
                     align-items: center;
-                    justify-content: center;
-                    font-size: 21px;
-                    box-shadow: 0 9px 20px rgba(249, 115, 22, 0.24);
+                    justify-content: flex-start;
+                    flex-shrink: 0;
+                }}
+
+                .brand-icon img {{
+                    width: 118px;
+                    max-height: 42px;
+                    display: block;
+                    object-fit: contain;
+                    object-position: left center;
                 }}
 
                 .brand-text {{
@@ -5369,7 +5369,9 @@ def mon_equipe():
         <body>
             <header class="top-nav">
                 <div class="nav-brand">
-                    <div class="brand-icon">DM</div>
+                    <div class="brand-icon">
+                        <img src="{{ url_for('static', filename='logo.png') }}" alt="Diffmedia">
+                    </div>
 
                     <div class="brand-text">
                         <span class="brand-title">Diffmedia</span>
