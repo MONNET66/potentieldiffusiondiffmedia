@@ -4757,227 +4757,734 @@ def mon_equipe():
             </tr>
         """
 
-    return f"""
-    <style>
-        body {{
-            margin: 0;
-            background: #f4f6f8;
-            font-family: Arial, sans-serif;
-            color: #111827;
-        }}
+        return f"""
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .top-nav {{
-            height: 78px;
-            background: white;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 14px;
-            padding: 0 28px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        }}
+            <title>Mon équipe - Diffmedia</title>
 
-        .user-pill {{
-            font-size: 18px;
-            margin-right: 20px;
-            color: #111827;
-        }}
+            <style>
+                * {{
+                    box-sizing: border-box;
+                }}
 
-        .nav-btn {{
-            background: #ff5a00;
-            color: white;
-            text-decoration: none;
-            padding: 13px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(255,90,0,0.22);
-        }}
+                :root {{
+                    --orange: #f97316;
+                    --orange-dark: #ea580c;
+                    --orange-soft: #fff7ed;
+                    --orange-border: #fed7aa;
+                    --text-dark: #172033;
+                    --text-muted: #667085;
+                    --border: #e5e7eb;
+                    --background: #f5f7fa;
+                    --white: #ffffff;
+                }}
 
-        .page {{
-            padding: 24px;
-        }}
+                body {{
+                    margin: 0;
+                    background:
+                        radial-gradient(
+                            circle at top left,
+                            rgba(249, 115, 22, 0.08),
+                            transparent 330px
+                        ),
+                        var(--background);
+                    font-family:
+                        Inter,
+                        -apple-system,
+                        BlinkMacSystemFont,
+                        "Segoe UI",
+                        Arial,
+                        sans-serif;
+                    color: var(--text-dark);
+                }}
 
-        .team-card {{
-            background: white;
-            border-radius: 14px;
-            padding: 34px 28px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-        }}
+                button,
+                input {{
+                    font-family: inherit;
+                }}
 
-        .title-row {{
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            margin-bottom: 10px;
-        }}
+                .top-nav {{
+                    min-height: 76px;
+                    padding: 14px 30px;
+                    background: rgba(255, 255, 255, 0.96);
+                    border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+                    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 20px;
+                    position: sticky;
+                    top: 0;
+                    z-index: 50;
+                }}
 
-        .team-icon {{
-            font-size: 42px;
-            color: #5b2aa0;
-        }}
+                .nav-brand {{
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-width: 0;
+                }}
 
-        h1 {{
-            margin: 0;
-            font-size: 32px;
-        }}
+                .brand-icon {{
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 13px;
+                    background: linear-gradient(
+                        135deg,
+                        var(--orange),
+                        #fb923c
+                    );
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 21px;
+                    box-shadow: 0 9px 20px rgba(249, 115, 22, 0.24);
+                }}
 
-        .subtitle {{
-            margin: 0 0 26px 64px;
-            color: #4b5563;
-            font-size: 16px;
-        }}
+                .brand-text {{
+                    display: flex;
+                    flex-direction: column;
+                    line-height: 1.15;
+                }}
 
-        .back-btn {{
-            display: inline-block;
-            background: #ff7a00;
-            color: white;
-            text-decoration: none;
-            padding: 13px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            margin-bottom: 28px;
-        }}
+                .brand-title {{
+                    font-size: 16px;
+                    font-weight: 800;
+                    color: var(--text-dark);
+                }}
 
-        .table-wrap {{
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            overflow: hidden;
-        }}
+                .brand-user {{
+                    margin-top: 4px;
+                    font-size: 13px;
+                    color: var(--text-muted);
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }}
 
-        table {{
-            width: 100%;
-            border-collapse: collapse;
-        }}
+                .nav-actions {{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                    gap: 9px;
+                    flex-wrap: wrap;
+                }}
 
-        th {{
-            background: #fff4e8;
-            padding: 18px;
-            font-size: 16px;
-            text-align: center;
-        }}
+                .nav-btn {{
+                    min-height: 40px;
+                    padding: 0 15px;
+                    border: 1px solid var(--border);
+                    border-radius: 10px;
+                    background: var(--white);
+                    color: #344054;
+                    text-decoration: none;
+                    font-size: 13px;
+                    font-weight: 700;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition:
+                        border-color 0.2s ease,
+                        background 0.2s ease,
+                        color 0.2s ease,
+                        transform 0.2s ease;
+                }}
 
-        td {{
-            padding: 20px 28px;
-            border-top: 1px solid #e5e7eb;
-            border-right: 1px solid #e5e7eb;
-            vertical-align: middle;
-            font-size: 16px;
-        }}
+                .nav-btn:hover {{
+                    border-color: var(--orange-border);
+                    background: var(--orange-soft);
+                    color: var(--orange-dark);
+                    transform: translateY(-1px);
+                }}
 
-        td:last-child {{
-            border-right: none;
-            text-align: center;
-        }}
+                .nav-btn.active {{
+                    border-color: var(--orange);
+                    background: var(--orange);
+                    color: white;
+                    box-shadow: 0 7px 16px rgba(249, 115, 22, 0.2);
+                }}
 
-        .manager-badge {{
-            color: #111827;
-            font-weight: 500;
-        }}
+                .nav-btn.logout {{
+                    border-color: #fee2e2;
+                    background: #fffafa;
+                    color: #b42318;
+                }}
 
-        .commercial-link {{
-            color: #4c1d95;
-            font-weight: 500;
-        }}
+                .nav-btn.logout:hover {{
+                    border-color: #fecaca;
+                    background: #fef2f2;
+                    color: #991b1b;
+                }}
 
-        .edit-input {{
-            width: 75%;
-            padding: 12px 14px;
-            border: 1px solid #d1d5db;
-            border-radius: 7px;
-            font-size: 15px;
-        }}
+                .page {{
+                    width: min(1460px, calc(100% - 40px));
+                    margin: 0 auto;
+                    padding: 34px 0 52px;
+                }}
 
-        .save-btn {{
-            background: #ff5a00;
-            color: white;
-            border: none;
-            border-radius: 7px;
-            padding: 12px 18px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 15px;
-        }}
+                .hero-card {{
+                    position: relative;
+                    overflow: hidden;
+                    margin-bottom: 22px;
+                    padding: 28px 30px;
+                    border: 1px solid rgba(254, 215, 170, 0.8);
+                    border-radius: 22px;
+                    background:
+                        linear-gradient(
+                            135deg,
+                            rgba(255, 247, 237, 0.98),
+                            rgba(255, 255, 255, 0.98)
+                        );
+                    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 28px;
+                }}
 
-        .info-box {{
-            margin-top: 26px;
-            background: #fff7ed;
-            border: 1px solid #fed7aa;
-            border-left: 5px solid #ff7a00;
-            border-radius: 10px;
-            padding: 22px 26px;
-            display: flex;
-            gap: 18px;
-            align-items: flex-start;
-        }}
+                .hero-card::after {{
+                    content: "";
+                    position: absolute;
+                    width: 230px;
+                    height: 230px;
+                    top: -115px;
+                    right: -45px;
+                    border-radius: 50%;
+                    background: rgba(249, 115, 22, 0.08);
+                }}
 
-        .info-icon {{
-            background: #ff8a00;
-            color: white;
-            border-radius: 50%;
-            width: 34px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            flex: 0 0 auto;
-        }}
+                .hero-content {{
+                    position: relative;
+                    z-index: 1;
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 17px;
+                    min-width: 0;
+                }}
 
-        .info-title {{
-            color: #f97316;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 6px;
-        }}
+                .team-icon {{
+                    width: 54px;
+                    height: 54px;
+                    flex: 0 0 54px;
+                    border-radius: 17px;
+                    background: var(--white);
+                    border: 1px solid var(--orange-border);
+                    color: var(--orange);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 27px;
+                    box-shadow: 0 8px 22px rgba(249, 115, 22, 0.12);
+                }}
 
-        .info-text {{
-            line-height: 1.6;
-        }}
-    </style>
+                .title-row {{
+                    display: block;
+                    margin: 0;
+                }}
 
-    <div class="top-nav">
-        <span class="user-pill">👤 {session.get("username", "")}</span>
-        <a class="nav-btn" href="/mon_equipe">Mon équipe</a>
-        <a class="nav-btn" href="/dashboard_equipe">Dashboard équipe</a>
-        <a class="nav-btn" href="/logout">Déconnexion</a>
-    </div>
+                h1 {{
+                    margin: 0;
+                    font-size: clamp(26px, 3vw, 36px);
+                    line-height: 1.15;
+                    letter-spacing: -0.7px;
+                    color: var(--text-dark);
+                }}
 
-    <div class="page">
-        <div class="team-card">
-            <div class="title-row">
-                <div class="team-icon">👥</div>
-                <h1>Mon équipe</h1>
-            </div>
+                    .subtitle {{
+                    margin: 8px 0 0;
+                    color: var(--text-muted);
+                    font-size: 15px;
+                    line-height: 1.55;
+                }}
 
-            <p class="subtitle">Gérez les commerciaux rattachés à votre compte</p>
+                .hero-actions {{
+                    position: relative;
+                    z-index: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                    gap: 12px;
+                    flex: 0 0 auto;
+                }}
 
-            <a href="/" class="back-btn">← Retour</a>
+                .member-count {{
+                    min-width: 124px;
+                    padding: 13px 17px;
+                    border-radius: 14px;
+                    background: var(--white);
+                    border: 1px solid var(--orange-border);
+                    text-align: center;
+                    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+                }}
 
-            <div class="table-wrap">
-                <table>
-                    <tr>
-                        <th>Manager</th>
-                        <th>Identifiant commercial</th>
-                        <th>Nom affiché</th>
-                        <th>Actions</th>
-                    </tr>
-                    {rows}
-                </table>
-            </div>
-        </div>
+                .member-count-number {{
+                    display: block;
+                    font-size: 24px;
+                    line-height: 1;
+                    font-weight: 850;
+                    color: var(--orange-dark);
+                }}
 
-        <div class="info-box">
-            <div class="info-icon">i</div>
-            <div>
-                <div class="info-title">Information</div>
-                <div class="info-text">
-                    Vous pouvez modifier l'identifiant de connexion et le nom affiché de vos commerciaux.<br>
-                    Après modification, le commercial devra utiliser son nouvel identifiant pour se connecter.
+                .member-count-label {{
+                    display: block;
+                    margin-top: 5px;
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: var(--text-muted);
+                }}
+
+                .back-btn {{
+                    min-height: 44px;
+                    padding: 0 17px;
+                    border: 1px solid var(--border);
+                    border-radius: 11px;
+                    background: var(--white);
+                    color: #344054;
+                    text-decoration: none;
+                    font-size: 13px;
+                    font-weight: 750;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition:
+                        background 0.2s ease,
+                        border-color 0.2s ease,
+                        color 0.2s ease,
+                        transform 0.2s ease;
+                }}
+
+                .back-btn:hover {{
+                    background: var(--orange-soft);
+                    border-color: var(--orange-border);
+                    color: var(--orange-dark);
+                    transform: translateY(-1px);
+                }}
+
+                .team-card {{
+                    padding: 0;
+                    border: 1px solid var(--border);
+                    border-radius: 20px;
+                    background: var(--white);
+                    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+                    overflow: hidden;
+                }}
+
+                .card-heading {{
+                    padding: 22px 26px;
+                    border-bottom: 1px solid var(--border);
+                    background: var(--white);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 18px;
+                }}
+
+                .card-heading-text {{
+                    min-width: 0;
+                }}
+
+                .card-title {{
+                    margin: 0;
+                    font-size: 18px;
+                    font-weight: 800;
+                    color: var(--text-dark);
+                }}
+
+                .card-description {{
+                    margin: 5px 0 0;
+                    font-size: 13px;
+                    line-height: 1.45;
+                    color: var(--text-muted);
+                }}
+
+                .card-status {{
+                    flex: 0 0 auto;
+                    padding: 8px 12px;
+                    border-radius: 999px;
+                    background: #ecfdf3;
+                    color: #027a48;
+                    font-size: 12px;
+                    font-weight: 750;
+                }}
+
+                .table-wrap {{
+                    width: 100%;
+                    overflow-x: auto;
+                }}
+
+                table {{
+                    width: 100%;
+                    min-width: 900px;
+                    border-collapse: collapse;
+                    table-layout: fixed;
+                }}
+
+                th {{
+                    padding: 14px 20px;
+                    background: #fafafa;
+                    border-bottom: 1px solid var(--border);
+                    color: #667085;
+                    font-size: 11px;
+                    font-weight: 800;
+                    letter-spacing: 0.055em;
+                    text-align: left;
+                    text-transform: uppercase;
+                }}
+
+                th:nth-child(1) {{
+                    width: 22%;
+                }}
+
+                th:nth-child(2) {{
+                    width: 27%;
+                }}
+
+                th:nth-child(3) {{
+                    width: 31%;
+                }}
+
+                th:nth-child(4) {{
+                    width: 20%;
+                    text-align: center;
+                }}
+
+                td {{
+                    padding: 17px 20px;
+                    border-bottom: 1px solid #edf0f3;
+                    vertical-align: middle;
+                    font-size: 14px;
+                    color: #344054;
+                }}
+
+                tr:last-child td {{
+                    border-bottom: none;
+                }}
+
+                tr:hover td {{
+                    background: #fffcf8;
+                }}
+
+                td:last-child {{
+                    text-align: center;
+                }}
+
+                .manager-badge {{
+                    max-width: 100%;
+                    padding: 7px 11px;
+                    border: 1px solid #e4e7ec;
+                    border-radius: 999px;
+                    background: #f9fafb;
+                    color: #344054;
+                    font-size: 12px;
+                    font-weight: 750;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }}
+
+                .edit-form {{
+                    width: 100%;
+                    margin: 0;
+                }}
+
+                .edit-input {{
+                    width: 100%;
+                    min-height: 44px;
+                    padding: 10px 13px;
+                    border: 1px solid #d0d5dd;
+                    border-radius: 10px;
+                    outline: none;
+                    background: #ffffff;
+                    color: var(--text-dark);
+                    font-size: 14px;
+                    transition:
+                        border-color 0.2s ease,
+                        box-shadow 0.2s ease,
+                        background 0.2s ease;
+                }}
+
+                .edit-input:hover {{
+                    border-color: #f5a16e;
+                }}
+
+                .edit-input:focus {{
+                    border-color: var(--orange);
+                    background: #fffdfb;
+                    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.11);
+                }}
+
+                .save-btn {{
+                    min-height: 42px;
+                    padding: 0 16px;
+                    border: none;
+                    border-radius: 10px;
+                    background: linear-gradient(
+                        135deg,
+                        var(--orange),
+                        var(--orange-dark)
+                    );
+                    color: white;
+                    font-size: 13px;
+                    font-weight: 800;
+                    cursor: pointer;
+                    box-shadow: 0 7px 16px rgba(249, 115, 22, 0.2);
+                    transition:
+                        transform 0.2s ease,
+                        box-shadow 0.2s ease,
+                        filter 0.2s ease;
+                    white-space: nowrap;
+                }}
+
+                .save-btn:hover {{
+                    transform: translateY(-1px);
+                    box-shadow: 0 10px 20px rgba(249, 115, 22, 0.25);
+                    filter: brightness(0.98);
+                }}
+
+                .save-btn:active {{
+                    transform: translateY(0);
+                }}
+
+                .info-box {{
+                    margin-top: 22px;
+                    padding: 20px 22px;
+                    border: 1px solid var(--orange-border);
+                    border-radius: 16px;
+                    background: linear-gradient(
+                        135deg,
+                        #fff7ed,
+                        #fffdf9
+                    );
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 15px;
+                    box-shadow: 0 9px 24px rgba(15, 23, 42, 0.04);
+                }}
+
+                .info-icon {{
+                    width: 38px;
+                    height: 38px;
+                    flex: 0 0 38px;
+                    border-radius: 12px;
+                    background: var(--orange);
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 17px;
+                    font-weight: 850;
+                    box-shadow: 0 7px 15px rgba(249, 115, 22, 0.18);
+                }}
+
+                .info-title {{
+                    margin: 0 0 5px;
+                    color: var(--orange-dark);
+                    font-size: 15px;
+                    font-weight: 850;
+                }}
+
+                .info-text {{
+                    color: #475467;
+                    font-size: 13px;
+                    line-height: 1.6;
+                }}
+
+                @media (max-width: 900px) {{
+                    .top-nav {{
+                        align-items: flex-start;
+                        flex-direction: column;
+                        padding: 14px 18px;
+                    }}
+
+                    .nav-actions {{
+                        width: 100%;
+                        justify-content: flex-start;
+                    }}
+
+                    .page {{
+                        width: min(100% - 24px, 1460px);
+                        padding-top: 22px;
+                    }}
+
+                    .hero-card {{
+                        align-items: flex-start;
+                        flex-direction: column;
+                        padding: 23px 20px;
+                    }}
+
+                    .hero-actions {{
+                        width: 100%;
+                        justify-content: space-between;
+                    }}
+                }}
+
+                @media (max-width: 560px) {{
+                    .nav-btn {{
+                        flex: 1 1 auto;
+                        padding: 0 10px;
+                    }}
+
+                    .hero-content {{
+                        gap: 12px;
+                    }}
+
+                    .team-icon {{
+                        width: 46px;
+                        height: 46px;
+                        flex-basis: 46px;
+                        border-radius: 14px;
+                        font-size: 23px;
+                    }}
+
+                    .hero-actions {{
+                        align-items: stretch;
+                        flex-direction: column;
+                    }}
+
+                    .member-count,
+                    .back-btn {{
+                        width: 100%;
+                    }}
+
+                    .card-heading {{
+                        align-items: flex-start;
+                        flex-direction: column;
+                    }}
+
+                    .info-box {{
+                        padding: 17px;
+                    }}
+                }}
+            </style>
+        </head>
+
+        <body>
+            <header class="top-nav">
+                <div class="nav-brand">
+                    <div class="brand-icon">DM</div>
+
+                    <div class="brand-text">
+                        <span class="brand-title">Diffmedia</span>
+                        <span class="brand-user">
+                            Connecté : {session.get("username", "")}
+                        </span>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    """
+
+                <nav class="nav-actions">
+                    <a class="nav-btn active" href="/mon_equipe">
+                        Mon équipe
+                    </a>
+
+                    <a class="nav-btn" href="/dashboard_equipe">
+                        Dashboard équipe
+                    </a>
+
+                    <a class="nav-btn logout" href="/logout">
+                        Déconnexion
+                    </a>
+                </nav>
+            </header>
+
+            <main class="page">
+                <section class="hero-card">
+                    <div class="hero-content">
+                        <div class="team-icon">👥</div>
+
+                        <div>
+                            <div class="title-row">
+                                <h1>Mon équipe</h1>
+                            </div>
+
+                            <p class="subtitle">
+                                Gérez les identifiants et les noms affichés
+                                des commerciaux rattachés à votre compte.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="hero-actions">
+                        <div class="member-count">
+                            <span class="member-count-number">
+                                {len(members)}
+                            </span>
+
+                            <span class="member-count-label">
+                                commercial{"x" if len(members) > 1 else ""}
+                            </span>
+                        </div>
+
+                        <a href="/" class="back-btn">
+                            ← Retour à l'accueil
+                        </a>
+                    </div>
+                </section>
+
+                <section class="team-card">
+                    <div class="card-heading">
+                        <div class="card-heading-text">
+                            <h2 class="card-title">
+                                Comptes commerciaux
+                            </h2>
+
+                            <p class="card-description">
+                                Modifiez les informations d'un compte,
+                                puis enregistrez uniquement la ligne concernée.
+                            </p>
+                        </div>
+
+                        <div class="card-status">
+                            ● Comptes actifs
+                        </div>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Manager</th>
+                                    <th>Identifiant commercial</th>
+                                    <th>Nom affiché</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {rows}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <aside class="info-box">
+                    <div class="info-icon">i</div>
+
+                    <div>
+                        <div class="info-title">
+                            Bon à savoir
+                        </div>
+
+                        <div class="info-text">
+                        Vous pouvez modifier l'identifiant de connexion
+                            et le nom affiché de vos commerciaux.<br>
+
+                            Après modification, le commercial devra utiliser
+                            son nouvel identifiant pour se connecter.
+                        </div>
+                    </div>
+                </aside>
+            </main>
+        </body>
+        </html>
+        """
 
 @app.route("/activity_logs")
 @login_required
