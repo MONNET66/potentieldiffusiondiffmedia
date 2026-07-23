@@ -4757,7 +4757,7 @@ def mon_equipe():
             </tr>
         """
 
-        return f"""
+    return f"""
         <!DOCTYPE html>
         <html lang="fr">
         <head>
