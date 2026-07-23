@@ -1491,6 +1491,554 @@
             }
         }
 
+
+        /* =========================================================
+           ACCUEIL RECHERCHE — REFONTE VISUELLE 2026
+           La logique métier, les IDs et les routes restent inchangés.
+           ========================================================= */
+
+        .welcome-hero {
+            position: relative;
+            min-height: 300px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(390px, .95fr);
+            align-items: center;
+            gap: 30px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            padding: 30px 34px;
+            border: 1px solid #e8edf3;
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at 92% 40%, rgba(255, 237, 213, .78), transparent 34%),
+                linear-gradient(135deg, #ffffff 0%, #fffdfb 58%, #fff7ed 100%);
+            box-shadow: var(--dm-shadow);
+        }
+
+        .welcome-hero::after {
+            content: "";
+            position: absolute;
+            right: -80px;
+            bottom: -120px;
+            width: 480px;
+            height: 260px;
+            border: 1px solid rgba(249, 115, 22, .13);
+            border-radius: 50%;
+            transform: rotate(-10deg);
+            pointer-events: none;
+        }
+
+        .welcome-copy {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-kicker {
+            margin-bottom: 9px;
+            color: var(--dm-orange-dark);
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .welcome-copy h2 {
+            margin: 0;
+            max-width: 680px;
+            color: #101827;
+            font-size: clamp(34px, 3.4vw, 52px);
+            line-height: 1.02;
+            letter-spacing: -.045em;
+        }
+
+        .welcome-copy h2 span {
+            color: var(--dm-orange);
+        }
+
+        .welcome-copy > p {
+            max-width: 610px;
+            margin: 15px 0 0;
+            color: #5f6f85;
+            font-size: 15px;
+            line-height: 1.55;
+        }
+
+        .welcome-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 11px;
+            margin-top: 24px;
+        }
+
+        .welcome-stat {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 14px;
+            border: 1px solid #e8edf3;
+            border-radius: 14px;
+            background: rgba(255,255,255,.88);
+            box-shadow: 0 7px 18px rgba(15,23,42,.055);
+        }
+
+        .welcome-stat-icon {
+            width: 39px;
+            height: 39px;
+            flex: 0 0 39px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #fff1e8;
+            color: var(--dm-orange);
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .welcome-stat-icon-purple {
+            background: #f2edff;
+            color: #7c3aed;
+        }
+
+        .welcome-stat-icon-green {
+            background: #eafbf3;
+            color: #059669;
+        }
+
+        .welcome-stat strong,
+        .welcome-stat small {
+            display: block;
+        }
+
+        .welcome-stat strong {
+            color: #172033;
+            font-size: 14px;
+            line-height: 1.2;
+        }
+
+        .welcome-stat small {
+            margin-top: 3px;
+            color: #708096;
+            font-size: 11px;
+            line-height: 1.25;
+        }
+
+        .france-visual {
+            position: relative;
+            z-index: 1;
+            min-width: 0;
+            height: 278px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .france-visual svg {
+            width: min(100%, 470px);
+            height: 100%;
+            overflow: visible;
+        }
+
+        .france-shape {
+            fill: url(#dmDots);
+            stroke: #d3deea;
+            stroke-width: 2;
+        }
+
+        .france-points circle {
+            fill: #ff7417;
+            stroke: rgba(255,255,255,.88);
+            stroke-width: 3;
+            filter: drop-shadow(0 5px 8px rgba(249,115,22,.24));
+        }
+
+        .search-card {
+            margin-bottom: 14px;
+            border: 1px solid #e8edf3;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: var(--dm-shadow);
+        }
+
+        .search-tabs {
+            display: flex;
+            align-items: flex-end;
+            min-height: 51px;
+            padding: 0 17px;
+            border-bottom: 1px solid #e8edf3;
+        }
+
+        .search-tab {
+            position: relative;
+            min-height: 51px;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 0 23px;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 900;
+            cursor: pointer;
+            border-right: 1px solid transparent;
+            border-left: 1px solid transparent;
+        }
+
+        .search-tab input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .search-tab.active {
+            margin-bottom: -1px;
+            color: var(--dm-orange-dark);
+            border-top: 2px solid var(--dm-orange);
+            border-right-color: #e8edf3;
+            border-left-color: #e8edf3;
+            border-radius: 10px 10px 0 0;
+            background: #ffffff;
+        }
+
+        .search-tab-icon {
+            font-size: 17px;
+        }
+
+        .search-bar {
+            display: grid;
+            grid-template-columns:
+                minmax(165px, .88fr)
+                minmax(190px, 1.05fr)
+                minmax(130px, .65fr)
+                minmax(180px, 1fr)
+                minmax(170px, .95fr)
+                minmax(205px, auto);
+            gap: 12px;
+            align-items: end;
+            margin: 0;
+            padding: 18px;
+            border: none;
+            border-radius: 0 0 18px 18px;
+            box-shadow: none;
+        }
+
+        .search-field {
+            min-width: 0;
+        }
+
+        .search-field > label {
+            display: block;
+            margin: 0 0 7px;
+            color: #344054;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .search-cell {
+            min-height: 45px;
+            border-color: #dce3eb;
+            border-radius: 10px;
+            box-shadow: none;
+        }
+
+        .search-bar select,
+        .search-bar input,
+        .types-button {
+            min-height: 43px;
+            padding: 11px 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .search-field-radius #rayonBox.hidden {
+            display: flex !important;
+            opacity: .48;
+            pointer-events: none;
+        }
+
+        .search-submit-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .search-button {
+            min-height: 45px;
+            padding: 0 20px;
+            border-radius: 10px;
+        }
+
+        .search-reset {
+            align-self: flex-end;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .search-reset:hover {
+            color: var(--dm-orange-dark);
+        }
+
+        .cumul-tools,
+        .chips-row,
+        .summary-row,
+        .actions-row {
+            position: relative;
+            z-index: 2;
+        }
+
+        .summary-row {
+            grid-template-columns: minmax(280px, 420px) minmax(360px, 1fr);
+        }
+
+        .actions-row {
+            margin: 0 0 12px;
+        }
+
+        .main-workspace {
+            grid-template-areas: "results map";
+            grid-template-columns: minmax(390px, .88fr) minmax(520px, 1.12fr);
+            gap: 14px;
+            align-items: stretch;
+        }
+
+        .results-box {
+            grid-area: results;
+            height: 620px;
+            padding: 0;
+            overflow-y: auto;
+            border-radius: 16px;
+        }
+
+        .map-panel {
+            grid-area: map;
+            min-width: 0;
+            height: 620px;
+            overflow: hidden;
+            border: 1px solid #e8edf3;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: var(--dm-shadow);
+        }
+
+        .map-card-header {
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e8edf3;
+            background: #ffffff;
+        }
+
+        .map-card-header strong,
+        .map-card-header span {
+            display: block;
+        }
+
+        .map-card-header strong {
+            color: #172033;
+            font-size: 14px;
+        }
+
+        .map-card-header span {
+            margin-top: 3px;
+            color: #7a889b;
+            font-size: 11px;
+        }
+
+        .map-expand-btn {
+            flex: 0 0 auto;
+            min-height: 36px;
+            padding: 8px 12px;
+            border: 1px solid #dce3eb;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #344054;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .map-expand-btn:hover {
+            border-color: #fdba74;
+            color: var(--dm-orange-dark);
+            background: #fffaf5;
+        }
+
+        #map {
+            height: calc(620px - 64px);
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .results-heading {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e8edf3;
+            background: rgba(255,255,255,.97);
+            backdrop-filter: blur(8px);
+        }
+
+        .results-title {
+            position: static;
+            margin: 0;
+            padding: 0;
+            border: none;
+            font-size: 16px;
+        }
+
+        .results-heading p {
+            margin: 3px 0 0;
+            color: #7a889b;
+            font-size: 10px;
+        }
+
+        .results-list {
+            gap: 0;
+            padding: 0;
+        }
+
+        .result-card {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 2px;
+            padding: 13px 15px;
+            border: none;
+            border-bottom: 1px solid #edf1f5;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .result-card:hover {
+            transform: none;
+            border-color: #fed7aa;
+            background: #fffaf6;
+            box-shadow: none;
+        }
+
+        .result-name {
+            font-size: 14px;
+        }
+
+        .result-type {
+            margin-bottom: 6px;
+            padding: 3px 7px;
+            font-size: 10px;
+        }
+
+        .result-line {
+            margin-bottom: 3px;
+            font-size: 11px;
+        }
+
+        .result-actions {
+            margin-top: 8px;
+        }
+
+        .view-map-btn {
+            padding: 6px 9px;
+            font-size: 10px;
+        }
+
+        .map-panel.map-fullscreen {
+            position: fixed;
+            inset: 16px;
+            z-index: 12000;
+            width: auto;
+            height: auto;
+            border-radius: 18px;
+            box-shadow: 0 30px 90px rgba(15,23,42,.35);
+        }
+
+        .map-panel.map-fullscreen #map {
+            height: calc(100vh - 96px);
+        }
+
+        body.map-open::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 11900;
+            background: rgba(15,23,42,.56);
+        }
+
+        @media (max-width: 1500px) {
+            .search-bar {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .search-submit-zone {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 1180px) {
+            .welcome-hero {
+                grid-template-columns: 1fr;
+            }
+
+            .france-visual {
+                display: none;
+            }
+
+            .main-workspace {
+                grid-template-areas:
+                    "map"
+                    "results";
+                grid-template-columns: 1fr;
+            }
+
+            .map-panel,
+            .results-box {
+                height: 560px;
+            }
+
+            #map {
+                height: calc(560px - 64px);
+            }
+        }
+
+        @media (max-width: 760px) {
+            .welcome-hero {
+                min-height: 0;
+                padding: 23px 19px;
+            }
+
+            .welcome-copy h2 {
+                font-size: 34px;
+            }
+
+            .welcome-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .search-tabs {
+                padding: 0 8px;
+                overflow-x: auto;
+            }
+
+            .search-tab {
+                padding: 0 13px;
+                white-space: nowrap;
+            }
+
+            .search-bar {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
     </style>
 </head>
 
@@ -1594,8 +2142,8 @@
                 </button>
 
                 <div class="topbar-title-block">
-                    <h1>Étude de potentiel</h1>
-                    <p>Analysez le potentiel de diffusion de vos campagnes</p>
+                    <h1>Recherche de commerces</h1>
+                    <p>Identifiez les meilleurs points de diffusion pour vos campagnes</p>
                 </div>
             </div>
 
@@ -1623,142 +2171,270 @@
         {% endif %}
     {% endwith %}
 
-    <form method="POST" id="searchForm">
+    <section class="welcome-hero">
+        <div class="welcome-copy">
+            <div class="welcome-kicker">Bonjour {{ current_user }} !</div>
+            <h2>Trouvez les commerces<br>où <span>diffuser</span> vos messages.</h2>
+            <p>
+                Recherchez les meilleurs points de diffusion parmi plus de
+                65&nbsp;000 commerces partenaires en France métropolitaine.
+            </p>
 
-    	<div class="search-mode-box">
-    		<div class="search-mode-title">Mode de recherche</div>
+            <div class="welcome-stats">
+                <div class="welcome-stat">
+                    <div class="welcome-stat-icon">🏪</div>
+                    <div>
+                        <strong>+65 000</strong>
+                        <small>commerces identifiés</small>
+                    </div>
+                </div>
 
-    		<label class="search-mode-option">
-        		<input type="radio" name="search_mode" value="commerce" {% if search_mode != "support" %}checked{% endif %}>
-        		Recherche par commerce
-    		</label>
+                <div class="welcome-stat">
+                    <div class="welcome-stat-icon welcome-stat-icon-purple">▥</div>
+                    <div>
+                        <strong>Couverture nationale</strong>
+                        <small>France métropolitaine</small>
+                    </div>
+                </div>
 
-    		<label class="search-mode-option">
-        		<input type="radio" name="search_mode" value="support" {% if search_mode == "support" %}checked{% endif %}>
-        		Recherche par support
-    		</label>
-		</div>
+                <div class="welcome-stat">
+                    <div class="welcome-stat-icon welcome-stat-icon-green">◉</div>
+                    <div>
+                        <strong>Données enrichies</strong>
+                        <small>mises à jour en continu</small>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="search-bar">
+        <div class="france-visual" aria-hidden="true">
+            <svg viewBox="0 0 520 390" role="img">
+                <defs>
+                    <pattern id="dmDots" width="9" height="9" patternUnits="userSpaceOnUse">
+                        <circle cx="2.5" cy="2.5" r="1.8" fill="#aebdd0"></circle>
+                    </pattern>
+                    <filter id="dmFranceShadow" x="-20%" y="-20%" width="140%" height="150%">
+                        <feDropShadow dx="0" dy="14" stdDeviation="13" flood-color="#14213d" flood-opacity=".14"/>
+                    </filter>
+                </defs>
 
-            <div class="search-cell" id="typesSearchCell">
-    			<div class="types-dropdown">
-                    <button type="button" class="types-button" id="typesButton">
-                        Types de commerces
-                    </button>
+                <path
+                    class="france-shape"
+                    filter="url(#dmFranceShadow)"
+                    d="M174 33
+                       L259 24 L314 57 L365 70 L392 112
+                       L420 150 L403 196 L423 237 L385 264
+                       L362 313 L317 346 L271 334 L229 365
+                       L194 329 L143 324 L118 283 L75 265
+                       L87 218 L57 180 L85 145 L80 101
+                       L130 88 Z">
+                </path>
 
-                    <div class="types-panel" id="typesPanel">
-                        <div class="type-option">
-                            <input
-                                type="checkbox"
-                                id="type_all"
-                                value="all"
-                                {% if 'all' in selected_types %}checked{% endif %}
-                            >
-                            <label for="type_all"><b>Tous</b></label>
-                        </div>
+                <g class="france-points">
+                    <circle cx="155" cy="82" r="7"/>
+                    <circle cx="250" cy="65" r="10"/>
+                    <circle cx="326" cy="92" r="6"/>
+                    <circle cx="121" cy="146" r="5"/>
+                    <circle cx="203" cy="131" r="12"/>
+                    <circle cx="286" cy="138" r="8"/>
+                    <circle cx="360" cy="155" r="6"/>
+                    <circle cx="150" cy="211" r="8"/>
+                    <circle cx="238" cy="207" r="14"/>
+                    <circle cx="328" cy="219" r="10"/>
+                    <circle cx="112" cy="270" r="5"/>
+                    <circle cx="191" cy="279" r="9"/>
+                    <circle cx="275" cy="282" r="12"/>
+                    <circle cx="344" cy="290" r="7"/>
+                    <circle cx="231" cy="330" r="6"/>
+                </g>
+            </svg>
+        </div>
+    </section>
 
-                        <div class="type-option">
-                            <input type="checkbox" name="types" id="type_pharmacy" value="pharmacy" {% if 'pharmacy' in selected_types %}checked{% endif %}>
-                            <label for="type_pharmacy">Pharmacies</label>
-                        </div>
+    <form method="POST" id="searchForm" class="search-card">
+        <div class="search-tabs" role="tablist" aria-label="Mode de recherche">
+            <label class="search-tab {% if search_mode != 'support' %}active{% endif %}">
+                <input
+                    type="radio"
+                    name="search_mode"
+                    value="commerce"
+                    {% if search_mode != "support" %}checked{% endif %}
+                >
+                <span class="search-tab-icon">🏪</span>
+                Recherche de commerces
+            </label>
 
-                        <div class="type-option">
-                            <input type="checkbox" name="types" id="type_restaurant" value="restaurant" {% if 'restaurant' in selected_types %}checked{% endif %}>
-                            <label for="type_restaurant">Restaurants</label>
-                        </div>
+            <label class="search-tab {% if search_mode == 'support' %}active{% endif %}">
+                <input
+                    type="radio"
+                    name="search_mode"
+                    value="support"
+                    {% if search_mode == "support" %}checked{% endif %}
+                >
+                <span class="search-tab-icon">▣</span>
+                Recherche par support
+            </label>
+        </div>
 
-                        <div class="type-option">
-                            <input type="checkbox" name="types" id="type_bar" value="bar" {% if 'bar' in selected_types %}checked{% endif %}>
-                            <label for="type_bar">Bars</label>
-                        </div>
+        <div class="search-bar">
+            <div class="search-field search-field-mode">
+                <label for="mode">Zone de recherche</label>
+                <div class="search-cell">
+                    <select name="mode" id="mode" onchange="updateMode()">
+                        <option value="ville" {% if mode == "ville" %}selected{% endif %}>Ville / code postal</option>
+                        <option value="departement" {% if mode == "departement" %}selected{% endif %}>Département</option>
+                        <option value="rayon" {% if mode == "rayon" %}selected{% endif %}>Rayon autour d’une ville</option>
+                    </select>
+                </div>
+            </div>
 
-                        <div class="type-option">
-                            <input type="checkbox" name="types" id="type_bakery" value="bakery" {% if 'bakery' in selected_types %}checked{% endif %}>
-                            <label for="type_bakery">Boulangeries</label>
-                        </div>
+            <div class="search-field search-field-location">
+                <label>Ville, code postal ou département</label>
 
-                        <div class="type-option">
-                            <input type="checkbox" name="types" id="type_fast_food" value="fast_food" {% if 'fast_food' in selected_types %}checked{% endif %}>
-                            <label for="type_fast_food">Snacks</label>
-                        </div>
+                <div class="search-cell" id="villeBox">
+                    <input
+                        type="text"
+                        name="ville"
+                        id="villeInput"
+                        placeholder="Ex : Lyon, Nantes ou 69000"
+                        value="{{ search_value }}"
+                        autocomplete="off"
+                    >
+                    <div id="suggestions" class="suggestions"></div>
+                </div>
 
-                        <div class="type-option">
-                            <input type="checkbox" name="types" id="type_camping" value="camping" {% if 'camping' in selected_types %}checked{% endif %}>
-                            <label for="type_camping">Campings</label>
-                        </div>
+                <div class="search-cell hidden" id="departementBox">
+                    <select name="departement" id="departementInput">
+                        <option value="">Choisir un département</option>
+                        {% for code, nom in departements %}
+                            <option value="{{ code }}" {% if departement_value == code %}selected{% endif %}>
+                                {{ code }} - {{ nom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
 
-                        <div class="type-option">
-                            <input type="checkbox" name="types" id="type_tourism_office" value="tourism_office" {% if 'tourism_office' in selected_types %}checked{% endif %}>
-                            <label for="type_tourism_office">Offices de tourisme</label>
-                        </div>
+            <div class="search-field search-field-radius">
+                <label for="rayonInput">Rayon de recherche</label>
+                <div class="search-cell" id="rayonBox">
+                    <input
+                        type="number"
+                        name="rayon"
+                        id="rayonInput"
+                        placeholder="Rayon en km"
+                        value="{{ rayon_value }}"
+                        min="1"
+                    >
+                </div>
+            </div>
 
-                        <div class="type-option">
-                            <input type="checkbox" name="types" id="type_hotel" value="hotel" {% if 'hotel' in selected_types %}checked{% endif %}>
-                            <label for="type_hotel">Hôtels</label>
-                        </div>
+            <div class="search-field" id="typesSearchCell">
+                <label>Types de commerces</label>
+                <div class="search-cell">
+                    <div class="types-dropdown">
+                        <button type="button" class="types-button" id="typesButton">
+                            Types de commerces
+                        </button>
 
-                        <div class="type-option">
-                            <input type="checkbox" name="types" id="type_tobacco" value="tobacco" {% if 'tobacco' in selected_types %}checked{% endif %}>
-                            <label for="type_tobacco">Tabacs / Presse</label>
-                        </div>
+                        <div class="types-panel" id="typesPanel">
+                            <div class="type-option">
+                                <input
+                                    type="checkbox"
+                                    id="type_all"
+                                    value="all"
+                                    {% if 'all' in selected_types %}checked{% endif %}
+                                >
+                                <label for="type_all"><b>Tous</b></label>
+                            </div>
 
-                        <div class="type-option">
-                            <input type="checkbox" name="types" id="type_hair_salon" value="hair_salon" {% if 'hair_salon' in selected_types %}checked{% endif %}>
-                            <label for="type_hair_salon">Salon de coiffure</label>
+                            <div class="type-option">
+                                <input type="checkbox" name="types" id="type_pharmacy" value="pharmacy" {% if 'pharmacy' in selected_types %}checked{% endif %}>
+                                <label for="type_pharmacy">Pharmacies</label>
+                            </div>
+
+                            <div class="type-option">
+                                <input type="checkbox" name="types" id="type_restaurant" value="restaurant" {% if 'restaurant' in selected_types %}checked{% endif %}>
+                                <label for="type_restaurant">Restaurants</label>
+                            </div>
+
+                            <div class="type-option">
+                                <input type="checkbox" name="types" id="type_bar" value="bar" {% if 'bar' in selected_types %}checked{% endif %}>
+                                <label for="type_bar">Bars</label>
+                            </div>
+
+                            <div class="type-option">
+                                <input type="checkbox" name="types" id="type_bakery" value="bakery" {% if 'bakery' in selected_types %}checked{% endif %}>
+                                <label for="type_bakery">Boulangeries</label>
+                            </div>
+
+                            <div class="type-option">
+                                <input type="checkbox" name="types" id="type_fast_food" value="fast_food" {% if 'fast_food' in selected_types %}checked{% endif %}>
+                                <label for="type_fast_food">Snacks</label>
+                            </div>
+
+                            <div class="type-option">
+                                <input type="checkbox" name="types" id="type_camping" value="camping" {% if 'camping' in selected_types %}checked{% endif %}>
+                                <label for="type_camping">Campings</label>
+                            </div>
+
+                            <div class="type-option">
+                                <input type="checkbox" name="types" id="type_tourism_office" value="tourism_office" {% if 'tourism_office' in selected_types %}checked{% endif %}>
+                                <label for="type_tourism_office">Offices de tourisme</label>
+                            </div>
+
+                            <div class="type-option">
+                                <input type="checkbox" name="types" id="type_hotel" value="hotel" {% if 'hotel' in selected_types %}checked{% endif %}>
+                                <label for="type_hotel">Hôtels</label>
+                            </div>
+
+                            <div class="type-option">
+                                <input type="checkbox" name="types" id="type_tobacco" value="tobacco" {% if 'tobacco' in selected_types %}checked{% endif %}>
+                                <label for="type_tobacco">Tabacs / Presse</label>
+                            </div>
+
+                            <div class="type-option">
+                                <input type="checkbox" name="types" id="type_hair_salon" value="hair_salon" {% if 'hair_salon' in selected_types %}checked{% endif %}>
+                                <label for="type_hair_salon">Salons de coiffure</label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-			
-{% if search_mode != "support" and 'camping' in selected_types %}
-<div class="search-cell">
-    <select name="camping_stars" id="camping_stars">
-        <option value="all">Tous les campings</option>
-        <option value="3_5">Campings 3 à 5 étoiles</option>
-    </select>
-</div>
-{% endif %}
 
-            <div class="search-cell">
-                <select name="support" id="support">
-                    {% for support_key in available_supports %}
-                        <option value="{{ support_key }}" {% if selected_support == support_key %}selected{% endif %}>
-                            {{ support_labels[support_key] }}
-                        </option>
-                    {% endfor %}
-                </select>
+            {% if search_mode != "support" and 'camping' in selected_types %}
+            <div class="search-field">
+                <label for="camping_stars">Classement camping</label>
+                <div class="search-cell">
+                    <select name="camping_stars" id="camping_stars">
+                        <option value="all">Tous les campings</option>
+                        <option value="3_5">Campings 3 à 5 étoiles</option>
+                    </select>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="search-field">
+                <label for="support">Support</label>
+                <div class="search-cell">
+                    <select name="support" id="support">
+                        {% for support_key in available_supports %}
+                            <option value="{{ support_key }}" {% if selected_support == support_key %}selected{% endif %}>
+                                {{ support_labels[support_key] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
 
-            <div class="search-cell">
-                <select name="mode" id="mode" onchange="updateMode()">
-                    <option value="ville" {% if mode == "ville" %}selected{% endif %}>Ville / CP</option>
-                    <option value="departement" {% if mode == "departement" %}selected{% endif %}>Département</option>
-                    <option value="rayon" {% if mode == "rayon" %}selected{% endif %}>Rayon</option>
-                </select>
+            <div class="search-submit-zone">
+                <button class="search-button" type="submit">
+                    Lancer la recherche <span aria-hidden="true">⌕</span>
+                </button>
+                <a class="search-reset" href="/?reset_search=1">
+                    ↻ Réinitialiser les critères
+                </a>
             </div>
-
-            <div class="search-cell" id="villeBox">
-                <input type="text" name="ville" id="villeInput" placeholder="Ville ou code postal" value="{{ search_value }}" autocomplete="off">
-                <div id="suggestions" class="suggestions"></div>
-            </div>
-
-            <div class="search-cell hidden" id="departementBox">
-                <select name="departement" id="departementInput">
-                    <option value="">Choisir un département</option>
-                    {% for code, nom in departements %}
-                        <option value="{{ code }}" {% if departement_value == code %}selected{% endif %}>
-                            {{ code }} - {{ nom }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="search-cell hidden" id="rayonBox">
-                <input type="number" name="rayon" id="rayonInput" placeholder="Rayon km" value="{{ rayon_value }}" min="1">
-            </div>
-
-            <button class="search-button" type="submit">🔍 Lancer l'étude</button>
         </div>
     </form>
 
@@ -2010,10 +2686,25 @@
     <div class="main-workspace">
 
         <div class="map-panel">
+            <div class="map-card-header">
+                <div>
+                    <strong>Cartographie des points de diffusion</strong>
+                    <span>Visualisez la répartition géographique des commerces</span>
+                </div>
+                <button type="button" class="map-expand-btn" onclick="toggleMapFullscreen()">
+                    ⛶ Agrandir la carte
+                </button>
+            </div>
             <div id="map"></div>
         </div>
 
-        <div class="results-box">            <h3 class="results-title">📍 Résultats ({{ nb }})</h3>
+        <div class="results-box">
+            <div class="results-heading">
+                <div>
+                    <h3 class="results-title">🛒 {{ nb }} commerce(s) trouvé(s)</h3>
+                    <p>Affichage des résultats correspondant à votre recherche</p>
+                </div>
+            </div>
 
             {% if data %}
                 <div class="results-list">
@@ -3302,6 +3993,53 @@ document.addEventListener("keydown", function(event) {
 })();
 </script>
 
+
+
+<script>
+function toggleMapFullscreen() {
+    const mapPanel = document.querySelector(".map-panel");
+    const mapButton = document.querySelector(".map-expand-btn");
+
+    if (!mapPanel) return;
+
+    const isOpen = mapPanel.classList.toggle("map-fullscreen");
+    document.body.classList.toggle("map-open", isOpen);
+
+    if (mapButton) {
+        mapButton.textContent = isOpen ? "✕ Fermer la carte" : "⛶ Agrandir la carte";
+    }
+
+    setTimeout(function () {
+        if (typeof map !== "undefined" && map) {
+            map.invalidateSize();
+        }
+    }, 180);
+}
+
+document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+        const mapPanel = document.querySelector(".map-panel");
+
+        if (mapPanel && mapPanel.classList.contains("map-fullscreen")) {
+            toggleMapFullscreen();
+        }
+    }
+});
+</script>
+
+
+<script>
+document.querySelectorAll('input[name="search_mode"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+        document.querySelectorAll(".search-tab").forEach(function (tab) {
+            tab.classList.remove("active");
+        });
+
+        const activeTab = this.closest(".search-tab");
+        if (activeTab) activeTab.classList.add("active");
+    });
+});
+</script>
 
 </body>
 </html>	
