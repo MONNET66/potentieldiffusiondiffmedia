@@ -5653,7 +5653,7 @@ def activity_logs():
         page=page,
         total_pages=total_pages,
         page_numbers=page_numbers,
-    )-radius:6px;'>⬅ Retour au dashboard</a><h1>Journal d'activité</h1><table border='1' cellpadding='8'><tr><th>Date</th><th>Utilisateur</th><th>Rôle</th><th>Action</th><th>Détail</th></tr>{rows}</table>"
+    
     
 @app.route("/dashboard_equipe")
 @login_required
