@@ -38,6 +38,9 @@ from werkzeug.security import check_password_hash
 from tarifs import (
     PRODUITS_DEVIS,
     TARIFS_PRODUITS,
+    CONFIG_SUPPORTS,
+    TARIFS_LIVRAISON_CIBLEE,
+    TARIFS_LIVRAISON_MASSIVE,
     calculer_livraison,
 )
 
@@ -2168,6 +2171,151 @@ def create_quote_from_campaign(token):
         nombre_villes=nombre_villes,
         tarif_livraison_massive_apercu=tarif_livraison_massive_apercu,
     )
+
+@app.route("/export_tarifs")
+@login_required
+def export_tarifs():
+    if session.get("role") != "admin":
+        return "Accès refusé", 403
+
+    sortie = io.StringIO()
+    sortie.write("\ufeff")
+
+    writer = csv.writer(
+        sortie,
+        delimiter=";",
+        quoting=csv.QUOTE_MINIMAL,
+        lineterminator="\n",
+    )
+
+    writer.writerow([
+        "Catégorie",
+        "Support / famille",
+        "Mode / variante",
+        "Quantité",
+        "Distance minimum (km)",
+        "Distance maximum (km)",
+        "Prix HT (€)",
+        "Prix unitaire HT (€)",
+        "Règle de facturation",
+    ])
+
+    libelles_supports = {
+        "sac_pain_1_2": "Sac à pain 1 à 2 baguettes",
+        "sac_pain_2_3": "Sac à pain 2 à 3 baguettes",
+        "sac_galette": "Sac galettes",
+        "sac_pharmacie": "Sac pharmacie",
+        "sac_primeur": "Sac primeur",
+        "set_table": "Set de table A3",
+        "sous_bock": "Sous-bock carré ou rond",
+        "affiche": "Affiche A2",
+        "flyer": "Flyer A5",
+        "boite_pizza": "Boîte pizza",
+    }
+
+    libelles_familles = {
+        "famille_papier": "Sacs et sets de table",
+        "sous_bock": "Sous-bocks",
+        "affiche": "Affiches",
+        "flyer": "Flyers",
+        "pizza": "Boîtes pizza",
+    }
+
+    # Tarifs d'impression
+    for support_id, grille in TARIFS_PRODUITS.items():
+        support_label = libelles_supports.get(
+            support_id,
+            support_id.replace("_", " ").title(),
+        )
+
+        for quantite, prix_ht in sorted(
+            grille.items(),
+            key=lambda element: int(element[0]),
+        ):
+            quantite = int(quantite)
+            prix_ht = float(prix_ht)
+
+            prix_unitaire = (
+                round(prix_ht / quantite, 6)
+                if quantite
+                else 0
+            )
+
+            writer.writerow([
+                "Impression",
+                support_label,
+                support_id,
+                quantite,
+                "",
+                "",
+                f"{prix_ht:.2f}".replace(".", ","),
+                f"{prix_unitaire:.6f}".replace(".", ","),
+                "Prix total d'impression pour la quantité",
+            ])
+
+    # Tarif de livraison ciblée
+    tarif_cible = TARIFS_LIVRAISON_CIBLEE.get(
+        "tarif_par_ville_ht"
+    )
+
+    if tarif_cible is not None:
+        writer.writerow([
+            "Livraison ciblée",
+            "Tous supports concernés",
+            "Par ville distincte",
+            "",
+            "",
+            "",
+            f"{float(tarif_cible):.2f}".replace(".", ","),
+            "",
+            "Tarif HT par ville distincte",
+        ])
+
+    # Tarifs de livraison massive
+    for mode, familles in TARIFS_LIVRAISON_MASSIVE.items():
+        if not isinstance(familles, dict):
+            continue
+
+        for famille, tranches in familles.items():
+            if not isinstance(tranches, list):
+                continue
+
+            famille_label = libelles_familles.get(
+                famille,
+                famille.replace("_", " ").title(),
+            )
+
+            for tranche in tranches:
+                prix_ht = float(tranche.get("prix_ht") or 0)
+
+                writer.writerow([
+                    "Livraison massive",
+                    famille_label,
+                    mode.replace("_", " ").title(),
+                    "",
+                    tranche.get("min_km", ""),
+                    tranche.get("max_km", ""),
+                    f"{prix_ht:.2f}".replace(".", ","),
+                    "",
+                    "Tarif HT par point de livraison",
+                ])
+
+    nom_fichier = (
+        "tarifs_diffmedia_"
+        + datetime.now().strftime("%Y-%m-%d")
+        + ".csv"
+    )
+
+    return Response(
+        sortie.getvalue(),
+        mimetype="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": (
+                f'attachment; filename="{nom_fichier}"'
+            )
+        },
+    )
+
 
 @app.route("/mes_devis")
 @login_required
