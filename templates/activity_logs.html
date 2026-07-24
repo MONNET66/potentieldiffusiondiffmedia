@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Journal d'activité - Diffmedia</title>
+
+    <style>
+        :root {
+            --orange: #f97316;
+            --orange-dark: #ea580c;
+            --black: #111827;
+            --dark-gray: #374151;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+            --border: #e5e7eb;
+            --white: #ffffff;
+            --green: #16a34a;
+            --blue: #2563eb;
+            --red: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f6f8;
+            color: var(--black);
+        }
+
+        .page-shell {
+            width: min(1500px, calc(100% - 32px));
+            margin: 24px auto 50px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 22px;
+            margin-bottom: 22px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(17, 24, 39, 0.07);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .brand img {
+            width: 175px;
+            max-width: 32vw;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .brand-title h1 {
+            margin: 0 0 5px;
+            font-size: 28px;
+            line-height: 1.1;
+        }
+
+        .brand-title p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+        }
+
+        .button-dark {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .button-orange {
+            background: var(--orange);
+            color: var(--white);
+        }
+
+        .button-orange:hover {
+            background: var(--orange-dark);
+        }
+
+        .button-light {
+            background: var(--light-gray);
+            color: var(--black);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 10px 24px rgba(17, 24, 39, 0.05);
+        }
+
+        .kpi-label {
+            margin-bottom: 10px;
+            color: var(--gray);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .kpi-value {
+            font-size: 30px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .filters-card,
+        .table-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 10px 24px rgba(17, 24, 39, 0.05);
+        }
+
+        .filters-card {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-heading {
+            margin: 0 0 16px;
+            font-size: 18px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns:
+                minmax(180px, 1.2fr)
+                minmax(160px, 1fr)
+                minmax(140px, 0.8fr)
+                minmax(150px, 0.9fr)
+                minmax(150px, 0.9fr)
+                auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--dark-gray);
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            background: var(--white);
+            color: var(--black);
+            font-size: 14px;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: 2px solid rgba(249, 115, 22, 0.18);
+            border-color: var(--orange);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .table-card {
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-title {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        .table-count {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 880px;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: #fafafa;
+            color: var(--dark-gray);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        tbody tr:hover {
+            background: #fff8f3;
+        }
+
+        .username {
+            font-weight: 800;
+        }
+
+        .role-badge,
+        .action-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .role-admin {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .role-manager {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .role-user {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .action-connexion {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .action-deconnexion {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .action-recherche {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .action-campagne {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .action-export {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .action-default {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .empty-state {
+            padding: 45px 20px;
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 16px 20px;
+            background: #fafafa;
+        }
+
+        .pagination-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .page-link {
+            min-width: 38px;
+            min-height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 10px;
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            background: var(--white);
+            color: var(--black);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .page-link.active {
+            background: var(--orange);
+            color: var(--white);
+            border-color: var(--orange);
+        }
+
+        .page-link.disabled {
+            opacity: 0.45;
+            pointer-events: none;
+        }
+
+        @media (max-width: 1100px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .filters-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 700px) {
+            .page-shell {
+                width: min(100% - 18px, 1500px);
+                margin-top: 10px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .brand img {
+                width: 140px;
+                max-width: 50vw;
+            }
+
+            .brand-title h1 {
+                font-size: 23px;
+            }
+
+            .kpi-grid,
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-actions {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+            }
+
+            .table-header,
+            .pagination {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page-shell">
+
+    <header class="topbar">
+        <div class="brand">
+            <img src="/static/logo.png" alt="Diffmedia">
+
+            <div class="brand-title">
+                <h1>Journal d’activité</h1>
+                <p>Suivi des connexions et des actions réalisées dans l’application</p>
+            </div>
+        </div>
+
+        <div class="top-actions">
+            <a href="{{ url_for('dashboard_equipe') }}" class="button button-dark">
+                ← Retour au dashboard
+            </a>
+
+            <a href="{{ url_for('activity_logs',
+                username=selected_username,
+                role=selected_role,
+                action=selected_action,
+                day=selected_day,
+                month=selected_month
+            ) }}" class="button button-light">
+                Actualiser
+            </a>
+        </div>
+    </header>
+
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-label">Actions affichées</div>
+            <div class="kpi-value">{{ total_filtered }}</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Connexions</div>
+            <div class="kpi-value">{{ connections_count }}</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Recherches</div>
+            <div class="kpi-value">{{ searches_count }}</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label">Campagnes créées</div>
+            <div class="kpi-value">{{ campaigns_count }}</div>
+        </div>
+    </section>
+
+    <section class="filters-card">
+        <h2 class="section-heading">Filtrer le journal</h2>
+
+        <form method="get" action="{{ url_for('activity_logs') }}">
+            <div class="filters-grid">
+
+                <div class="field">
+                    <label for="username">Utilisateur</label>
+                    <select id="username" name="username">
+                        <option value="">Tous les utilisateurs</option>
+
+                        {% for username in usernames %}
+                            <option
+                                value="{{ username }}"
+                                {% if selected_username == username %}selected{% endif %}
+                            >
+                                {{ username }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="action">Action</label>
+                    <select id="action" name="action">
+                        <option value="">Toutes les actions</option>
+
+                        {% for action in actions %}
+                            <option
+                                value="{{ action }}"
+                                {% if selected_action == action %}selected{% endif %}
+                            >
+                                {{ action }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="role">Rôle</label>
+                    <select id="role" name="role">
+                        <option value="">Tous les rôles</option>
+                        <option value="admin" {% if selected_role == "admin" %}selected{% endif %}>Admin</option>
+                        <option value="manager" {% if selected_role == "manager" %}selected{% endif %}>Manager</option>
+                        <option value="user" {% if selected_role == "user" %}selected{% endif %}>Commercial</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="day">Jour précis</label>
+                    <input
+                        id="day"
+                        type="date"
+                        name="day"
+                        value="{{ selected_day }}"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="month">Mois</label>
+                    <input
+                        id="month"
+                        type="month"
+                        name="month"
+                        value="{{ selected_month }}"
+                    >
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="button button-orange">
+                        Appliquer
+                    </button>
+
+                    <a href="{{ url_for('activity_logs') }}" class="button button-light">
+                        Réinitialiser
+                    </a>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <section class="table-card">
+        <div class="table-header">
+            <h2 class="table-title">Historique des actions</h2>
+            <div class="table-count">
+                {{ total_filtered }} résultat(s)
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            {% if logs %}
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Utilisateur</th>
+                        <th>Rôle</th>
+                        <th>Action</th>
+                        <th>Détail</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for log in logs %}
+                        {% set role_class =
+                            "role-admin" if log["role"] == "admin"
+                            else "role-manager" if log["role"] == "manager"
+                            else "role-user"
+                        %}
+
+                        {% set action_lower = (log["action"] or "")|lower %}
+
+                        {% set action_class =
+                            "action-connexion" if action_lower == "connexion"
+                            else "action-deconnexion" if action_lower == "déconnexion"
+                            else "action-recherche" if action_lower == "recherche"
+                            else "action-campagne" if "campagne" in action_lower
+                            else "action-export" if "export" in action_lower
+                            else "action-default"
+                        %}
+
+                        <tr>
+                            <td>{{ log["created_at"] }}</td>
+
+                            <td class="username">
+                                {{ log["username"] or "Utilisateur inconnu" }}
+                            </td>
+
+                            <td>
+                                <span class="role-badge {{ role_class }}">
+                                    {% if log["role"] == "admin" %}
+                                        Admin
+                                    {% elif log["role"] == "manager" %}
+                                        Manager
+                                    {% elif log["role"] == "user" %}
+                                        Commercial
+                                    {% else %}
+                                        {{ log["role"] or "—" }}
+                                    {% endif %}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="action-badge {{ action_class }}">
+                                    {{ log["action"] or "—" }}
+                                </span>
+                            </td>
+
+                            <td>{{ log["details"] or "—" }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">
+                    Aucun événement ne correspond aux filtres sélectionnés.
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="pagination">
+            <div>
+                Page {{ page }} sur {{ total_pages }}
+            </div>
+
+            <div class="pagination-links">
+                <a
+                    class="page-link {% if page <= 1 %}disabled{% endif %}"
+                    href="{{ url_for('activity_logs',
+                        page=page-1,
+                        username=selected_username,
+                        role=selected_role,
+                        action=selected_action,
+                        day=selected_day,
+                        month=selected_month
+                    ) }}"
+                >
+                    ←
+                </a>
+
+                {% for page_number in page_numbers %}
+                    <a
+                        class="page-link {% if page_number == page %}active{% endif %}"
+                        href="{{ url_for('activity_logs',
+                            page=page_number,
+                            username=selected_username,
+                            role=selected_role,
+                            action=selected_action,
+                            day=selected_day,
+                            month=selected_month
+                        ) }}"
+                    >
+                        {{ page_number }}
+                    </a>
+                {% endfor %}
+
+                <a
+                    class="page-link {% if page >= total_pages %}disabled{% endif %}"
+                    href="{{ url_for('activity_logs',
+                        page=page+1,
+                        username=selected_username,
+                        role=selected_role,
+                        action=selected_action,
+                        day=selected_day,
+                        month=selected_month
+                    ) }}"
+                >
+                    →
+                </a>
+            </div>
+        </div>
+    </section>
+
+</div>
+</body>
+</html>
