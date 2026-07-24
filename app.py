@@ -5508,19 +5508,152 @@ def activity_logs():
     if session.get("role") != "admin":
         return "Accès refusé", 403
 
+    selected_username = (request.args.get("username") or "").strip()
+    selected_role = (request.args.get("role") or "").strip()
+    selected_action = (request.args.get("action") or "").strip()
+    selected_day = (request.args.get("day") or "").strip()
+    selected_month = (request.args.get("month") or "").strip()
+
+    try:
+        page = max(int(request.args.get("page", 1)), 1)
+    except (TypeError, ValueError):
+        page = 1
+
+    per_page = 50
+    offset = (page - 1) * per_page
+
+    where_clauses = []
+    params = []
+
+    if selected_username:
+        where_clauses.append("username = ?")
+        params.append(selected_username)
+
+    if selected_role:
+        where_clauses.append("role = ?")
+        params.append(selected_role)
+
+    if selected_action:
+        where_clauses.append("action = ?")
+        params.append(selected_action)
+
+    if selected_day:
+        where_clauses.append("substr(created_at, 1, 10) = ?")
+        params.append(selected_day)
+
+    if selected_month:
+        where_clauses.append("substr(created_at, 1, 7) = ?")
+        params.append(selected_month)
+
+    where_sql = ""
+
+    if where_clauses:
+        where_sql = "WHERE " + " AND ".join(where_clauses)
+
     conn = get_auth_connection()
-    logs = conn.execute("""
+
+    usernames = [
+        row["username"]
+        for row in conn.execute("""
+            SELECT DISTINCT username
+            FROM activity_logs
+            WHERE username IS NOT NULL
+              AND TRIM(username) <> ''
+            ORDER BY username
+        """).fetchall()
+    ]
+
+    actions = [
+        row["action"]
+        for row in conn.execute("""
+            SELECT DISTINCT action
+            FROM activity_logs
+            WHERE action IS NOT NULL
+              AND TRIM(action) <> ''
+            ORDER BY action
+        """).fetchall()
+    ]
+
+    total_filtered = conn.execute(
+        f"""
+        SELECT COUNT(*) AS total
+        FROM activity_logs
+        {where_sql}
+        """,
+        params
+    ).fetchone()["total"]
+
+    total_pages = max((total_filtered + per_page - 1) // per_page, 1)
+
+    if page > total_pages:
+        page = total_pages
+        offset = (page - 1) * per_page
+
+    logs = conn.execute(
+        f"""
         SELECT username, role, action, details, created_at
         FROM activity_logs
+        {where_sql}
         ORDER BY id DESC
-        LIMIT 200
-    """).fetchall()
+        LIMIT ? OFFSET ?
+        """,
+        params + [per_page, offset]
+    ).fetchall()
+
+    connections_count = conn.execute(
+        f"""
+        SELECT COUNT(*) AS total
+        FROM activity_logs
+        {where_sql}
+        {"AND" if where_sql else "WHERE"} action = 'Connexion'
+        """,
+        params
+    ).fetchone()["total"]
+
+    searches_count = conn.execute(
+        f"""
+        SELECT COUNT(*) AS total
+        FROM activity_logs
+        {where_sql}
+        {"AND" if where_sql else "WHERE"} action = 'Recherche'
+        """,
+        params
+    ).fetchone()["total"]
+
+    campaigns_count = conn.execute(
+        f"""
+        SELECT COUNT(*) AS total
+        FROM activity_logs
+        {where_sql}
+        {"AND" if where_sql else "WHERE"} action LIKE 'Création campagne%'
+        """,
+        params
+    ).fetchone()["total"]
+
     conn.close()
 
-    rows = ""
-    for log in logs:
-        rows += f"<tr><td>{log['created_at']}</td><td>{log['username']}</td><td>{log['role']}</td><td>{log['action']}</td><td>{log['details']}</td></tr>"
-    return f"<a href='/dashboard_equipe' style='display:inline-block;margin-bottom:15px;padding:8px 12px;background:#2563eb;color:white;text-decoration:none;border-radius:6px;'>⬅ Retour au dashboard</a><h1>Journal d'activité</h1><table border='1' cellpadding='8'><tr><th>Date</th><th>Utilisateur</th><th>Rôle</th><th>Action</th><th>Détail</th></tr>{rows}</table>"
+    first_page = max(1, page - 2)
+    last_page = min(total_pages, page + 2)
+    page_numbers = range(first_page, last_page + 1)
+
+    return render_template(
+        "activity_logs.html",
+        logs=logs,
+        usernames=usernames,
+        actions=actions,
+        selected_username=selected_username,
+        selected_role=selected_role,
+        selected_action=selected_action,
+        selected_day=selected_day,
+        selected_month=selected_month,
+        total_filtered=total_filtered,
+        connections_count=connections_count,
+        searches_count=searches_count,
+        campaigns_count=campaigns_count,
+        page=page,
+        total_pages=total_pages,
+        page_numbers=page_numbers,
+    )-radius:6px;'>⬅ Retour au dashboard</a><h1>Journal d'activité</h1><table border='1' cellpadding='8'><tr><th>Date</th><th>Utilisateur</th><th>Rôle</th><th>Action</th><th>Détail</th></tr>{rows}</table>"
     
 @app.route("/dashboard_equipe")
 @login_required
