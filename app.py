@@ -328,7 +328,27 @@ def normalize_search_text(value):
 
 
 def is_generic_name(value):
-    return normalize_name(value) in GENERIC_NAMES
+    normalized = normalize_name(value)
+
+    if normalized in GENERIC_NAMES:
+        return True
+
+    generic_prefixes = (
+        "pharmacie - ",
+        "restaurant - ",
+        "bar - ",
+        "boulangerie - ",
+        "snack - ",
+        "camping - ",
+        "hotel - ",
+        "hôtel - ",
+        "coiffeur - ",
+        "salon de coiffure - ",
+        "office de tourisme - ",
+        "tabac - ",
+    )
+
+    return normalized.startswith(generic_prefixes)
 
 
 def haversine_km(lat1, lon1, lat2, lon2):
