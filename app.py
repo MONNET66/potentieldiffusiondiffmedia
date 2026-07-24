@@ -326,7 +326,10 @@ def normalize_search_text(value):
     value = value.replace(" de la ", " la ")
     return " ".join(value.split())
 
-
+# Les imports OSM peuvent créer des commerces génériques
+# (ex. "Boulangerie - NICE", "Restaurant - PARIS").
+# Ils sont exclus des résultats pour éviter les doublons
+# et les surestimations de potentiel.
 def is_generic_name(value):
     normalized = normalize_name(value)
 
@@ -349,7 +352,6 @@ def is_generic_name(value):
     )
 
     return normalized.startswith(generic_prefixes)
-
 
 def haversine_km(lat1, lon1, lat2, lon2):
     r = 6371
