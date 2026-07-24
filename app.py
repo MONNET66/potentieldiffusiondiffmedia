@@ -5653,6 +5653,7 @@ def activity_logs():
         page=page,
         total_pages=total_pages,
         page_numbers=page_numbers,
+    )
     
     
 @app.route("/dashboard_equipe")
