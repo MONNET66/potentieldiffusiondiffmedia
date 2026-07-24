@@ -128,11 +128,37 @@
         }
 
         .kpi-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-height: 126px;
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 18px;
+            padding: 20px;
             box-shadow: 0 10px 24px rgba(17, 24, 39, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(17, 24, 39, 0.08);
+        }
+
+        .kpi-icon {
+            width: 52px;
+            height: 52px;
+            flex: 0 0 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: #fff3e8;
+            font-size: 25px;
+        }
+
+        .kpi-content {
+            min-width: 0;
         }
 
         .kpi-label {
@@ -148,6 +174,12 @@
             font-size: 30px;
             font-weight: 800;
             line-height: 1;
+        }
+
+        .kpi-note {
+            margin-top: 8px;
+            color: var(--gray);
+            font-size: 13px;
         }
 
         .filters-card,
@@ -268,8 +300,22 @@
             letter-spacing: 0.04em;
         }
 
+        tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
         tbody tr:hover {
-            background: #fff8f3;
+            background: #fff3e8;
+        }
+
+        tbody td:first-child {
+            color: var(--gray);
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        tbody td:last-child {
+            color: var(--dark-gray);
         }
 
         .username {
@@ -281,11 +327,13 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 6px 9px;
+            min-height: 30px;
+            padding: 6px 11px;
             border-radius: 999px;
             font-size: 12px;
             font-weight: 800;
             white-space: nowrap;
+            box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.04);
         }
 
         .role-admin {
@@ -457,36 +505,52 @@
                 action=selected_action,
                 day=selected_day,
                 month=selected_month
-            ) }}" class="button button-light">
+            ) }}" class="button button-orange">
                 Actualiser
             </a>
         </div>
     </header>
 
     <section class="kpi-grid">
-        <div class="kpi-card">
+    <div class="kpi-card">
+        <div class="kpi-icon">📊</div>
+        <div class="kpi-content">
             <div class="kpi-label">Actions affichées</div>
             <div class="kpi-value">{{ total_filtered }}</div>
+            <div class="kpi-note">Selon les filtres sélectionnés</div>
         </div>
+    </div>
 
-        <div class="kpi-card">
+    <div class="kpi-card">
+        <div class="kpi-icon">🔑</div>
+        <div class="kpi-content">
             <div class="kpi-label">Connexions</div>
             <div class="kpi-value">{{ connections_count }}</div>
+            <div class="kpi-note">Connexions enregistrées</div>
         </div>
+    </div>
 
-        <div class="kpi-card">
+    <div class="kpi-card">
+        <div class="kpi-icon">🔍</div>
+        <div class="kpi-content">
             <div class="kpi-label">Recherches</div>
             <div class="kpi-value">{{ searches_count }}</div>
+            <div class="kpi-note">Recherches effectuées</div>
         </div>
+    </div>
 
-        <div class="kpi-card">
+    <div class="kpi-card">
+        <div class="kpi-icon">📣</div>
+        <div class="kpi-content">
             <div class="kpi-label">Campagnes créées</div>
             <div class="kpi-value">{{ campaigns_count }}</div>
+            <div class="kpi-note">Campagnes enregistrées</div>
         </div>
-    </section>
+    </div>
+</section>
 
     <section class="filters-card">
-        <h2 class="section-heading">Filtrer le journal</h2>
+        <h2 class="section-heading">Recherche avancée</h2>
 
         <form method="get" action="{{ url_for('activity_logs') }}">
             <div class="filters-grid">
