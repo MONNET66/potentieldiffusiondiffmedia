@@ -4843,7 +4843,7 @@ def mon_equipe():
                     max-height: 60px;
                     display: block;
                     object-fit: contain;
-                }
+                }}
 
                 .brand-text {{
                     display: flex;
