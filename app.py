@@ -5555,10 +5555,11 @@ def activity_logs():
     usernames = [
         row["username"]
         for row in conn.execute("""
-            SELECT DISTINCT username
-            FROM activity_logs
+            SELECT username
+            FROM users
             WHERE username IS NOT NULL
               AND TRIM(username) <> ''
+              AND COALESCE(is_active, 1) = 1
             ORDER BY username
         """).fetchall()
     ]
