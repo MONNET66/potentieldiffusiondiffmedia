@@ -4830,8 +4830,8 @@ def mon_equipe():
                 }}
 
                 .brand-icon {{
-                    width: 118px;
-                    height: 42px;
+                    width: 180px;
+                    height: 60px;
                     display: flex;
                     align-items: center;
                     justify-content: flex-start;
@@ -4839,12 +4839,11 @@ def mon_equipe():
                 }}
 
                 .brand-icon img {{
-                    width: 118px;
-                    max-height: 42px;
+                    width: 180px;
+                    max-height: 60px;
                     display: block;
                     object-fit: contain;
-                    object-position: left center;
-                }}
+                }
 
                 .brand-text {{
                     display: flex;
@@ -5371,13 +5370,6 @@ def mon_equipe():
                 <div class="nav-brand">
                     <div class="brand-icon">
                         <img src="/static/logo.png" alt="Diffmedia">
-                    </div>
-
-                    <div class="brand-text">
-                        <span class="brand-title">Diffmedia</span>
-                        <span class="brand-user">
-                            Connecté : {session.get("username", "")}
-                        </span>
                     </div>
                 </div>
 
