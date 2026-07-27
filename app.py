@@ -4404,13 +4404,33 @@ def add_commerce():
             except ValueError:
                 return jsonify({"status": "error", "message": "Longitude invalide"})
 
-        ville, code_postal, departement = normalize_added_city_and_postal(ville, code_postal, lat_value, lon_value)
-        if not code_postal:
-            return jsonify({"status": "error", "message": "Code postal manquant : choisis une ville dans les suggestions ou saisis le code postal."})
-        if not ville:
-            ville = ""
-        if not departement:
-            departement = code_postal[:2]
+        ville, code_postal, departement = normalize_added_city_and_postal(
+        ville,
+        code_postal,
+        lat_value,
+        lon_value
+    )
+
+    if not code_postal:
+        return jsonify({
+            "status": "error",
+            "message": "Code postal manquant : choisis une ville dans les suggestions ou saisis le code postal."
+        })
+
+    if not ville:
+        ville = ""
+
+    if not departement:
+        departement = code_postal[:2]
+
+    # Si aucune coordonnée fiable n’a été fournie,
+    # on utilise le code postal pour éviter les communes homonymes.
+    if lat_value is None or lon_value is None:
+        safe_lat, safe_lon = get_coords_commune(code_postal)
+
+        if safe_lat is not None and safe_lon is not None:
+            lat_value = safe_lat
+            lon_value = safe_lon
 
         conn = get_db_connection()
         cur = conn.cursor()
