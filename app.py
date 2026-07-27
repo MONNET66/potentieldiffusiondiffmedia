@@ -334,7 +334,8 @@ def normalize_search_text(value):
 # Ils sont exclus des résultats pour éviter les doublons
 # et les surestimations de potentiel.
 def is_generic_name(value):
-    normalized = normalize_name(value)
+    raw_name = " ".join((value or "").strip().split())
+    normalized = normalize_name(raw_name)
 
     if normalized in GENERIC_NAMES:
         return True
@@ -354,7 +355,19 @@ def is_generic_name(value):
         "tabac - ",
     )
 
-    return normalized.startswith(generic_prefixes)
+    raw_name_lower = raw_name.lower()
+
+    for prefix in generic_prefixes:
+        if raw_name_lower.startswith(prefix):
+            suffixe = raw_name[len(prefix):].strip()
+
+            # Les noms créés automatiquement sont du type :
+            # "Boulangerie - BOURCEFRANC-LE-CHAPUS"
+            # Le suffixe est entièrement en majuscules.
+            if suffixe and suffixe == suffixe.upper():
+                return True
+
+    return False
 
 def haversine_km(lat1, lon1, lat2, lon2):
     r = 6371
