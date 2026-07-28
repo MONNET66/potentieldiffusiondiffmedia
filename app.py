@@ -1440,15 +1440,16 @@ cur.execute("""
     CREATE TABLE IF NOT EXISTS pricing_massive_delivery (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         delivery_mode TEXT NOT NULL,
-        support_family TEXT NOT NULL,
+        establishment_type TEXT,
+        support_family TEXT,
+        product_id TEXT,
         min_km REAL,
         max_km REAL,
         price_ht REAL NOT NULL,
         billing_rule TEXT,
         display_order INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(delivery_mode, support_family, min_km, max_km)
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
 """)
 
@@ -1466,7 +1467,9 @@ cur.execute("""
     CREATE INDEX IF NOT EXISTS idx_pricing_massive_lookup
     ON pricing_massive_delivery(
         delivery_mode,
+        establishment_type,
         support_family,
+        product_id,
         min_km,
         max_km
     )
