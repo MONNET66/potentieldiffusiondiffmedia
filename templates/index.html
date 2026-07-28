@@ -3672,9 +3672,19 @@ markers.on('clusterclick', function(a) {
 
     childMarkers.forEach(function(marker) {
         const item = marker.options.itemData || {};
-        let type = item.type || "";
+        const type = item.type || "";
 
         if (!type) {
+            return;
+        }
+
+        const accepteSupport = String(
+            item.accepte_support || ""
+        ).trim().toLowerCase();
+
+        // Les commerces "Jamais" restent visibles dans le cluster,
+        // mais ne sont pas comptés dans le potentiel.
+        if (accepteSupport === "jamais") {
             return;
         }
 
