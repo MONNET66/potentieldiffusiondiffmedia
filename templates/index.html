@@ -3604,9 +3604,45 @@ data.forEach(function(p, index) {
             popup += "<br>Tél. : " + p.telephone;
         }
 
-        const marker = L.marker([Number(p.lat), Number(p.lon)], {
+        const accepteSupport = String(
+            p.accepte_support || ""
+        ).trim().toLowerCase();
+
+        const markerOptions = {
             itemData: p
-        });
+        };
+
+        // Marqueur rouge uniquement pour les commerces marqués "Jamais"
+        if (accepteSupport === "jamais") {
+            markerOptions.icon = L.divIcon({
+                className: "",
+                html: `
+                    <svg
+                        width="28"
+                        height="41"
+                        viewBox="0 0 28 41"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 27 14 27s14-16.5 14-27C28 6.27 21.73 0 14 0z"
+                            fill="#dc2626"
+                            stroke="#ffffff"
+                            stroke-width="2"
+                        />
+                        <circle cx="14" cy="14" r="5" fill="#ffffff"/>
+                    </svg>
+                `,
+                iconSize: [28, 41],
+                iconAnchor: [14, 41],
+                popupAnchor: [0, -37]
+            });
+        }
+
+        const marker = L.marker(
+            [Number(p.lat), Number(p.lon)],
+            markerOptions
+        );
 
         marker.bindPopup(popup);
 
