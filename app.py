@@ -1386,7 +1386,94 @@ cur.execute("""
 
 conn.commit()
 conn.close()
-    
+
+
+# ============================================================
+# INITIALISATION DE LA BASE DES PRODUITS ET TARIFS
+# Cette base n'est pas encore utilisée par les devis.
+# ============================================================
+
+conn = get_pricing_connection()
+cur = conn.cursor()
+
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS pricing_products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        family_id TEXT NOT NULL,
+        product_id TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
+        product_format TEXT,
+        paper TEXT,
+        printing TEXT,
+        description TEXT,
+        display_order INTEGER NOT NULL DEFAULT 0,
+        is_active INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+""")
+
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS pricing_print_prices (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_id TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        price_ht REAL NOT NULL,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(product_id, quantity)
+    )
+""")
+
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS pricing_targeted_delivery (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        pricing_key TEXT NOT NULL UNIQUE,
+        price_ht REAL NOT NULL,
+        billing_rule TEXT,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+""")
+
+cur.execute("""
+    CREATE TABLE IF NOT EXISTS pricing_massive_delivery (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        delivery_mode TEXT NOT NULL,
+        support_family TEXT NOT NULL,
+        min_km REAL,
+        max_km REAL,
+        price_ht REAL NOT NULL,
+        billing_rule TEXT,
+        display_order INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(delivery_mode, support_family, min_km, max_km)
+    )
+""")
+
+cur.execute("""
+    CREATE INDEX IF NOT EXISTS idx_pricing_products_family
+    ON pricing_products(family_id)
+""")
+
+cur.execute("""
+    CREATE INDEX IF NOT EXISTS idx_pricing_print_product
+    ON pricing_print_prices(product_id)
+""")
+
+cur.execute("""
+    CREATE INDEX IF NOT EXISTS idx_pricing_massive_lookup
+    ON pricing_massive_delivery(
+        delivery_mode,
+        support_family,
+        min_km,
+        max_km
+    )
+""")
+
+conn.commit()
+conn.close()
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
