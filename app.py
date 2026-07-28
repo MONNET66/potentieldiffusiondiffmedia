@@ -629,18 +629,28 @@ def build_results_from_rows(rows):
         seen_keys.add(key)
         supports_list = get_supports_for_type(commerce_type)
         potentiel_supports = 0
-        for support_label in supports_list:
-            for support_key, label in SUPPORT_LABELS.items():
-                if label == support_label:
-                    potentiel_supports += {
-                        "sac_pain": 1000,
-                        "set_table": 1000,
-                        "sous_bock": 250,
-                        "flyer": 50,
-                        "affiche": 1,
-                        "sac_pharmacie": 1000,
-                        "sac_galette": 1000,
-                    }.get(support_key, 0)
+
+        # Les commerces marqués "Jamais" restent visibles mais ne comptent
+        # plus dans le potentiel de diffusion.
+        accepte_support = (
+            str(row["accepte_support"]).strip().lower()
+            if "accepte_support" in row.keys() and row["accepte_support"] is not None
+            else ""
+        )
+
+        if accepte_support != "jamais":
+            for support_label in supports_list:
+                for support_key, label in SUPPORT_LABELS.items():
+                    if label == support_label:
+                        potentiel_supports += {
+                            "sac_pain": 1000,
+                            "set_table": 1000,
+                            "sous_bock": 250,
+                            "flyer": 50,
+                            "affiche": 1,
+                            "sac_pharmacie": 1000,
+                            "sac_galette": 1000,
+                        }.get(support_key, 0)
         results.append({
             "id": row["id"], "name": nom, "lat": lat, "lon": lon, "type": commerce_type,
             "ville": row["ville"] or "", "code_postal": row["code_postal"] or "", "adresse": row["adresse"] or "",
