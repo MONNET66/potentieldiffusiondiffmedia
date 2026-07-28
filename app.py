@@ -53,6 +53,7 @@ BASE_DIR = Path(__file__).resolve().parent
 DB_FILE = "/data/commerces_render.db"
 AUTH_DB_FILE = Path("/data/auth.db")
 CAMPAIGN_DB_FILE = "/data/campaigns.db"
+PRICING_DB_FILE = "/data/pricing.db"
 LAST_RESULTS = []
 
 DEFAULT_LAT = 46.6
@@ -253,6 +254,10 @@ def get_campaign_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def get_pricing_connection():
+    conn = sqlite3.connect(PRICING_DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 def init_campaign_items_table():
     conn = get_campaign_connection()
