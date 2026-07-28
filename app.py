@@ -1174,6 +1174,11 @@ def execute_search_criteria(criteria):
 def compute_potentiel_and_supports(data):
     counts = {}
     for item in data:
+        # Les commerces marqués "Jamais" restent visibles,
+        # mais ne sont pas pris en compte dans le calcul du potentiel.
+        if str(item.get("accepte_support") or "").strip().lower() == "jamais":
+            continue
+
         t = item.get("type", "")
         if t:
             counts[t] = counts.get(t, 0) + 1
