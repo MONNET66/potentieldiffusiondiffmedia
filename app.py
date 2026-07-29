@@ -4209,6 +4209,41 @@ def massive_export_download(campaign_id):
         }
     )
 
+@app.route("/admin/pricing/product/<product_id>")
+@login_required
+def admin_pricing_product(product_id):
+    if session.get("role") != "admin":
+        return "Accès refusé", 403
+
+    conn = get_pricing_connection()
+
+    product = conn.execute("""
+        SELECT
+            id,
+            family_id,
+            product_id,
+            pricing_key,
+            name,
+            product_format,
+            paper,
+            printing,
+            description,
+            display_order,
+            is_active
+        FROM pricing_products
+        WHERE product_id = ?
+    """, (product_id,)).fetchone()
+
+    conn.close()
+
+    if product is None:
+        return "Produit introuvable", 404
+
+    return render_template(
+        "admin_pricing_product.html",
+        product=product
+    )
+
 @app.route("/admin/pricing")
 @login_required
 def admin_pricing():
