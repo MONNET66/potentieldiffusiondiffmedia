@@ -4378,7 +4378,7 @@ def admin_pricing():
         massive_delivery=massive_delivery,
     )
 
-@app.route("/admin/pricing/prices/<product_id>", methods=["GET"])
+@app.route("/admin/pricing/prices/<product_id>", methods=["GET", "POST"])
 @login_required
 def admin_pricing_prices(product_id):
     if session.get("role") != "admin":
@@ -4399,10 +4399,44 @@ def admin_pricing_prices(product_id):
         conn.close()
         return "Produit introuvable", 404
 
-    pricing_key = (
-        product["pricing_key"]
-        or product["product_id"]
-    )
+    pricing_key = product["pricing_key"] or product["product_id"]
+
+    if request.method == "POST":
+
+        rows = conn.execute("""
+            SELECT id
+            FROM pricing_print_prices
+            WHERE product_id = ?
+        """, (pricing_key,)).fetchall()
+
+        for row in rows:
+
+            field = f"price_{row['id']}"
+
+            value = request.form.get(field)
+
+            if value is None:
+                continue
+
+            value = value.replace(",", ".")
+
+            try:
+                value = float(value)
+            except ValueError:
+                continue
+
+            conn.execute("""
+                UPDATE pricing_print_prices
+                SET
+                    price_ht = ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            """, (
+                value,
+                row["id"]
+            ))
+
+        conn.commit()
 
     prices = conn.execute("""
         SELECT
