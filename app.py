@@ -4208,6 +4208,86 @@ def massive_export_download(campaign_id):
         }
     )
 
+@app.route("/admin/pricing")
+@login_required
+def admin_pricing():
+    if session.get("role") != "admin":
+        return "Accès refusé", 403
+
+    conn = get_pricing_connection()
+
+    products = conn.execute("""
+        SELECT
+            family_id,
+            product_id,
+            name,
+            product_format,
+            paper,
+            printing,
+            description,
+            display_order,
+            is_active
+        FROM pricing_products
+        ORDER BY display_order, name
+    """).fetchall()
+
+    print_prices = conn.execute("""
+        SELECT
+            product_id,
+            quantity,
+            price_ht
+        FROM pricing_print_prices
+        ORDER BY product_id, quantity
+    """).fetchall()
+
+    targeted_delivery = conn.execute("""
+        SELECT
+            pricing_key,
+            price_ht,
+            billing_rule
+        FROM pricing_targeted_delivery
+        ORDER BY pricing_key
+    """).fetchall()
+
+    massive_delivery = conn.execute("""
+        SELECT
+            delivery_mode,
+            establishment_type,
+            support_family,
+            product_id,
+            min_km,
+            max_km,
+            price_ht,
+            billing_rule,
+            display_order
+        FROM pricing_massive_delivery
+        ORDER BY
+            delivery_mode,
+            establishment_type,
+            support_family,
+            product_id,
+            display_order,
+            min_km
+    """).fetchall()
+
+    conn.close()
+
+    prices_by_product = {}
+
+    for price in print_prices:
+        prices_by_product.setdefault(
+            price["product_id"],
+            []
+        ).append(price)
+
+    return render_template(
+        "admin_pricing.html",
+        products=products,
+        prices_by_product=prices_by_product,
+        targeted_delivery=targeted_delivery,
+        massive_delivery=massive_delivery,
+    )
+
 @app.route("/log_massive_export", methods=["POST"])
 @login_required
 def log_massive_export():
