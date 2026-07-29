@@ -2337,12 +2337,23 @@
             {% endif %}
 
             {% if session.role == "admin" %}
-    			<div class="sidebar-section-label sidebar-section-spaced">Administration</div>
+    			<div class="sidebar-section-label sidebar-section-spaced">
+        			Administration
+    			</div>
 
-    			<button type="button" class="sidebar-link sidebar-button" onclick="openAddCommerceModal()">
+    			<button
+        			type="button"
+        			class="sidebar-link sidebar-button"
+        			onclick="openAddCommerceModal()"
+    			>
         			<span class="sidebar-icon">➕</span>
         			<span class="sidebar-link-text">Ajouter un commerce</span>
     			</button>
+
+    			<a href="{{ url_for('admin_pricing') }}" class="sidebar-link">
+        			<span class="sidebar-icon">💶</span>
+        			<span class="sidebar-link-text">Gestion des tarifs</span>
+    			</a>
 
     			<a href="{{ url_for('export_tarifs') }}" class="sidebar-link">
         			<span class="sidebar-icon">📥</span>
