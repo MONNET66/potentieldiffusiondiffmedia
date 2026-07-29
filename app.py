@@ -4221,6 +4221,7 @@ def admin_pricing():
         SELECT
             family_id,
             product_id,
+            pricing_key,
             name,
             product_format,
             paper,
@@ -4280,6 +4281,21 @@ def admin_pricing():
             price["product_id"],
             []
         ).append(price)
+
+    for product in products:
+        pricing_key = (
+            product["pricing_key"]
+            or product["product_id"]
+        )
+
+        product_prices = prices_by_product.get(
+            pricing_key,
+            []
+        )
+
+        prices_by_product[
+            product["product_id"]
+        ] = product_prices
 
     return render_template(
         "admin_pricing.html",
