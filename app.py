@@ -4525,41 +4525,205 @@ def admin_pricing_prices(product_id):
     pricing_key = product["pricing_key"] or product["product_id"]
 
     if request.method == "POST":
+        action = request.form.get("action", "save")
 
-        rows = conn.execute("""
-            SELECT id
-            FROM pricing_print_prices
-            WHERE product_id = ?
-        """, (pricing_key,)).fetchall()
+        # AJOUTER UNE NOUVELLE LIGNE
+        if action == "add":
+            quantity_value = (
+                request.form.get("new_quantity") or ""
+            ).strip()
 
-        for row in rows:
-
-            field = f"price_{row['id']}"
-
-            value = request.form.get(field)
-
-            if value is None:
-                continue
-
-            value = value.replace(",", ".")
+            price_value = (
+                request.form.get("new_price_ht") or ""
+            ).strip().replace(",", ".")
 
             try:
-                value = float(value)
-            except ValueError:
-                continue
+                quantity = int(quantity_value)
+                price_ht = float(price_value)
+            except (TypeError, ValueError):
+                conn.close()
+                return "Quantité ou prix incorrect.", 400
+
+            if quantity <= 0 or price_ht < 0:
+                conn.close()
+                return "La quantité et le prix doivent être valides.", 400
+
+            existing_row = conn.execute("""
+                SELECT id
+                FROM pricing_print_prices
+                WHERE product_id = ?
+                  AND quantity = ?
+            """, (
+                pricing_key,
+                quantity,
+            )).fetchone()
+
+            if existing_row is not None:
+                conn.close()
+                return "Cette quantité existe déjà pour ce produit.", 400
 
             conn.execute("""
-                UPDATE pricing_print_prices
-                SET
-                    price_ht = ?,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE id = ?
+                INSERT INTO pricing_print_prices (
+                    product_id,
+                    quantity,
+                    price_ht,
+                    created_at,
+                    updated_at
+                )
+                VALUES (
+                    ?,
+                    ?,
+                    ?,
+                    CURRENT_TIMESTAMP,
+                    CURRENT_TIMESTAMP
+                )
             """, (
-                value,
-                row["id"]
+                pricing_key,
+                quantity,
+                price_ht,
             ))
 
-        conn.commit()
+            conn.commit()
+
+        # DUPLIQUER UNE LIGNE
+        elif action == "duplicate":
+            row_id = request.form.get("row_id")
+
+            source_row = conn.execute("""
+                SELECT
+                    quantity,
+                    price_ht
+                FROM pricing_print_prices
+                WHERE id = ?
+                  AND product_id = ?
+            """, (
+                row_id,
+                pricing_key,
+            )).fetchone()
+
+            if source_row is not None:
+                new_quantity = int(source_row["quantity"]) + 1
+
+                while conn.execute("""
+                    SELECT id
+                    FROM pricing_print_prices
+                    WHERE product_id = ?
+                      AND quantity = ?
+                """, (
+                    pricing_key,
+                    new_quantity,
+                )).fetchone() is not None:
+                    new_quantity += 1
+
+                conn.execute("""
+                    INSERT INTO pricing_print_prices (
+                        product_id,
+                        quantity,
+                        price_ht,
+                        created_at,
+                        updated_at
+                    )
+                    VALUES (
+                        ?,
+                        ?,
+                        ?,
+                        CURRENT_TIMESTAMP,
+                        CURRENT_TIMESTAMP
+                    )
+                """, (
+                    pricing_key,
+                    new_quantity,
+                    source_row["price_ht"],
+                ))
+
+                conn.commit()
+
+        # SUPPRIMER UNE LIGNE
+        elif action == "delete":
+            row_id = request.form.get("row_id")
+
+            conn.execute("""
+                DELETE FROM pricing_print_prices
+                WHERE id = ?
+                  AND product_id = ?
+            """, (
+                row_id,
+                pricing_key,
+            ))
+
+            conn.commit()
+
+        # ENREGISTRER LES QUANTITÉS ET LES PRIX
+        else:
+            rows = conn.execute("""
+                SELECT id
+                FROM pricing_print_prices
+                WHERE product_id = ?
+            """, (pricing_key,)).fetchall()
+
+            submitted_rows = []
+
+            for row in rows:
+                row_id = row["id"]
+
+                quantity_value = (
+                    request.form.get(f"quantity_{row_id}") or ""
+                ).strip()
+
+                price_value = (
+                    request.form.get(f"price_{row_id}") or ""
+                ).strip().replace(",", ".")
+
+                try:
+                    quantity = int(quantity_value)
+                    price_ht = float(price_value)
+                except (TypeError, ValueError):
+                    conn.close()
+                    return "Une quantité ou un prix est incorrect.", 400
+
+                if quantity <= 0 or price_ht < 0:
+                    conn.close()
+                    return "Les quantités et les prix doivent être valides.", 400
+
+                submitted_rows.append({
+                    "id": row_id,
+                    "quantity": quantity,
+                    "price_ht": price_ht,
+                })
+
+            submitted_quantities = [
+                row["quantity"]
+                for row in submitted_rows
+            ]
+
+            if len(submitted_quantities) != len(set(submitted_quantities)):
+                conn.close()
+                return "Deux lignes ne peuvent pas avoir la même quantité.", 400
+
+            for submitted_row in submitted_rows:
+                conn.execute("""
+                    UPDATE pricing_print_prices
+                    SET
+                        quantity = ?,
+                        price_ht = ?,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                      AND product_id = ?
+                """, (
+                    submitted_row["quantity"],
+                    submitted_row["price_ht"],
+                    submitted_row["id"],
+                    pricing_key,
+                ))
+
+            conn.commit()
+
+        conn.close()
+
+        return redirect(url_for(
+            "admin_pricing_prices",
+            product_id=product_id,
+        ))
 
     prices = conn.execute("""
         SELECT
