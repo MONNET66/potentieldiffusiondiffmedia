@@ -1401,6 +1401,7 @@ cur.execute("""
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         family_id TEXT NOT NULL,
         product_id TEXT NOT NULL UNIQUE,
+        pricing_key TEXT,
         name TEXT NOT NULL,
         product_format TEXT,
         paper TEXT,
