@@ -4219,44 +4219,190 @@ def admin_targeted_delivery():
 
     if request.method == "POST":
 
-        rows = conn.execute("""
-            SELECT id
-            FROM pricing_targeted_delivery
-        """).fetchall()
+        action = request.form.get("action", "save")
 
-        for row in rows:
+        # AJOUTER UNE LIGNE
+        if action == "add":
 
-            value = request.form.get(f"price_{row['id']}")
+            pricing_key = (request.form.get("new_pricing_key") or "").strip()
+            billing_rule = (request.form.get("new_billing_rule") or "").strip()
 
-            if value is None:
-                continue
-
-            value = value.replace(",", ".")
+            price_value = (
+                request.form.get("new_price_ht") or ""
+            ).replace(",", ".")
 
             try:
-                value = float(value)
+                price_ht = float(price_value)
             except ValueError:
-                continue
+                conn.close()
+                return "Prix incorrect.", 400
+
+            if not pricing_key:
+                conn.close()
+                return "Clé tarifaire obligatoire.", 400
+
+            existing = conn.execute("""
+                SELECT id
+                FROM pricing_targeted_delivery
+                WHERE pricing_key = ?
+            """, (pricing_key,)).fetchone()
+
+            if existing:
+                conn.close()
+                return "Cette clé tarifaire existe déjà.", 400
 
             conn.execute("""
-                UPDATE pricing_targeted_delivery
-                SET
-                    price_ht = ?,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE id = ?
+                INSERT INTO pricing_targeted_delivery (
+                    pricing_key,
+                    price_ht,
+                    billing_rule,
+                    created_at,
+                    updated_at
+                )
+                VALUES (
+                    ?,
+                    ?,
+                    ?,
+                    CURRENT_TIMESTAMP,
+                    CURRENT_TIMESTAMP
+                )
             """, (
-                value,
-                row["id"]
+                pricing_key,
+                price_ht,
+                billing_rule,
             ))
 
-        conn.commit()
+            conn.commit()
+
+        # DUPLIQUER
+        elif action == "duplicate":
+
+            row_id = request.form.get("row_id")
+
+            source = conn.execute("""
+                SELECT
+                    pricing_key,
+                    billing_rule,
+                    price_ht
+                FROM pricing_targeted_delivery
+                WHERE id = ?
+            """, (row_id,)).fetchone()
+
+            if source:
+
+                new_key = source["pricing_key"] + "_copie"
+
+                i = 2
+
+                while conn.execute("""
+                    SELECT id
+                    FROM pricing_targeted_delivery
+                    WHERE pricing_key = ?
+                """, (new_key,)).fetchone():
+
+                    new_key = f"{source['pricing_key']}_copie{i}"
+                    i += 1
+
+                conn.execute("""
+                    INSERT INTO pricing_targeted_delivery (
+                        pricing_key,
+                        price_ht,
+                        billing_rule,
+                        created_at,
+                        updated_at
+                    )
+                    VALUES (
+                        ?,
+                        ?,
+                        ?,
+                        CURRENT_TIMESTAMP,
+                        CURRENT_TIMESTAMP
+                    )
+                """, (
+                    new_key,
+                    source["price_ht"],
+                    source["billing_rule"],
+                ))
+
+                conn.commit()
+
+        # SUPPRIMER
+        elif action == "delete":
+
+            row_id = request.form.get("row_id")
+
+            conn.execute("""
+                DELETE
+                FROM pricing_targeted_delivery
+                WHERE id = ?
+            """, (row_id,))
+
+            conn.commit()
+
+        # ENREGISTRER
+        else:
+
+            rows = conn.execute("""
+                SELECT id
+                FROM pricing_targeted_delivery
+            """).fetchall()
+
+            keys = []
+
+            for row in rows:
+
+                row_id = row["id"]
+
+                pricing_key = (
+                    request.form.get(f"pricing_key_{row_id}") or ""
+                ).strip()
+
+                billing_rule = (
+                    request.form.get(f"billing_rule_{row_id}") or ""
+                ).strip()
+
+                price_value = (
+                    request.form.get(f"price_{row_id}") or ""
+                ).replace(",", ".")
+
+                try:
+                    price_ht = float(price_value)
+                except ValueError:
+                    continue
+
+                if pricing_key in keys:
+                    conn.close()
+                    return "Deux lignes ne peuvent pas avoir la même clé tarifaire.", 400
+
+                keys.append(pricing_key)
+
+                conn.execute("""
+                    UPDATE pricing_targeted_delivery
+                    SET
+                        pricing_key = ?,
+                        billing_rule = ?,
+                        price_ht = ?,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                """, (
+                    pricing_key,
+                    billing_rule,
+                    price_ht,
+                    row_id,
+                ))
+
+            conn.commit()
+
+        conn.close()
+
+        return redirect(url_for("admin_targeted_delivery"))
 
     prices = conn.execute("""
         SELECT
             id,
             pricing_key,
-            price_ht,
-            billing_rule
+            billing_rule,
+            price_ht
         FROM pricing_targeted_delivery
         ORDER BY pricing_key
     """).fetchall()
