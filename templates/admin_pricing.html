@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administration des tarifs</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f4f6;
+            color: #1f2937;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .page-header {
+            background: #111827;
+            color: white;
+            padding: 24px 30px;
+        }
+
+        .page-header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #d1d5db;
+        }
+
+        .page-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px 40px;
+        }
+
+        .top-actions {
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #f97316;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .section-card {
+            margin-bottom: 24px;
+            overflow: hidden;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            margin: 0;
+            padding: 18px 22px;
+            background: #111827;
+            color: white;
+            font-size: 20px;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .product-card {
+            margin-bottom: 22px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .product-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 14px 18px;
+            background: #fff7ed;
+            border-bottom: 1px solid #fed7aa;
+        }
+
+        .product-title {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .product-code {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .status {
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .product-details {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            padding: 16px 18px;
+            background: #ffffff;
+        }
+
+        .detail-box {
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .prices-table,
+        .delivery-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .prices-table th,
+        .prices-table td,
+        .delivery-table th,
+        .delivery-table td {
+            padding: 10px 12px;
+            border-top: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        .prices-table th,
+        .delivery-table th {
+            background: #f9fafb;
+            color: #4b5563;
+            font-size: 13px;
+        }
+
+        .price-value {
+            font-weight: bold;
+            color: #c2410c;
+        }
+
+        .empty-state {
+            padding: 20px;
+            color: #6b7280;
+            text-align: center;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 900px) {
+            .product-details {
+                grid-template-columns: 1fr;
+            }
+
+            .table-wrapper {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="page-header">
+    <div class="page-header-inner">
+        <h1>Administration des produits et tarifs</h1>
+        <p>
+            Consultation des produits, tarifs d’impression et tarifs de livraison.
+        </p>
+    </div>
+</header>
+
+<main class="page-container">
+
+    <div class="top-actions">
+        <a href="{{ url_for('index') }}" class="back-link">
+            Retour à l’application
+        </a>
+    </div>
+
+    <section class="section-card">
+        <h2 class="section-title">
+            Produits et tarifs d’impression
+        </h2>
+
+        <div class="section-content">
+
+            {% for product in products %}
+                <article class="product-card">
+
+                    <div class="product-header">
+                        <div>
+                            <h3 class="product-title">
+                                {{ product["name"] }}
+                            </h3>
+
+                            <div class="product-code">
+                                Famille : {{ product["family_id"] }}
+                                · Référence : {{ product["product_id"] }}
+                            </div>
+                        </div>
+
+                        {% if product["is_active"] %}
+                            <span class="status status-active">
+                                Actif
+                            </span>
+                        {% else %}
+                            <span class="status status-inactive">
+                                Inactif
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="product-details">
+                        <div class="detail-box">
+                            <span class="detail-label">Format</span>
+                            {{ product["product_format"] or "Non renseigné" }}
+                        </div>
+
+                        <div class="detail-box">
+                            <span class="detail-label">Papier</span>
+                            {{ product["paper"] or "Non renseigné" }}
+                        </div>
+
+                        <div class="detail-box">
+                            <span class="detail-label">Impression</span>
+                            {{ product["printing"] or "Non renseigné" }}
+                        </div>
+                    </div>
+
+                    {% set product_prices = prices_by_product.get(product["product_id"], []) %}
+
+                    {% if product_prices %}
+                        <div class="table-wrapper">
+                            <table class="prices-table">
+                                <thead>
+                                    <tr>
+                                        <th>Quantité</th>
+                                        <th>Prix HT</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for price in product_prices %}
+                                        <tr>
+                                            <td>
+                                                {{ "{:,}".format(price["quantity"]).replace(",", " ") }}
+                                            </td>
+
+                                            <td class="price-value">
+                                                {{ "%.2f"|format(price["price_ht"]) }} €
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            Aucun tarif d’impression enregistré pour cette référence.
+                        </div>
+                    {% endif %}
+
+                </article>
+            {% else %}
+                <div class="empty-state">
+                    Aucun produit enregistré.
+                </div>
+            {% endfor %}
+
+        </div>
+    </section>
+
+    <section class="section-card">
+        <h2 class="section-title">
+            Livraison ciblée
+        </h2>
+
+        <div class="section-content">
+
+            {% if targeted_delivery %}
+                <div class="table-wrapper">
+                    <table class="delivery-table">
+                        <thead>
+                            <tr>
+                                <th>Clé tarifaire</th>
+                                <th>Prix HT</th>
+                                <th>Règle</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for price in targeted_delivery %}
+                                <tr>
+                                    <td>{{ price["pricing_key"] }}</td>
+
+                                    <td class="price-value">
+                                        {{ "%.2f"|format(price["price_ht"]) }} €
+                                    </td>
+
+                                    <td>
+                                        {{ price["billing_rule"] or "Non renseignée" }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    Aucun tarif de livraison ciblée importé pour le moment.
+                </div>
+            {% endif %}
+
+        </div>
+    </section>
+
+    <section class="section-card">
+        <h2 class="section-title">
+            Livraison massive
+        </h2>
+
+        <div class="section-content">
+
+            {% if massive_delivery %}
+                <div class="table-wrapper">
+                    <table class="delivery-table">
+                        <thead>
+                            <tr>
+                                <th>Mode</th>
+                                <th>Établissement</th>
+                                <th>Famille</th>
+                                <th>Produit</th>
+                                <th>Distance</th>
+                                <th>Prix HT</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for price in massive_delivery %}
+                                <tr>
+                                    <td>{{ price["delivery_mode"] }}</td>
+
+                                    <td>
+                                        {{ price["establishment_type"] or "Tous" }}
+                                    </td>
+
+                                    <td>
+                                        {{ price["support_family"] or "—" }}
+                                    </td>
+
+                                    <td>
+                                        {{ price["product_id"] or "—" }}
+                                    </td>
+
+                                    <td>
+                                        {% if price["max_km"] is none %}
+                                            À partir de {{ price["min_km"]|int }} km
+                                        {% else %}
+                                            {{ price["min_km"]|int }}
+                                            à
+                                            {{ price["max_km"]|int }} km
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="price-value">
+                                        {{ "%.2f"|format(price["price_ht"]) }} €
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    Aucun tarif de livraison massive importé pour le moment.
+                </div>
+            {% endif %}
+
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>
+HTML
