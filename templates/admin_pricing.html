@@ -75,22 +75,9 @@
         }
 
         .brand-logo {
-            height: 48px;
+            height: 64px;
             width: auto;
             display: block;
-        }
-
-        .brand-text strong {
-            display: block;
-            font-size: 15px;
-            letter-spacing: 0.03em;
-        }
-
-        .brand-text span {
-            display: block;
-            margin-top: 2px;
-            color: #d1d5db;
-            font-size: 12px;
         }
 
         .topbar-actions {
@@ -684,12 +671,9 @@
 <header class="topbar">
     <div class="topbar-inner">
         <a href="{{ url_for('index') }}" class="brand">
-            <img src="{{ url_for('static', filename='TON_LOGO_TRANSPARENT.png') }}" alt="DIFFMEDIA" class="brand-logo">
-
-            <div class="brand-text">
-                <strong>DIFFMEDIA</strong>
-                <span>Administration des tarifs</span>
-            </div>
+            <img src="{{ url_for('static', filename='logo_diffmedia_sidebar_transparent.png') }}"
+                 alt="DIFFMEDIA"
+                 class="brand-logo">
         </a>
 
         <div class="topbar-actions">
