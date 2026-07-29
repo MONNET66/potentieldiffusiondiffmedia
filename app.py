@@ -4209,13 +4209,48 @@ def massive_export_download(campaign_id):
         }
     )
 
-@app.route("/admin/pricing/product/<product_id>")
+@app.route("/admin/pricing/product/<product_id>", methods=["GET", "POST"])
 @login_required
 def admin_pricing_product(product_id):
     if session.get("role") != "admin":
         return "Accès refusé", 403
 
     conn = get_pricing_connection()
+
+    if request.method == "POST":
+        name = (request.form.get("name") or "").strip()
+        product_format = (request.form.get("product_format") or "").strip()
+        paper = (request.form.get("paper") or "").strip()
+        printing = (request.form.get("printing") or "").strip()
+        description = (request.form.get("description") or "").strip()
+        is_active = 1 if request.form.get("is_active") == "1" else 0
+
+        if not name:
+            conn.close()
+            return "Le nom commercial est obligatoire", 400
+
+        conn.execute("""
+            UPDATE pricing_products
+            SET
+                name = ?,
+                product_format = ?,
+                paper = ?,
+                printing = ?,
+                description = ?,
+                is_active = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE product_id = ?
+        """, (
+            name,
+            product_format,
+            paper,
+            printing,
+            description,
+            is_active,
+            product_id,
+        ))
+
+        conn.commit()
 
     product = conn.execute("""
         SELECT
@@ -4238,6 +4273,9 @@ def admin_pricing_product(product_id):
 
     if product is None:
         return "Produit introuvable", 404
+
+    if request.method == "POST":
+        return redirect(url_for("admin_pricing"))
 
     return render_template(
         "admin_pricing_product.html",
