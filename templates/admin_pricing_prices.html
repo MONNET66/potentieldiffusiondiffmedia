@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tarifs d'impression</title>
+
+    <style>
+        *{
+            box-sizing:border-box;
+            font-family:Arial,sans-serif;
+        }
+
+        body{
+            margin:0;
+            background:#f5f5f5;
+        }
+
+        .container{
+            max-width:900px;
+            margin:40px auto;
+            background:white;
+            border-radius:14px;
+            padding:30px;
+            box-shadow:0 8px 24px rgba(0,0,0,.08);
+        }
+
+        h1{
+            margin-top:0;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:25px;
+        }
+
+        th{
+            background:#f15a00;
+            color:white;
+            padding:12px;
+        }
+
+        td{
+            padding:12px;
+            border-bottom:1px solid #e5e5e5;
+        }
+
+        input[type=number]{
+            width:140px;
+            padding:8px;
+            border-radius:8px;
+            border:1px solid #ccc;
+        }
+
+        .buttons{
+            margin-top:30px;
+            display:flex;
+            gap:15px;
+        }
+
+        .btn{
+            text-decoration:none;
+            border:none;
+            cursor:pointer;
+            border-radius:10px;
+            padding:12px 18px;
+            font-size:15px;
+            font-weight:bold;
+        }
+
+        .btn-orange{
+            background:#f15a00;
+            color:white;
+        }
+
+        .btn-grey{
+            background:#ececec;
+            color:#222;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>{{ product["name"] }}</h1>
+
+    <p>
+        Référence :
+        <strong>{{ product["product_id"] }}</strong>
+    </p>
+
+    <form method="POST">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Quantité</th>
+                    <th>Prix HT (€)</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for price in prices %}
+
+                <tr>
+
+                    <td>
+                        {{ "{:,}".format(price["quantity"]).replace(",", " ") }}
+                    </td>
+
+                    <td>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="price_{{ price['id'] }}"
+                            value="{{ '%.2f'|format(price['price_ht']) }}"
+                        >
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <div class="buttons">
+
+            <button
+                class="btn btn-orange"
+                type="submit">
+
+                💾 Enregistrer
+
+            </button>
+
+            <a
+                class="btn btn-grey"
+                href="{{ url_for('admin_pricing') }}">
+
+                ← Retour
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>
