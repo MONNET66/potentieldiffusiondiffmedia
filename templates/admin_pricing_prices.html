@@ -2,160 +2,552 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Tarifs d'impression</title>
 
     <style>
-        *{
-            box-sizing:border-box;
-            font-family:Arial,sans-serif;
+        * {
+            box-sizing: border-box;
         }
 
-        body{
-            margin:0;
-            background:#f5f5f5;
+        body {
+            margin: 0;
+            background: #f4f5f7;
+            color: #202124;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-        .container{
-            max-width:900px;
-            margin:40px auto;
-            background:white;
-            border-radius:14px;
-            padding:30px;
-            box-shadow:0 8px 24px rgba(0,0,0,.08);
+        .page-header {
+            padding: 24px 30px;
+            background: #171717;
+            color: white;
+            border-bottom: 4px solid #f58220;
         }
 
-        h1{
-            margin-top:0;
+        .page-header-inner {
+            max-width: 1150px;
+            margin: 0 auto;
         }
 
-        table{
-            width:100%;
-            border-collapse:collapse;
-            margin-top:25px;
+        .page-header h1 {
+            margin: 0 0 7px;
+            font-size: 28px;
         }
 
-        th{
-            background:#f15a00;
-            color:white;
-            padding:12px;
+        .page-header p {
+            margin: 0;
+            color: #d6d6d6;
+            font-size: 15px;
         }
 
-        td{
-            padding:12px;
-            border-bottom:1px solid #e5e5e5;
+        .page-container {
+            max-width: 1150px;
+            margin: 28px auto;
+            padding: 0 22px 40px;
         }
 
-        input[type=number]{
-            width:140px;
-            padding:8px;
-            border-radius:8px;
-            border:1px solid #ccc;
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .buttons{
-            margin-top:30px;
-            display:flex;
-            gap:15px;
+        .summary {
+            padding: 15px 19px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 14px rgba(0, 0, 0, 0.07);
+            font-weight: 700;
         }
 
-        .btn{
-            text-decoration:none;
-            border:none;
-            cursor:pointer;
-            border-radius:10px;
-            padding:12px 18px;
-            font-size:15px;
-            font-weight:bold;
+        .summary strong {
+            color: #f58220;
         }
 
-        .btn-orange{
-            background:#f15a00;
-            color:white;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition:
+                transform 0.15s ease,
+                opacity 0.15s ease;
         }
 
-        .btn-grey{
-            background:#ececec;
-            color:#222;
+        .btn:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
         }
 
+        .btn-primary {
+            background: #f58220;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #292929;
+        }
+
+        .btn-duplicate {
+            min-height: 36px;
+            padding: 8px 11px;
+            background: #e8f2ff;
+            color: #165a9f;
+        }
+
+        .btn-delete {
+            min-height: 36px;
+            padding: 8px 11px;
+            background: #feecec;
+            color: #b42318;
+        }
+
+        .pricing-card,
+        .add-card {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .add-card {
+            margin-bottom: 22px;
+        }
+
+        .section-title {
+            margin: 0;
+            padding: 18px 22px;
+            background: #242424;
+            color: white;
+            font-size: 18px;
+        }
+
+        .add-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            align-items: end;
+            gap: 16px;
+            padding: 22px;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #444444;
+        }
+
+        .field-group input {
+            width: 100%;
+            min-height: 43px;
+            padding: 10px 12px;
+            border: 1px solid #cfcfcf;
+            border-radius: 8px;
+            background: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .field-group input:focus,
+        .table-input:focus {
+            border-color: #f58220;
+            box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.14);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 760px;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 14px 15px;
+            background: #eeeeee;
+            color: #333333;
+            text-align: left;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid #d7d7d7;
+        }
+
+        td {
+            padding: 13px 15px;
+            border-bottom: 1px solid #ececec;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #fff8f1;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .table-input {
+            width: 150px;
+            min-height: 40px;
+            padding: 9px 11px;
+            border: 1px solid #cfcfcf;
+            border-radius: 8px;
+            background: white;
+            font-size: 15px;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .price-field {
+            display: flex;
+            align-items: center;
+            width: 150px;
+            border: 1px solid #cfcfcf;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .price-field:focus-within {
+            border-color: #f58220;
+            box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.14);
+        }
+
+        .price-field input {
+            width: 110px;
+            min-height: 40px;
+            padding: 9px 8px 9px 11px;
+            border: 0;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: right;
+            outline: none;
+        }
+
+        .price-field span {
+            padding-right: 11px;
+            color: #666666;
+            font-weight: 700;
+        }
+
+        .row-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .row-actions form {
+            margin: 0;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 22px;
+            background: #fafafa;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .empty-message {
+            padding: 45px 20px;
+            color: #777777;
+            text-align: center;
+        }
+
+        @media (max-width: 750px) {
+            .page-header {
+                padding: 20px;
+            }
+
+            .page-header h1 {
+                font-size: 23px;
+            }
+
+            .toolbar,
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .add-form {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .row-actions .btn {
+                width: auto;
+            }
+        }
     </style>
-
 </head>
 
 <body>
 
-<div class="container">
+<header class="page-header">
+    <div class="page-header-inner">
+        <h1>🖨️ Tarifs d’impression</h1>
 
-    <h1>{{ product["name"] }}</h1>
+        <p>
+            {{ product["name"] }} —
+            Référence : {{ product["product_id"] }}
+        </p>
+    </div>
+</header>
 
-    <p>
-        Référence :
-        <strong>{{ product["product_id"] }}</strong>
-    </p>
+<main class="page-container">
 
-    <form method="POST">
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Quantité</th>
-                    <th>Prix HT (€)</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-            {% for price in prices %}
-
-                <tr>
-
-                    <td>
-                        {{ "{:,}".format(price["quantity"]).replace(",", " ") }}
-                    </td>
-
-                    <td>
-
-                        <input
-                            type="number"
-                            step="0.01"
-                            name="price_{{ price['id'] }}"
-                            value="{{ '%.2f'|format(price['price_ht']) }}"
-                        >
-
-                    </td>
-
-                </tr>
-
-            {% endfor %}
-
-            </tbody>
-
-        </table>
-
-        <div class="buttons">
-
-            <button
-                class="btn btn-orange"
-                type="submit">
-
-                💾 Enregistrer
-
-            </button>
-
-            <a
-                class="btn btn-grey"
-                href="{{ url_for('admin_pricing') }}">
-
-                ← Retour
-
-            </a>
-
+    <div class="toolbar">
+        <div class="summary">
+            <strong>{{ prices|length }}</strong>
+            ligne{% if prices|length > 1 %}s{% endif %} de prix
         </div>
 
-    </form>
+        <a
+            href="{{ url_for('admin_pricing') }}"
+            class="btn btn-secondary"
+        >
+            ← Retour aux tarifs
+        </a>
+    </div>
 
-</div>
+    <section class="add-card">
+
+        <h2 class="section-title">
+            Ajouter une ligne de prix
+        </h2>
+
+        <form method="POST" class="add-form">
+
+            <input type="hidden" name="action" value="add">
+
+            <div class="field-group">
+                <label for="new_quantity">
+                    Quantité
+                </label>
+
+                <input
+                    id="new_quantity"
+                    type="number"
+                    name="new_quantity"
+                    min="1"
+                    step="1"
+                    placeholder="Exemple : 2500"
+                    required
+                >
+            </div>
+
+            <div class="field-group">
+                <label for="new_price_ht">
+                    Prix HT (€)
+                </label>
+
+                <input
+                    id="new_price_ht"
+                    type="number"
+                    name="new_price_ht"
+                    min="0"
+                    step="0.01"
+                    placeholder="Exemple : 420,00"
+                    required
+                >
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                ＋ Ajouter la ligne
+            </button>
+
+        </form>
+
+    </section>
+
+    <section class="pricing-card">
+
+        <h2 class="section-title">
+            Grille tarifaire
+        </h2>
+
+        {% if prices %}
+
+            <form
+                id="save-prices-form"
+                method="POST"
+            >
+                <input
+                    type="hidden"
+                    name="action"
+                    value="save"
+                >
+            </form>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Quantité</th>
+                            <th>Prix HT</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for price in prices %}
+
+                        <tr>
+
+                            <td>
+                                <input
+                                    form="save-prices-form"
+                                    class="table-input"
+                                    type="number"
+                                    name="quantity_{{ price['id'] }}"
+                                    value="{{ price['quantity'] }}"
+                                    min="1"
+                                    step="1"
+                                    required
+                                >
+                            </td>
+
+                            <td>
+                                <div class="price-field">
+                                    <input
+                                        form="save-prices-form"
+                                        type="number"
+                                        name="price_{{ price['id'] }}"
+                                        value="{{ '%.2f'|format(price['price_ht']) }}"
+                                        min="0"
+                                        step="0.01"
+                                        required
+                                    >
+
+                                    <span>€</span>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="row-actions">
+
+                                    <form method="POST">
+                                        <input
+                                            type="hidden"
+                                            name="action"
+                                            value="duplicate"
+                                        >
+
+                                        <input
+                                            type="hidden"
+                                            name="row_id"
+                                            value="{{ price['id'] }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-duplicate"
+                                            title="Dupliquer cette ligne"
+                                        >
+                                            ⧉ Dupliquer
+                                        </button>
+                                    </form>
+
+                                    <form
+                                        method="POST"
+                                        onsubmit="return confirm('Supprimer définitivement cette ligne de prix ?');"
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="action"
+                                            value="delete"
+                                        >
+
+                                        <input
+                                            type="hidden"
+                                            name="row_id"
+                                            value="{{ price['id'] }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-delete"
+                                            title="Supprimer cette ligne"
+                                        >
+                                            🗑 Supprimer
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="form-actions">
+
+                <a
+                    href="{{ url_for('admin_pricing') }}"
+                    class="btn btn-secondary"
+                >
+                    Annuler
+                </a>
+
+                <button
+                    type="submit"
+                    form="save-prices-form"
+                    class="btn btn-primary"
+                >
+                    💾 Enregistrer les tarifs
+                </button>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-message">
+                Aucune ligne de prix n’est enregistrée pour ce produit.
+                Utilise le formulaire ci-dessus pour ajouter le premier tarif.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</main>
 
 </body>
 </html>
