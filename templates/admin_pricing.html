@@ -809,6 +809,15 @@
                             {% endif %}
                         </div>
 
+                        <div class="product-actions">
+                            <a
+                                href="{{ url_for('admin_pricing_product', product_id=product['product_id']) }}"
+                                class="action-button secondary"
+                            >
+                                ✏ Modifier la fiche
+                            </a>
+                        </div>
+                        
                         <div class="product-details">
                             <div class="detail-box">
                                 <span class="detail-label">Format</span>
