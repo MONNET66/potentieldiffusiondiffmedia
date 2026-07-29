@@ -2,162 +2,615 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Livraison ciblée</title>
 
     <style>
-        *{
-            box-sizing:border-box;
-            font-family:Arial,sans-serif;
+        * {
+            box-sizing: border-box;
         }
 
-        body{
-            margin:0;
-            background:#f5f5f5;
+        body {
+            margin: 0;
+            background: #f4f5f7;
+            color: #202124;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-        .container{
-            max-width:900px;
-            margin:40px auto;
-            background:white;
-            border-radius:14px;
-            padding:30px;
-            box-shadow:0 8px 24px rgba(0,0,0,.08);
+        .page-header {
+            padding: 24px 30px;
+            background: #171717;
+            color: white;
+            border-bottom: 4px solid #f58220;
         }
 
-        h1{
-            margin-top:0;
+        .page-header-inner {
+            max-width: 1150px;
+            margin: 0 auto;
         }
 
-        table{
-            width:100%;
-            border-collapse:collapse;
-            margin-top:25px;
+        .page-header h1 {
+            margin: 0 0 7px;
+            font-size: 28px;
         }
 
-        th{
-            background:#f15a00;
-            color:white;
-            padding:12px;
+        .page-header p {
+            margin: 0;
+            color: #d6d6d6;
+            font-size: 15px;
         }
 
-        td{
-            padding:12px;
-            border-bottom:1px solid #e5e5e5;
+        .page-container {
+            max-width: 1150px;
+            margin: 28px auto;
+            padding: 0 22px 40px;
         }
 
-        input[type=number]{
-            width:140px;
-            padding:8px;
-            border-radius:8px;
-            border:1px solid #ccc;
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .buttons{
-            margin-top:30px;
-            display:flex;
-            gap:15px;
+        .summary {
+            padding: 15px 19px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 14px rgba(0, 0, 0, 0.07);
+            font-weight: 700;
         }
 
-        .btn{
-            text-decoration:none;
-            border:none;
-            cursor:pointer;
-            border-radius:10px;
-            padding:12px 18px;
-            font-size:15px;
-            font-weight:bold;
+        .summary strong {
+            color: #f58220;
         }
 
-        .btn-orange{
-            background:#f15a00;
-            color:white;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition:
+                transform 0.15s ease,
+                opacity 0.15s ease;
         }
 
-        .btn-grey{
-            background:#ececec;
-            color:#222;
+        .btn:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
         }
 
+        .btn-primary {
+            background: #f58220;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #292929;
+        }
+
+        .btn-duplicate {
+            min-height: 36px;
+            padding: 8px 11px;
+            background: #e8f2ff;
+            color: #165a9f;
+        }
+
+        .btn-delete {
+            min-height: 36px;
+            padding: 8px 11px;
+            background: #feecec;
+            color: #b42318;
+        }
+
+        .pricing-card,
+        .add-card {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .add-card {
+            margin-bottom: 22px;
+        }
+
+        .section-title {
+            margin: 0;
+            padding: 18px 22px;
+            background: #242424;
+            color: white;
+            font-size: 18px;
+        }
+
+        .add-form {
+            display: grid;
+            grid-template-columns: 1.2fr 1.2fr 0.7fr auto;
+            align-items: end;
+            gap: 16px;
+            padding: 22px;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #444444;
+        }
+
+        .field-group input {
+            width: 100%;
+            min-height: 43px;
+            padding: 10px 12px;
+            border: 1px solid #cfcfcf;
+            border-radius: 8px;
+            background: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .field-group input:focus,
+        .table-input:focus {
+            border-color: #f58220;
+            box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.14);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 14px 15px;
+            background: #eeeeee;
+            color: #333333;
+            text-align: left;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid #d7d7d7;
+        }
+
+        td {
+            padding: 13px 15px;
+            border-bottom: 1px solid #ececec;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #fff8f1;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .table-input {
+            width: 100%;
+            min-height: 40px;
+            padding: 9px 11px;
+            border: 1px solid #cfcfcf;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .pricing-key-input {
+            min-width: 210px;
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        .billing-rule-input {
+            min-width: 220px;
+        }
+
+        .price-field {
+            display: flex;
+            align-items: center;
+            width: 145px;
+            border: 1px solid #cfcfcf;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .price-field:focus-within {
+            border-color: #f58220;
+            box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.14);
+        }
+
+        .price-field input {
+            width: 105px;
+            min-height: 40px;
+            padding: 9px 8px 9px 11px;
+            border: 0;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: right;
+            outline: none;
+        }
+
+        .price-field span {
+            padding-right: 11px;
+            color: #666666;
+            font-weight: 700;
+        }
+
+        .row-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .row-actions form {
+            margin: 0;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 22px;
+            background: #fafafa;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .empty-message {
+            padding: 45px 20px;
+            color: #777777;
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .add-form {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .page-header {
+                padding: 20px;
+            }
+
+            .page-header h1 {
+                font-size: 23px;
+            }
+
+            .toolbar,
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .add-form {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .row-actions .btn {
+                width: auto;
+            }
+        }
     </style>
-
 </head>
 
 <body>
 
-<div class="container" style="max-width:900px;margin:40px auto;">
+<header class="page-header">
+    <div class="page-header-inner">
 
-    <h1>🎯 Livraison ciblée</h1>
+        <h1>🎯 Livraison ciblée</h1>
 
-    <p style="margin-bottom:25px;color:#666;">
-        Modifier les tarifs des campagnes ciblées.
-    </p>
+        <p>
+            Gestion des tarifs appliqués aux campagnes ciblées.
+        </p>
 
-    <form method="POST">
+    </div>
+</header>
 
-        <table class="table" style="width:100%;border-collapse:collapse;">
+<main class="page-container">
 
-            <thead>
-                <tr>
-                    <th style="text-align:left;">Clé tarifaire</th>
-                    <th style="text-align:left;">Règle</th>
-                    <th style="width:180px;">Prix HT (€)</th>
-                </tr>
-            </thead>
+    <div class="toolbar">
 
-            <tbody>
+        <div class="summary">
+            <strong>{{ prices|length }}</strong>
+            tarif{% if prices|length > 1 %}s{% endif %} enregistré{% if prices|length > 1 %}s{% endif %}
+        </div>
 
-            {% for price in prices %}
+        <a
+            href="{{ url_for('admin_pricing') }}"
+            class="btn btn-secondary"
+        >
+            ← Retour aux tarifs
+        </a>
 
-                <tr>
+    </div>
 
-                    <td>
-                        {{ price["pricing_key"] }}
-                    </td>
+    <section class="add-card">
 
-                    <td>
-                        {{ price["billing_rule"] or "-" }}
-                    </td>
+        <h2 class="section-title">
+            Ajouter un tarif de livraison ciblée
+        </h2>
 
-                    <td>
+        <form method="POST" class="add-form">
 
-                        <input
-                            type="number"
-                            step="0.01"
-                            name="price_{{ price['id'] }}"
-                            value="{{ "%.2f"|format(price['price_ht']) }}"
-                            style="width:120px;padding:6px;"
-                        >
+            <input
+                type="hidden"
+                name="action"
+                value="add"
+            >
 
-                    </td>
+            <div class="field-group">
 
-                </tr>
+                <label for="new_pricing_key">
+                    Clé tarifaire
+                </label>
 
-            {% endfor %}
+                <input
+                    id="new_pricing_key"
+                    type="text"
+                    name="new_pricing_key"
+                    placeholder="Exemple : tarif_par_ville_ht"
+                    required
+                >
 
-            </tbody>
+            </div>
 
-        </table>
+            <div class="field-group">
 
-        <div style="margin-top:30px;display:flex;gap:15px;">
+                <label for="new_billing_rule">
+                    Règle de facturation
+                </label>
+
+                <input
+                    id="new_billing_rule"
+                    type="text"
+                    name="new_billing_rule"
+                    placeholder="Exemple : Par ville"
+                    required
+                >
+
+            </div>
+
+            <div class="field-group">
+
+                <label for="new_price_ht">
+                    Prix HT (€)
+                </label>
+
+                <input
+                    id="new_price_ht"
+                    type="number"
+                    name="new_price_ht"
+                    min="0"
+                    step="0.01"
+                    placeholder="15,50"
+                    required
+                >
+
+            </div>
 
             <button
                 type="submit"
-                class="action-button secondary"
+                class="btn btn-primary"
             >
-                💾 Enregistrer
+                ＋ Ajouter
             </button>
 
-            <a
-                href="{{ url_for('admin_pricing') }}"
-                class="action-button"
+        </form>
+
+    </section>
+
+    <section class="pricing-card">
+
+        <h2 class="section-title">
+            Grille tarifaire
+        </h2>
+
+        {% if prices %}
+
+            <form
+                id="save-targeted-form"
+                method="POST"
             >
-                ← Retour
-            </a>
+                <input
+                    type="hidden"
+                    name="action"
+                    value="save"
+                >
+            </form>
 
-        </div>
+            <div class="table-wrapper">
 
-    </form>
+                <table>
 
-</div>
+                    <thead>
+                        <tr>
+                            <th>Clé tarifaire</th>
+                            <th>Règle de facturation</th>
+                            <th>Prix HT</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
 
+                    <tbody>
 
+                    {% for price in prices %}
+
+                        <tr>
+
+                            <td>
+
+                                <input
+                                    form="save-targeted-form"
+                                    class="table-input pricing-key-input"
+                                    type="text"
+                                    name="pricing_key_{{ price['id'] }}"
+                                    value="{{ price['pricing_key'] }}"
+                                    required
+                                >
+
+                            </td>
+
+                            <td>
+
+                                <input
+                                    form="save-targeted-form"
+                                    class="table-input billing-rule-input"
+                                    type="text"
+                                    name="billing_rule_{{ price['id'] }}"
+                                    value="{{ price['billing_rule'] or '' }}"
+                                    placeholder="Règle de facturation"
+                                >
+
+                            </td>
+
+                            <td>
+
+                                <div class="price-field">
+
+                                    <input
+                                        form="save-targeted-form"
+                                        type="number"
+                                        name="price_{{ price['id'] }}"
+                                        value="{{ '%.2f'|format(price['price_ht']) }}"
+                                        min="0"
+                                        step="0.01"
+                                        required
+                                    >
+
+                                    <span>€</span>
+
+                                </div>
+
+                            </td>
+
+                            <td>
+
+                                <div class="row-actions">
+
+                                    <form method="POST">
+
+                                        <input
+                                            type="hidden"
+                                            name="action"
+                                            value="duplicate"
+                                        >
+
+                                        <input
+                                            type="hidden"
+                                            name="row_id"
+                                            value="{{ price['id'] }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-duplicate"
+                                            title="Dupliquer ce tarif"
+                                        >
+                                            ⧉ Dupliquer
+                                        </button>
+
+                                    </form>
+
+                                    <form
+                                        method="POST"
+                                        onsubmit="return confirm('Supprimer définitivement ce tarif de livraison ciblée ?');"
+                                    >
+
+                                        <input
+                                            type="hidden"
+                                            name="action"
+                                            value="delete"
+                                        >
+
+                                        <input
+                                            type="hidden"
+                                            name="row_id"
+                                            value="{{ price['id'] }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-delete"
+                                            title="Supprimer ce tarif"
+                                        >
+                                            🗑 Supprimer
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="form-actions">
+
+                <a
+                    href="{{ url_for('admin_pricing') }}"
+                    class="btn btn-secondary"
+                >
+                    Annuler
+                </a>
+
+                <button
+                    type="submit"
+                    form="save-targeted-form"
+                    class="btn btn-primary"
+                >
+                    💾 Enregistrer les tarifs
+                </button>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-message">
+                Aucun tarif de livraison ciblée n’est enregistré.
+                Utilise le formulaire ci-dessus pour ajouter le premier tarif.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</main>
+
+</body>
+</html>
