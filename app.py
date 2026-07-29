@@ -4268,6 +4268,70 @@ def admin_targeted_delivery():
         prices=prices,
     )
 
+@app.route("/admin/pricing/massive", methods=["GET", "POST"])
+@login_required
+def admin_massive_delivery():
+    if session.get("role") != "admin":
+        return "Accès refusé", 403
+
+    conn = get_pricing_connection()
+
+    if request.method == "POST":
+        rows = conn.execute("""
+            SELECT id
+            FROM pricing_massive_delivery
+        """).fetchall()
+
+        for row in rows:
+            value = request.form.get(f"price_{row['id']}")
+
+            if value is None:
+                continue
+
+            value = value.strip().replace(",", ".")
+
+            try:
+                value = float(value)
+            except ValueError:
+                continue
+
+            conn.execute("""
+                UPDATE pricing_massive_delivery
+                SET
+                    price_ht = ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            """, (
+                value,
+                row["id"],
+            ))
+
+        conn.commit()
+
+    prices = conn.execute("""
+        SELECT
+            id,
+            delivery_mode,
+            establishment_type,
+            support_family,
+            product_id,
+            min_km,
+            max_km,
+            price_ht,
+            billing_rule,
+            display_order
+        FROM pricing_massive_delivery
+        ORDER BY display_order, id
+    """).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "admin_massive_delivery.html",
+        prices=prices,
+    )
+
+
 @app.route("/admin/pricing/product/<product_id>", methods=["GET", "POST"])
 @login_required
 def admin_pricing_product(product_id):
