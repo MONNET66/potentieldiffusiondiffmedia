@@ -938,7 +938,20 @@
                     <p>Tarifs appliqués aux campagnes avec sélection précise des points de diffusion.</p>
                 </div>
             </div>
-            <span class="section-count">{{ targeted_delivery | length }} règle{% if targeted_delivery | length > 1 %}s{% endif %}</span>
+            <div style="display:flex;align-items:center;gap:12px;">
+
+                <span class="section-count">
+                    {{ targeted_delivery | length }} règle{% if targeted_delivery | length > 1 %}s{% endif %}
+                </span>
+
+                <a
+                    href="{{ url_for('admin_targeted_delivery') }}"
+                    class="action-button secondary"
+                >
+                    ✏ Modifier
+                </a>
+
+            </div>
         </div>
 
         <div class="section-content">
@@ -985,7 +998,20 @@
                     <p>Barèmes standards et exceptions selon le support, le point de diffusion et la distance.</p>
                 </div>
             </div>
-            <span class="section-count">{{ massive_delivery | length }} règle{% if massive_delivery | length > 1 %}s{% endif %}</span>
+            <div style="display:flex;align-items:center;gap:12px;">
+
+                <span class="section-count">
+                    {{ massive_delivery | length }} règle{% if massive_delivery | length > 1 %}s{% endif %}
+                </span>
+
+                <a
+                    href="{{ url_for('admin_massive_delivery') }}"
+                    class="action-button secondary"
+                >
+                    ✏ Modifier
+                </a>
+
+            </div>
         </div>
 
         <div class="section-content">
