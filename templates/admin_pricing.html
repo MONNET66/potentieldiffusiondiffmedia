@@ -425,7 +425,9 @@
         }
 
         .product-actions {
-            padding: 14px 18px 0;
+            display:flex;
+            gap:12px;
+            padding:14px 18px 0;
         }
 
         .action-button {
@@ -839,12 +841,21 @@
                         </div>
 
                         <div class="product-actions">
+
                             <a
                                 href="{{ url_for('admin_pricing_product', product_id=product['product_id']) }}"
                                 class="action-button secondary"
                             >
                                 ✏ Modifier la fiche
                             </a>
+
+                            <a
+                                href="{{ url_for('admin_pricing_prices', product_id=product['product_id']) }}"
+                                class="action-button secondary"
+                            >
+                                💰 Modifier les tarifs
+                            </a>
+
                         </div>
                         
                         <div class="product-details">
