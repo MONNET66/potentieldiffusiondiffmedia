@@ -4378,6 +4378,50 @@ def admin_pricing():
         massive_delivery=massive_delivery,
     )
 
+@app.route("/admin/pricing/prices/<product_id>", methods=["GET"])
+@login_required
+def admin_pricing_prices(product_id):
+    if session.get("role") != "admin":
+        return "Accès refusé", 403
+
+    conn = get_pricing_connection()
+
+    product = conn.execute("""
+        SELECT
+            product_id,
+            pricing_key,
+            name
+        FROM pricing_products
+        WHERE product_id = ?
+    """, (product_id,)).fetchone()
+
+    if product is None:
+        conn.close()
+        return "Produit introuvable", 404
+
+    pricing_key = (
+        product["pricing_key"]
+        or product["product_id"]
+    )
+
+    prices = conn.execute("""
+        SELECT
+            id,
+            quantity,
+            price_ht
+        FROM pricing_print_prices
+        WHERE product_id = ?
+        ORDER BY quantity
+    """, (pricing_key,)).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "admin_pricing_prices.html",
+        product=product,
+        prices=prices,
+    )
+
 @app.route("/log_massive_export", methods=["POST"])
 @login_required
 def log_massive_export():
