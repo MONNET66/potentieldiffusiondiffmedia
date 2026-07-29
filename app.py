@@ -4209,6 +4209,65 @@ def massive_export_download(campaign_id):
         }
     )
 
+@app.route("/admin/pricing/targeted", methods=["GET", "POST"])
+@login_required
+def admin_targeted_delivery():
+    if session.get("role") != "admin":
+        return "Accès refusé", 403
+
+    conn = get_pricing_connection()
+
+    if request.method == "POST":
+
+        rows = conn.execute("""
+            SELECT id
+            FROM pricing_targeted_delivery
+        """).fetchall()
+
+        for row in rows:
+
+            value = request.form.get(f"price_{row['id']}")
+
+            if value is None:
+                continue
+
+            value = value.replace(",", ".")
+
+            try:
+                value = float(value)
+            except ValueError:
+                continue
+
+            conn.execute("""
+                UPDATE pricing_targeted_delivery
+                SET
+                    price_ht = ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            """, (
+                value,
+                row["id"]
+            ))
+
+        conn.commit()
+
+    prices = conn.execute("""
+        SELECT
+            id,
+            pricing_key,
+            price_ht,
+            billing_rule
+        FROM pricing_targeted_delivery
+        ORDER BY pricing_key
+    """).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "admin_targeted_delivery.html",
+        prices=prices,
+    )
+
 @app.route("/admin/pricing/product/<product_id>", methods=["GET", "POST"])
 @login_required
 def admin_pricing_product(product_id):
