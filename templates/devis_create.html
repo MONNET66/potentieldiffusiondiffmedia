@@ -1712,7 +1712,7 @@ function updateTarifsFixes() {
 
     const tarifLivraisonUnitaire = isMassive
         ? Number({{ tarif_livraison_massive_apercu|tojson }})
-        : 15.50;
+        : Number({{ tarif_livraison_ciblee_apercu|tojson }});
     const totalLivraison = nombrePoints * tarifLivraisonUnitaire;
     if (totalLivraisonElement) {
         totalLivraisonElement.textContent = formatEuros(totalLivraison);
