@@ -781,6 +781,15 @@
                     <span class="sidebar-icon">📚</span>
                     <span class="sidebar-link-text">Journal d'activité</span>
                 </a>
+                <a href="{{ url_for('admin_pricing') }}" class="sidebar-link">
+                    <span class="sidebar-icon">💶</span>
+                    <span class="sidebar-link-text">Gestion des tarifs</span>
+                </a>
+
+                <a href="{{ url_for('export_tarifs') }}" class="sidebar-link">
+                    <span class="sidebar-icon">📥</span>
+                    <span class="sidebar-link-text">Exporter les tarifs</span>
+                </a>   
             {% endif %}
         </nav>
 
