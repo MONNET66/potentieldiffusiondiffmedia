@@ -2714,16 +2714,46 @@
         </div>
 
         <div class="search-bar">
-            <div class="search-field search-field-mode">
-                <label for="mode">Zone de recherche</label>
-                <div class="search-cell">
-                    <select name="mode" id="mode" onchange="updateMode()">
-                        <option value="ville" {% if mode == "ville" %}selected{% endif %}>Ville / code postal</option>
-                        <option value="departement" {% if mode == "departement" %}selected{% endif %}>Département</option>
-                        <option value="rayon" {% if mode == "rayon" %}selected{% endif %}>Rayon autour d’une ville</option>
-                    </select>
-                </div>
-            </div>
+            <div class="search-field search-field-mode" id="modeSearchCell">
+    			<label for="modeButton">Zone de recherche</label>
+
+    			<div class="search-cell">
+        			<div class="types-dropdown" id="modeDropdown">
+
+            			<button
+                			type="button"
+                			class="types-button"
+                			id="modeButton"
+            			>
+                			Zone de recherche
+            			</button>
+
+            			<div class="types-panel" id="modePanel"></div>
+
+            			<select
+                			name="mode"
+                			id="mode"
+                			class="native-select-hidden"
+                			tabindex="-1"
+                			aria-hidden="true"
+                			onchange="updateMode()"
+            			>
+                			<option value="ville" {% if mode == "ville" %}selected{% endif %}>
+                    			Ville / code postal
+                			</option>
+
+                			<option value="departement" {% if mode == "departement" %}selected{% endif %}>
+                    			Département
+                			</option>
+
+                			<option value="rayon" {% if mode == "rayon" %}selected{% endif %}>
+                    			Rayon autour d’une ville
+                			</option>
+            			</select>
+
+        			</div>
+    			</div>
+			</div>
 
             <div class="search-field search-field-location">
                 <label>Ville, code postal ou département</label>
