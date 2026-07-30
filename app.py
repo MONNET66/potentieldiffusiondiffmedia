@@ -43,6 +43,7 @@ from tarifs import (
     TARIFS_LIVRAISON_MASSIVE,
     calculer_livraison,
     obtenir_tarif_livraison_ciblee,
+    obtenir_tarif_impression,
 )
 
 session_http = requests.Session()
@@ -3584,9 +3585,10 @@ def save_quote_from_campaign(token):
     if produit_id in ("sous_bock_carre", "sous_bock_rond"):
         tarif_key = "sous_bock"
 
-    tarifs_produit = TARIFS_PRODUITS.get(tarif_key, {})
-
-    montant_impression_ht = tarifs_produit.get(quantite)
+    montant_impression_ht = obtenir_tarif_impression(
+        tarif_key,
+        quantite
+    )
 
     if montant_impression_ht is None:
         conn.close()
