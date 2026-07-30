@@ -4423,36 +4423,341 @@ def admin_massive_delivery():
     conn = get_pricing_connection()
 
     if request.method == "POST":
-        rows = conn.execute("""
-            SELECT id
-            FROM pricing_massive_delivery
-        """).fetchall()
 
-        for row in rows:
-            value = request.form.get(f"price_{row['id']}")
+        action = request.form.get("action", "save")
 
-            if value is None:
-                continue
+        # AJOUTER UNE RÈGLE
+        if action == "add":
 
-            value = value.strip().replace(",", ".")
+            delivery_mode = (
+                request.form.get("new_delivery_mode") or "standard"
+            ).strip()
+
+            establishment_type = (
+                request.form.get("new_establishment_type") or ""
+            ).strip() or None
+
+            support_family = (
+                request.form.get("new_support_family") or ""
+            ).strip() or None
+
+            product_id = (
+                request.form.get("new_product_id") or ""
+            ).strip() or None
+
+            billing_rule = (
+                request.form.get("new_billing_rule")
+                or "Par point de livraison"
+            ).strip()
+
+            min_km_value = (
+                request.form.get("new_min_km") or ""
+            ).strip()
+
+            max_km_value = (
+                request.form.get("new_max_km") or ""
+            ).strip()
+
+            price_value = (
+                request.form.get("new_price_ht") or ""
+            ).strip().replace(",", ".")
+
+            display_order_value = (
+                request.form.get("new_display_order") or "0"
+            ).strip()
+
+            if delivery_mode not in ("standard", "exception"):
+                conn.close()
+                return "Mode de livraison incorrect.", 400
 
             try:
-                value = float(value)
+                min_km = int(min_km_value)
+                price_ht = float(price_value)
+                display_order = int(display_order_value)
             except ValueError:
-                continue
+                conn.close()
+                return "Les valeurs numériques sont incorrectes.", 400
+
+            if max_km_value:
+                try:
+                    max_km = int(max_km_value)
+                except ValueError:
+                    conn.close()
+                    return "La distance maximale est incorrecte.", 400
+            else:
+                max_km = None
+
+            if min_km < 0:
+                conn.close()
+                return "La distance minimale ne peut pas être négative.", 400
+
+            if max_km is not None and max_km < min_km:
+                conn.close()
+                return (
+                    "La distance maximale doit être supérieure "
+                    "ou égale à la distance minimale."
+                ), 400
+
+            if price_ht < 0:
+                conn.close()
+                return "Le prix ne peut pas être négatif.", 400
 
             conn.execute("""
-                UPDATE pricing_massive_delivery
-                SET
-                    price_ht = ?,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE id = ?
+                INSERT INTO pricing_massive_delivery (
+                    delivery_mode,
+                    establishment_type,
+                    support_family,
+                    product_id,
+                    min_km,
+                    max_km,
+                    price_ht,
+                    billing_rule,
+                    display_order,
+                    created_at,
+                    updated_at
+                )
+                VALUES (
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    CURRENT_TIMESTAMP,
+                    CURRENT_TIMESTAMP
+                )
             """, (
-                value,
-                row["id"],
+                delivery_mode,
+                establishment_type,
+                support_family,
+                product_id,
+                min_km,
+                max_km,
+                price_ht,
+                billing_rule,
+                display_order,
             ))
 
-        conn.commit()
+            conn.commit()
+
+        # DUPLIQUER UNE RÈGLE
+        elif action == "duplicate":
+
+            row_id = request.form.get("row_id")
+
+            source = conn.execute("""
+                SELECT
+                    delivery_mode,
+                    establishment_type,
+                    support_family,
+                    product_id,
+                    min_km,
+                    max_km,
+                    price_ht,
+                    billing_rule,
+                    display_order
+                FROM pricing_massive_delivery
+                WHERE id = ?
+            """, (row_id,)).fetchone()
+
+            if source:
+
+                conn.execute("""
+                    INSERT INTO pricing_massive_delivery (
+                        delivery_mode,
+                        establishment_type,
+                        support_family,
+                        product_id,
+                        min_km,
+                        max_km,
+                        price_ht,
+                        billing_rule,
+                        display_order,
+                        created_at,
+                        updated_at
+                    )
+                    VALUES (
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        CURRENT_TIMESTAMP,
+                        CURRENT_TIMESTAMP
+                    )
+                """, (
+                    source["delivery_mode"],
+                    source["establishment_type"],
+                    source["support_family"],
+                    source["product_id"],
+                    source["min_km"],
+                    source["max_km"],
+                    source["price_ht"],
+                    source["billing_rule"],
+                    source["display_order"],
+                ))
+
+                conn.commit()
+
+        # SUPPRIMER UNE RÈGLE
+        elif action == "delete":
+
+            row_id = request.form.get("row_id")
+
+            conn.execute("""
+                DELETE
+                FROM pricing_massive_delivery
+                WHERE id = ?
+            """, (row_id,))
+
+            conn.commit()
+
+        # ENREGISTRER TOUTES LES MODIFICATIONS
+        else:
+
+            rows = conn.execute("""
+                SELECT id
+                FROM pricing_massive_delivery
+            """).fetchall()
+
+            prepared_rows = []
+
+            for row in rows:
+
+                row_id = row["id"]
+
+                delivery_mode = (
+                    request.form.get(f"delivery_mode_{row_id}")
+                    or "standard"
+                ).strip()
+
+                establishment_type = (
+                    request.form.get(f"establishment_type_{row_id}")
+                    or ""
+                ).strip() or None
+
+                support_family = (
+                    request.form.get(f"support_family_{row_id}")
+                    or ""
+                ).strip() or None
+
+                product_id = (
+                    request.form.get(f"product_id_{row_id}")
+                    or ""
+                ).strip() or None
+
+                billing_rule = (
+                    request.form.get(f"billing_rule_{row_id}")
+                    or "Par point de livraison"
+                ).strip()
+
+                min_km_value = (
+                    request.form.get(f"min_km_{row_id}") or ""
+                ).strip()
+
+                max_km_value = (
+                    request.form.get(f"max_km_{row_id}") or ""
+                ).strip()
+
+                price_value = (
+                    request.form.get(f"price_{row_id}") or ""
+                ).strip().replace(",", ".")
+
+                display_order_value = (
+                    request.form.get(f"display_order_{row_id}") or "0"
+                ).strip()
+
+                if delivery_mode not in ("standard", "exception"):
+                    conn.close()
+                    return "Mode de livraison incorrect.", 400
+
+                try:
+                    min_km = int(min_km_value)
+                    price_ht = float(price_value)
+                    display_order = int(display_order_value)
+                except ValueError:
+                    conn.close()
+                    return (
+                        f"Valeur numérique incorrecte sur la ligne {row_id}."
+                    ), 400
+
+                if max_km_value:
+                    try:
+                        max_km = int(max_km_value)
+                    except ValueError:
+                        conn.close()
+                        return (
+                            f"Distance maximale incorrecte "
+                            f"sur la ligne {row_id}."
+                        ), 400
+                else:
+                    max_km = None
+
+                if min_km < 0:
+                    conn.close()
+                    return (
+                        f"La distance minimale de la ligne {row_id} "
+                        f"ne peut pas être négative."
+                    ), 400
+
+                if max_km is not None and max_km < min_km:
+                    conn.close()
+                    return (
+                        f"La distance maximale de la ligne {row_id} "
+                        f"doit être supérieure ou égale "
+                        f"à la distance minimale."
+                    ), 400
+
+                if price_ht < 0:
+                    conn.close()
+                    return (
+                        f"Le prix de la ligne {row_id} "
+                        f"ne peut pas être négatif."
+                    ), 400
+
+                prepared_rows.append((
+                    delivery_mode,
+                    establishment_type,
+                    support_family,
+                    product_id,
+                    min_km,
+                    max_km,
+                    price_ht,
+                    billing_rule,
+                    display_order,
+                    row_id,
+                ))
+
+            for prepared_row in prepared_rows:
+
+                conn.execute("""
+                    UPDATE pricing_massive_delivery
+                    SET
+                        delivery_mode = ?,
+                        establishment_type = ?,
+                        support_family = ?,
+                        product_id = ?,
+                        min_km = ?,
+                        max_km = ?,
+                        price_ht = ?,
+                        billing_rule = ?,
+                        display_order = ?,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                """, prepared_row)
+
+            conn.commit()
+
+        conn.close()
+
+        return redirect(url_for("admin_massive_delivery"))
 
     prices = conn.execute("""
         SELECT
@@ -4467,7 +4772,14 @@ def admin_massive_delivery():
             billing_rule,
             display_order
         FROM pricing_massive_delivery
-        ORDER BY display_order, id
+        ORDER BY
+            display_order,
+            delivery_mode,
+            establishment_type,
+            support_family,
+            product_id,
+            min_km,
+            id
     """).fetchall()
 
     conn.close()
