@@ -2852,16 +2852,36 @@
                 </div>
 
                 <div class="search-cell hidden" id="departementBox">
-                    <select name="departement" id="departementInput">
-                        <option value="">Choisir un département</option>
-                        {% for code, nom in departements %}
-                            <option value="{{ code }}" {% if departement_value == code %}selected{% endif %}>
-                                {{ code }} - {{ nom }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
+    				<div class="types-dropdown" id="departementDropdown">
+
+        				<button
+            				type="button"
+            				class="types-button"
+            				id="departementButton"
+        				>
+            				Choisir un département
+        				</button>
+
+        				<div class="types-panel" id="departementPanel"></div>
+
+        				<select
+            				name="departement"
+            				id="departementInput"
+            				class="native-select-hidden"
+            				tabindex="-1"
+            				aria-hidden="true"
+        				>
+            				<option value="">Choisir un département</option>
+
+            				{% for code, nom in departements %}
+                				<option value="{{ code }}" {% if departement_value == code %}selected{% endif %}>
+                    				{{ code }} - {{ nom }}
+                				</option>
+            				{% endfor %}
+        				</select>
+
+    				</div>
+				</div>
 
             <div class="search-field search-field-radius">
                 <label for="rayonInput">Rayon de recherche</label>
