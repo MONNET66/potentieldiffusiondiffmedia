@@ -42,6 +42,7 @@ from tarifs import (
     TARIFS_LIVRAISON_CIBLEE,
     TARIFS_LIVRAISON_MASSIVE,
     calculer_livraison,
+    obtenir_tarif_livraison_ciblee,
 )
 
 session_http = requests.Session()
