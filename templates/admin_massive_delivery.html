@@ -26,7 +26,7 @@
         }
 
         .page-header-inner {
-            max-width: 1450px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -42,7 +42,7 @@
         }
 
         .page-container {
-            max-width: 1450px;
+            max-width: 1600px;
             margin: 28px auto;
             padding: 0 22px 40px;
         }
@@ -71,8 +71,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 44px;
-            padding: 11px 18px;
+            min-height: 42px;
+            padding: 10px 15px;
             border: 0;
             border-radius: 9px;
             font-size: 14px;
@@ -97,11 +97,30 @@
             color: #292929;
         }
 
-        .pricing-card {
+        .btn-duplicate {
+            min-height: 36px;
+            padding: 8px 10px;
+            background: #e8f2ff;
+            color: #165a9f;
+        }
+
+        .btn-delete {
+            min-height: 36px;
+            padding: 8px 10px;
+            background: #feecec;
+            color: #b42318;
+        }
+
+        .pricing-card,
+        .add-card {
             background: white;
             border-radius: 14px;
             overflow: hidden;
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .add-card {
+            margin-bottom: 22px;
         }
 
         .section-title {
@@ -112,32 +131,85 @@
             font-size: 18px;
         }
 
+        .add-form {
+            display: grid;
+            grid-template-columns:
+                0.8fr
+                1fr
+                1.1fr
+                1fr
+                0.7fr
+                0.7fr
+                0.8fr
+                1.2fr
+                0.6fr
+                auto;
+            align-items: end;
+            gap: 12px;
+            padding: 22px;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #444444;
+        }
+
+        .field-group input,
+        .field-group select,
+        .table-input,
+        .table-select {
+            width: 100%;
+            min-height: 40px;
+            padding: 8px 9px;
+            border: 1px solid #cfcfcf;
+            border-radius: 8px;
+            background: white;
+            color: #202124;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .field-group input:focus,
+        .field-group select:focus,
+        .table-input:focus,
+        .table-select:focus {
+            border-color: #f58220;
+            box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.14);
+        }
+
         .table-wrapper {
             overflow-x: auto;
         }
 
         table {
             width: 100%;
+            min-width: 1550px;
             border-collapse: collapse;
-            min-width: 1040px;
         }
 
         th {
-            padding: 14px 12px;
+            padding: 13px 9px;
             background: #eeeeee;
             color: #333333;
             text-align: left;
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.03em;
             border-bottom: 1px solid #d7d7d7;
         }
 
         td {
-            padding: 13px 12px;
+            padding: 11px 9px;
             border-bottom: 1px solid #ececec;
             vertical-align: middle;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         tbody tr:hover {
@@ -148,35 +220,38 @@
             border-bottom: 0;
         }
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            border-radius: 999px;
-            padding: 6px 10px;
-            font-size: 12px;
-            font-weight: 700;
-            white-space: nowrap;
+        .mode-select {
+            min-width: 105px;
         }
 
-        .badge-standard {
-            background: #e8f2ff;
-            color: #165a9f;
+        .establishment-select {
+            min-width: 110px;
         }
 
-        .badge-exception {
-            background: #fff0df;
-            color: #ad5400;
+        .family-select {
+            min-width: 145px;
         }
 
-        .distance {
-            white-space: nowrap;
-            font-weight: 700;
+        .product-select {
+            min-width: 135px;
+        }
+
+        .km-input {
+            width: 90px;
+        }
+
+        .billing-input {
+            min-width: 175px;
+        }
+
+        .order-input {
+            width: 75px;
         }
 
         .price-field {
             display: flex;
             align-items: center;
-            width: 135px;
+            width: 125px;
             border: 1px solid #cfcfcf;
             border-radius: 8px;
             overflow: hidden;
@@ -189,19 +264,32 @@
         }
 
         .price-field input {
-            width: 92px;
-            padding: 10px;
+            width: 88px;
+            min-height: 40px;
+            padding: 8px;
             border: 0;
-            outline: 0;
-            font-size: 15px;
+            background: transparent;
+            font-size: 14px;
             font-weight: 700;
             text-align: right;
+            outline: none;
         }
 
         .price-field span {
-            padding-right: 10px;
+            padding-right: 9px;
             color: #666666;
             font-weight: 700;
+        }
+
+        .row-actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+        }
+
+        .row-actions form {
+            margin: 0;
         }
 
         .form-actions {
@@ -219,7 +307,29 @@
             color: #777777;
         }
 
-        @media (max-width: 750px) {
+        .help-text {
+            margin: 0;
+            padding: 15px 22px;
+            background: #fff8f1;
+            color: #654321;
+            border-bottom: 1px solid #f6d5b8;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 1300px) {
+            .add-form {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        @media (max-width: 850px) {
+            .add-form {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
             .page-header {
                 padding: 20px;
             }
@@ -234,8 +344,16 @@
                 align-items: stretch;
             }
 
+            .add-form {
+                grid-template-columns: 1fr;
+            }
+
             .btn {
                 width: 100%;
+            }
+
+            .row-actions .btn {
+                width: auto;
             }
         }
     </style>
@@ -245,112 +363,385 @@
 
 <header class="page-header">
     <div class="page-header-inner">
+
         <h1>🚚 Tarifs de livraison massive</h1>
+
         <p>
-            Modification des tarifs HT appliqués par point de livraison
-            selon la distance, le support et le type d’établissement.
+            Gestion complète des tarifs HT par point de livraison selon la distance,
+            le support et le type d’établissement.
         </p>
+
     </div>
 </header>
 
 <main class="page-container">
 
     <div class="toolbar">
+
         <div class="summary">
             <strong>{{ prices|length }}</strong>
-            règle{% if prices|length > 1 %}s{% endif %} tarifaire{% if prices|length > 1 %}s{% endif %}
+            règle{% if prices|length > 1 %}s{% endif %}
+            tarifaire{% if prices|length > 1 %}s{% endif %}
         </div>
 
-        <a href="{{ url_for('admin_pricing') }}" class="btn btn-secondary">
+        <a
+            href="{{ url_for('admin_pricing') }}"
+            class="btn btn-secondary"
+        >
             ← Retour aux tarifs
         </a>
+
     </div>
 
-    <form method="POST">
-        <section class="pricing-card">
+    <section class="add-card">
 
-            <h2 class="section-title">
-                Grille de livraison massive
-            </h2>
+        <h2 class="section-title">
+            Ajouter une règle de livraison massive
+        </h2>
 
-            {% if prices %}
+        <form method="POST" class="add-form">
+
+            <input type="hidden" name="action" value="add">
+
+            <div class="field-group">
+                <label for="new_delivery_mode">Mode</label>
+
+                <select
+                    id="new_delivery_mode"
+                    name="new_delivery_mode"
+                    required
+                >
+                    <option value="standard">Standard</option>
+                    <option value="exception">Exception</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label for="new_establishment_type">Établissement</label>
+
+                <select
+                    id="new_establishment_type"
+                    name="new_establishment_type"
+                >
+                    <option value="">Aucun</option>
+                    <option value="camping">Camping</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label for="new_support_family">Famille</label>
+
+                <select
+                    id="new_support_family"
+                    name="new_support_family"
+                >
+                    <option value="">Aucune</option>
+                    <option value="famille_papier">Supports papier</option>
+                    <option value="sous_bock">Sous-bocks</option>
+                    <option value="affiche">Affiches</option>
+                    <option value="flyer">Flyers</option>
+                    <option value="pizza">Boîtes à pizza</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label for="new_product_id">Produit</label>
+
+                <select
+                    id="new_product_id"
+                    name="new_product_id"
+                >
+                    <option value="">Aucun</option>
+                    <option value="sac_pain">Sacs à pain</option>
+                    <option value="set_table">Sets de table</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label for="new_min_km">Km minimum</label>
+
+                <input
+                    id="new_min_km"
+                    type="number"
+                    name="new_min_km"
+                    min="0"
+                    step="1"
+                    value="0"
+                    required
+                >
+            </div>
+
+            <div class="field-group">
+                <label for="new_max_km">Km maximum</label>
+
+                <input
+                    id="new_max_km"
+                    type="number"
+                    name="new_max_km"
+                    min="0"
+                    step="1"
+                    placeholder="Vide = illimité"
+                >
+            </div>
+
+            <div class="field-group">
+                <label for="new_price_ht">Prix HT (€)</label>
+
+                <input
+                    id="new_price_ht"
+                    type="number"
+                    name="new_price_ht"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+            </div>
+
+            <div class="field-group">
+                <label for="new_billing_rule">Facturation</label>
+
+                <input
+                    id="new_billing_rule"
+                    type="text"
+                    name="new_billing_rule"
+                    value="Par point de livraison"
+                    required
+                >
+            </div>
+
+            <div class="field-group">
+                <label for="new_display_order">Ordre</label>
+
+                <input
+                    id="new_display_order"
+                    type="number"
+                    name="new_display_order"
+                    min="0"
+                    step="1"
+                    value="0"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                ＋ Ajouter
+            </button>
+
+        </form>
+
+    </section>
+
+    <section class="pricing-card">
+
+        <h2 class="section-title">
+            Grille de livraison massive
+        </h2>
+
+        <p class="help-text">
+            Le champ « Km maximum » peut rester vide pour une tranche sans limite supérieure.
+            Exemple : minimum 251 km et maximum vide signifie « 251 km et plus ».
+        </p>
+
+        {% if prices %}
+
+            <form
+                id="save-massive-form"
+                method="POST"
+            >
+                <input type="hidden" name="action" value="save">
+            </form>
+
             <div class="table-wrapper">
+
                 <table>
+
                     <thead>
                         <tr>
                             <th>Mode</th>
                             <th>Établissement</th>
                             <th>Famille</th>
                             <th>Produit</th>
-                            <th>Distance</th>
+                            <th>Km min.</th>
+                            <th>Km max.</th>
                             <th>Facturation</th>
                             <th>Prix HT</th>
+                            <th>Ordre</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
 
                     <tbody>
+
                     {% for price in prices %}
+
                         <tr>
+
                             <td>
-                                {% if price["delivery_mode"] == "exception" %}
-                                    <span class="badge badge-exception">Exception</span>
-                                {% else %}
-                                    <span class="badge badge-standard">Standard</span>
-                                {% endif %}
+                                <select
+                                    form="save-massive-form"
+                                    class="table-select mode-select"
+                                    name="delivery_mode_{{ price['id'] }}"
+                                    required
+                                >
+                                    <option
+                                        value="standard"
+                                        {% if price["delivery_mode"] == "standard" %}selected{% endif %}
+                                    >
+                                        Standard
+                                    </option>
+
+                                    <option
+                                        value="exception"
+                                        {% if price["delivery_mode"] == "exception" %}selected{% endif %}
+                                    >
+                                        Exception
+                                    </option>
+                                </select>
                             </td>
 
                             <td>
-                                {% if price["establishment_type"] == "camping" %}
-                                    Camping
-                                {% else %}
-                                    —
-                                {% endif %}
+                                <select
+                                    form="save-massive-form"
+                                    class="table-select establishment-select"
+                                    name="establishment_type_{{ price['id'] }}"
+                                >
+                                    <option
+                                        value=""
+                                        {% if not price["establishment_type"] %}selected{% endif %}
+                                    >
+                                        Aucun
+                                    </option>
+
+                                    <option
+                                        value="camping"
+                                        {% if price["establishment_type"] == "camping" %}selected{% endif %}
+                                    >
+                                        Camping
+                                    </option>
+                                </select>
                             </td>
 
                             <td>
-                                {% set family_labels = {
-                                    "famille_papier": "Supports papier",
-                                    "sous_bock": "Sous-bocks",
-                                    "affiche": "Affiches",
-                                    "flyer": "Flyers",
-                                    "pizza": "Boîtes à pizza"
-                                } %}
+                                <select
+                                    form="save-massive-form"
+                                    class="table-select family-select"
+                                    name="support_family_{{ price['id'] }}"
+                                >
+                                    <option
+                                        value=""
+                                        {% if not price["support_family"] %}selected{% endif %}
+                                    >
+                                        Aucune
+                                    </option>
 
-                                {{ family_labels.get(
-                                    price["support_family"],
-                                    price["support_family"] or "—"
-                                ) }}
+                                    <option
+                                        value="famille_papier"
+                                        {% if price["support_family"] == "famille_papier" %}selected{% endif %}
+                                    >
+                                        Supports papier
+                                    </option>
+
+                                    <option
+                                        value="sous_bock"
+                                        {% if price["support_family"] == "sous_bock" %}selected{% endif %}
+                                    >
+                                        Sous-bocks
+                                    </option>
+
+                                    <option
+                                        value="affiche"
+                                        {% if price["support_family"] == "affiche" %}selected{% endif %}
+                                    >
+                                        Affiches
+                                    </option>
+
+                                    <option
+                                        value="flyer"
+                                        {% if price["support_family"] == "flyer" %}selected{% endif %}
+                                    >
+                                        Flyers
+                                    </option>
+
+                                    <option
+                                        value="pizza"
+                                        {% if price["support_family"] == "pizza" %}selected{% endif %}
+                                    >
+                                        Boîtes à pizza
+                                    </option>
+                                </select>
                             </td>
 
                             <td>
-                                {% set product_labels = {
-                                    "sac_pain": "Sacs à pain",
-                                    "set_table": "Sets de table"
-                                } %}
+                                <select
+                                    form="save-massive-form"
+                                    class="table-select product-select"
+                                    name="product_id_{{ price['id'] }}"
+                                >
+                                    <option
+                                        value=""
+                                        {% if not price["product_id"] %}selected{% endif %}
+                                    >
+                                        Aucun
+                                    </option>
 
-                                {{ product_labels.get(
-                                    price["product_id"],
-                                    price["product_id"] or "—"
-                                ) }}
-                            </td>
+                                    <option
+                                        value="sac_pain"
+                                        {% if price["product_id"] == "sac_pain" %}selected{% endif %}
+                                    >
+                                        Sacs à pain
+                                    </option>
 
-                            <td class="distance">
-                                {% if price["max_km"] is none %}
-                                    {{ price["min_km"]|int }} km et plus
-                                {% else %}
-                                    {{ price["min_km"]|int }}
-                                    à
-                                    {{ price["max_km"]|int }} km
-                                {% endif %}
+                                    <option
+                                        value="set_table"
+                                        {% if price["product_id"] == "set_table" %}selected{% endif %}
+                                    >
+                                        Sets de table
+                                    </option>
+                                </select>
                             </td>
 
                             <td>
-                                {{ price["billing_rule"] or "Par point de livraison" }}
+                                <input
+                                    form="save-massive-form"
+                                    class="table-input km-input"
+                                    type="number"
+                                    name="min_km_{{ price['id'] }}"
+                                    value="{{ price['min_km']|int }}"
+                                    min="0"
+                                    step="1"
+                                    required
+                                >
+                            </td>
+
+                            <td>
+                                <input
+                                    form="save-massive-form"
+                                    class="table-input km-input"
+                                    type="number"
+                                    name="max_km_{{ price['id'] }}"
+                                    value="{% if price['max_km'] is not none %}{{ price['max_km']|int }}{% endif %}"
+                                    min="0"
+                                    step="1"
+                                    placeholder="Illimité"
+                                >
+                            </td>
+
+                            <td>
+                                <input
+                                    form="save-massive-form"
+                                    class="table-input billing-input"
+                                    type="text"
+                                    name="billing_rule_{{ price['id'] }}"
+                                    value="{{ price['billing_rule'] or '' }}"
+                                    required
+                                >
                             </td>
 
                             <td>
                                 <div class="price-field">
+
                                     <input
+                                        form="save-massive-form"
                                         type="number"
                                         name="price_{{ price['id'] }}"
                                         value="{{ '%.2f'|format(price['price_ht']) }}"
@@ -358,36 +749,123 @@
                                         step="0.01"
                                         required
                                     >
+
                                     <span>€</span>
+
                                 </div>
                             </td>
+
+                            <td>
+                                <input
+                                    form="save-massive-form"
+                                    class="table-input order-input"
+                                    type="number"
+                                    name="display_order_{{ price['id'] }}"
+                                    value="{{ price['display_order'] or 0 }}"
+                                    min="0"
+                                    step="1"
+                                    required
+                                >
+                            </td>
+
+                            <td>
+                                <div class="row-actions">
+
+                                    <form method="POST">
+
+                                        <input
+                                            type="hidden"
+                                            name="action"
+                                            value="duplicate"
+                                        >
+
+                                        <input
+                                            type="hidden"
+                                            name="row_id"
+                                            value="{{ price['id'] }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-duplicate"
+                                            title="Dupliquer cette règle"
+                                        >
+                                            ⧉
+                                        </button>
+
+                                    </form>
+
+                                    <form
+                                        method="POST"
+                                        onsubmit="return confirm('Supprimer définitivement cette règle tarifaire ?');"
+                                    >
+
+                                        <input
+                                            type="hidden"
+                                            name="action"
+                                            value="delete"
+                                        >
+
+                                        <input
+                                            type="hidden"
+                                            name="row_id"
+                                            value="{{ price['id'] }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-delete"
+                                            title="Supprimer cette règle"
+                                        >
+                                            🗑
+                                        </button>
+
+                                    </form>
+
+                                </div>
+                            </td>
+
                         </tr>
+
                     {% endfor %}
+
                     </tbody>
+
                 </table>
+
             </div>
 
             <div class="form-actions">
-                <a href="{{ url_for('admin_pricing') }}" class="btn btn-secondary">
+
+                <a
+                    href="{{ url_for('admin_pricing') }}"
+                    class="btn btn-secondary"
+                >
                     Annuler
                 </a>
 
-                <button type="submit" class="btn btn-primary">
-                    Enregistrer les tarifs
+                <button
+                    type="submit"
+                    form="save-massive-form"
+                    class="btn btn-primary"
+                >
+                    💾 Enregistrer les règles
                 </button>
+
             </div>
 
-            {% else %}
-                <div class="empty-message">
-                    Aucun tarif de livraison massive n’est enregistré.
-                </div>
-            {% endif %}
+        {% else %}
 
-        </section>
-    </form>
+            <div class="empty-message">
+                Aucune règle de livraison massive n’est enregistrée.
+                Utilise le formulaire ci-dessus pour ajouter la première règle.
+            </div>
+
+        {% endif %}
+
+    </section>
 
 </main>
 
 </body>
 </html>
-EOF
