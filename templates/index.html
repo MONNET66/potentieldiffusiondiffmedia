@@ -594,6 +594,34 @@
     		accent-color: #ff7900;
 		}
 
+		.type-option input[type="checkbox"]:checked {
+    		accent-color: #ff7900;
+		}
+
+		.type-option input[type="checkbox"] {
+    		appearance: none;
+    		-webkit-appearance: none;
+    		border: 1px solid #9ca3af;
+    		border-radius: 3px;
+    		background: #ffffff;
+    		position: relative;
+		}
+
+		.type-option input[type="checkbox"]:checked {
+    		border-color: #ff7900;
+    		background: #ff7900;
+		}
+
+		.type-option input[type="checkbox"]:checked::after {
+    		content: "✓";
+    		position: absolute;
+    		left: 2px;
+    		top: -2px;
+    		color: #ffffff;
+    		font-size: 14px;
+    		font-weight: 900;
+		}
+
         .type-option label {
             cursor: pointer;
             flex: 1;
