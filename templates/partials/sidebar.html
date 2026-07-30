@@ -1,1 +1,145 @@
+<aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+        <img
+            class="sidebar-logo"
+            src="{{ url_for('static', filename='logo_diffmedia_sidebar_transparent.png') }}"
+            alt="Diffmedia"
+        >
 
+        <button
+            type="button"
+            class="sidebar-collapse-btn"
+            id="sidebarCollapseBtn"
+            aria-label="Réduire le menu"
+            title="Réduire le menu"
+        >
+            ‹
+        </button>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Navigation principale">
+        <div class="sidebar-section-label">Navigation</div>
+
+        <a
+            href="{{ url_for('index') }}"
+            class="sidebar-link {% if request.endpoint == 'index' %}active{% endif %}"
+        >
+            <span class="sidebar-icon">🔎</span>
+            <span class="sidebar-link-text">Nouvelle étude</span>
+        </a>
+
+        {% if session.role == "user" %}
+            <a
+                href="{{ url_for('mon_dashboard') }}"
+                class="sidebar-link {% if request.endpoint == 'mon_dashboard' %}active{% endif %}"
+            >
+                <span class="sidebar-icon">🏠</span>
+                <span class="sidebar-link-text">Mon dashboard</span>
+            </a>
+        {% endif %}
+
+        <a
+            href="{{ url_for('mes_devis') }}"
+            class="sidebar-link {% if request.endpoint in ['mes_devis', 'voir_devis'] %}active{% endif %}"
+        >
+            <span class="sidebar-icon">💶</span>
+            <span class="sidebar-link-text">Mes devis</span>
+        </a>
+
+        {% if session.role in ["manager", "admin"] %}
+            <div class="sidebar-section-label sidebar-section-spaced">
+                Équipe
+            </div>
+
+            <a
+                href="{{ url_for('mon_equipe') }}"
+                class="sidebar-link {% if request.endpoint == 'mon_equipe' %}active{% endif %}"
+            >
+                <span class="sidebar-icon">👥</span>
+                <span class="sidebar-link-text">Mon équipe</span>
+            </a>
+
+            <a
+                href="{{ url_for('dashboard_equipe') }}"
+                class="sidebar-link {% if request.endpoint == 'dashboard_equipe' %}active{% endif %}"
+            >
+                <span class="sidebar-icon">📊</span>
+                <span class="sidebar-link-text">Dashboard équipe</span>
+            </a>
+        {% endif %}
+
+        {% if session.role == "admin" %}
+            <div class="sidebar-section-label sidebar-section-spaced">
+                Administration
+            </div>
+
+            {% if request.endpoint == "index" %}
+                <button
+                    type="button"
+                    class="sidebar-link sidebar-button"
+                    onclick="openAddCommerceModal()"
+                >
+                    <span class="sidebar-icon">➕</span>
+                    <span class="sidebar-link-text">Ajouter un commerce</span>
+                </button>
+            {% endif %}
+
+            <a
+                href="{{ url_for('activity_logs') }}"
+                class="sidebar-link {% if request.endpoint == 'activity_logs' %}active{% endif %}"
+            >
+                <span class="sidebar-icon">📚</span>
+                <span class="sidebar-link-text">Journal d'activité</span>
+            </a>
+
+            <a
+                href="{{ url_for('admin_pricing') }}"
+                class="sidebar-link {% if request.endpoint in [
+                    'admin_pricing',
+                    'admin_pricing_product',
+                    'admin_pricing_prices',
+                    'admin_targeted_delivery',
+                    'admin_massive_delivery'
+                ] %}active{% endif %}"
+            >
+                <span class="sidebar-icon">💶</span>
+                <span class="sidebar-link-text">Gestion des tarifs</span>
+            </a>
+
+            <a
+                href="{{ url_for('export_tarifs') }}"
+                class="sidebar-link {% if request.endpoint == 'export_tarifs' %}active{% endif %}"
+            >
+                <span class="sidebar-icon">📥</span>
+                <span class="sidebar-link-text">Exporter les tarifs</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            <div class="sidebar-avatar">👤</div>
+
+            <div class="sidebar-user-info">
+                <strong>
+                    {{ session.get("username", current_user|default("")) }}
+                </strong>
+
+                <span>
+                    {% if session.role == "admin" %}
+                        Administrateur
+                    {% elif session.role == "manager" %}
+                        Manager
+                    {% else %}
+                        Commercial
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <a href="{{ url_for('logout') }}" class="sidebar-link sidebar-logout">
+            <span class="sidebar-icon">🚪</span>
+            <span class="sidebar-link-text">Déconnexion</span>
+        </a>
+    </div>
+</aside>
