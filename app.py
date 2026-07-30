@@ -2294,6 +2294,7 @@ def create_quote_from_campaign(token):
         villes_livraison=villes_livraison,
         nombre_villes=nombre_villes,
         tarif_livraison_massive_apercu=tarif_livraison_massive_apercu,
+        tarif_livraison_ciblee_apercu=obtenir_tarif_livraison_ciblee(),
     )
 
 @app.route("/export_tarifs")
