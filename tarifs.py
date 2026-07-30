@@ -1,3 +1,13 @@
+import sqlite3
+
+PRICING_DB = "/data/pricing.db"
+
+
+def get_pricing_connection():
+    conn = sqlite3.connect(PRICING_DB)
+    conn.row_factory = sqlite3.Row
+    return conn
+
 PRODUITS_DEVIS = {
     "sac_pain": [
         {
@@ -339,19 +349,26 @@ TARIFS_LIVRAISON_CIBLEE = {
 
 def obtenir_tarif_livraison_ciblee():
     """
-    Retourne le tarif HT par ville pour une campagne ciblée.
+    Retourne le tarif HT par ville depuis pricing.db.
     """
 
-    tarif = TARIFS_LIVRAISON_CIBLEE.get(
-        "tarif_par_ville_ht"
-    )
+    conn = get_pricing_connection()
 
-    if tarif is None:
+    row = conn.execute("""
+        SELECT price_ht
+        FROM pricing_targeted_delivery
+        WHERE pricing_key = 'tarif_par_ville_ht'
+        LIMIT 1
+    """).fetchone()
+
+    conn.close()
+
+    if row is None:
         raise ValueError(
             "Le tarif de livraison ciblée n'est pas configuré."
         )
 
-    return float(tarif)
+    return float(row["price_ht"])
 
 
 def calculer_frais_livraison_ciblee(villes):
