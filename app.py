@@ -2269,6 +2269,28 @@ def create_quote_from_campaign(token):
                 minimum_fabrication - potentiel_reel
             )
 
+    pricing_conn = get_pricing_connection()
+
+    print_price_rows = pricing_conn.execute("""
+        SELECT
+            product_id,
+            quantity,
+            price_ht
+        FROM pricing_print_prices
+        ORDER BY product_id, quantity
+    """).fetchall()
+
+    pricing_conn.close()
+
+    tarifs_produits = {}
+
+    for price_row in print_price_rows:
+        product_id = price_row["product_id"]
+        quantity = int(price_row["quantity"])
+        price_ht = float(price_row["price_ht"])
+
+        tarifs_produits.setdefault(product_id, {})[quantity] = price_ht
+    
     return render_template(
         "devis_create.html",
         campaign=campaign,
@@ -2282,7 +2304,7 @@ def create_quote_from_campaign(token):
             campaign["support"],
             []
         ),
-        tarifs_produits=TARIFS_PRODUITS,
+        tarifs_produits=tarifs_produits,
         minimum_fabrication=minimum_fabrication,
         palier_fabrication=palier_fabrication,
         quantite_devisable=quantite_devisable,
