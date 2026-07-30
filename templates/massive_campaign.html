@@ -614,72 +614,16 @@ body.sidebar-collapsed .sidebar-link{
     .public-logo{width:180px}
 }
 </style>
+    
+<link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    
 </head>
 
 <body>
 
 {% if not is_public %}
 <div class="app-shell">
-    <aside class="sidebar" id="appSidebar">
-        <div class="sidebar-brand">
-            <img class="sidebar-logo" src="{{ url_for('static', filename='logo_diffmedia_sidebar_transparent.png') }}" alt="Diffmedia">
-            <button type="button" class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Réduire le menu">‹</button>
-        </div>
-
-        <div class="sidebar-scroll">
-            <div class="sidebar-section">
-                <div class="sidebar-section-label">Navigation</div>
-                <a class="sidebar-link" href="{{ url_for('index', reset_search=1) }}">
-                    <span class="sidebar-icon">🔎</span>
-                    <span class="sidebar-link-text">Nouvelle étude</span>
-                </a>
-                <a class="sidebar-link" href="{{ url_for('mes_devis') }}">
-                    <span class="sidebar-icon">💶</span>
-                    <span class="sidebar-link-text">Mes devis</span>
-                </a>
-                <a class="sidebar-link active" href="#">
-                    <span class="sidebar-icon">📊</span>
-                    <span class="sidebar-link-text">Campagne massive</span>
-                </a>
-            </div>
-
-            {% if session.role in ["manager", "admin"] %}
-            <div class="sidebar-section">
-                <div class="sidebar-section-label">Équipe</div>
-                <a class="sidebar-link" href="{{ url_for('mon_equipe') }}">
-                    <span class="sidebar-icon">👥</span>
-                    <span class="sidebar-link-text">Mon équipe</span>
-                </a>
-                <a class="sidebar-link" href="{{ url_for('dashboard_equipe') }}">
-                    <span class="sidebar-icon">📊</span>
-                    <span class="sidebar-link-text">Dashboard équipe</span>
-                </a>
-            </div>
-            {% endif %}
-        </div>
-
-        <div class="sidebar-footer">
-            <div class="sidebar-user">
-                <div class="sidebar-avatar">👤</div>
-                <div class="sidebar-user-info">
-                    <strong>{{ session.username }}</strong>
-                    <span>
-                        {% if session.role == "admin" %}
-                            Administrateur
-                        {% elif session.role == "manager" %}
-                            Manager
-                        {% else %}
-                            Commercial
-                        {% endif %}
-                    </span>
-                </div>
-            </div>
-            <a class="sidebar-link sidebar-logout" href="{{ url_for('logout') }}">
-                <span class="sidebar-icon">🚪</span>
-                <span class="sidebar-link-text">Déconnexion</span>
-            </a>
-        </div>
-    </aside>
+    {% include "partials/sidebar.html" %}
 
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
