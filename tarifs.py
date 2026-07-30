@@ -465,17 +465,13 @@ def obtenir_tarif_livraison_massive(
     type_etablissement=None,
 ):
     """
-    Retourne le tarif HT applicable à un point de livraison massif.
+    Retourne le tarif HT applicable à un point de livraison massif
+    depuis pricing.db.
 
-    La tranche est déterminée à partir de distance_km :
-    - 0 à 100 km
-    - 101 à 150 km
-    - 151 à 200 km
-    - plus de 200 km
-
-    Les campings bénéficient d'une grille spéciale uniquement pour :
-    - sac_pain
-    - set_table
+    Priorité :
+    1. exception par établissement et produit ;
+    2. tarif standard spécifique au produit ;
+    3. tarif standard par famille de support.
     """
 
     configuration = CONFIG_SUPPORTS.get(produit_id)
@@ -490,43 +486,92 @@ def obtenir_tarif_livraison_massive(
     except (TypeError, ValueError):
         distance = 0.0
 
-    grille_tarifaire = None
+    type_normalise = (
+        str(type_etablissement or "")
+        .strip()
+        .casefold()
+    )
 
-    if type_etablissement == "camping":
-        grille_tarifaire = (
-            TARIFS_LIVRAISON_MASSIVE
-            .get("exceptions", {})
-            .get("camping", {})
-            .get(produit_id)
-        )
+    famille_livraison = configuration["famille_livraison"]
 
-    if not grille_tarifaire:
-        famille_livraison = configuration["famille_livraison"]
+    conn = get_pricing_connection()
 
-        grille_tarifaire = (
-            TARIFS_LIVRAISON_MASSIVE
-            .get("standard", {})
-            .get(famille_livraison)
-        )
+    try:
+        row = None
 
-    if not grille_tarifaire:
-        raise ValueError(
-            "Grille de livraison massive introuvable pour "
-            f"le produit : {produit_id}"
-        )
+        # 1. Exception par établissement et produit
+        if type_normalise:
+            row = conn.execute("""
+                SELECT price_ht
+                FROM pricing_massive_delivery
+                WHERE delivery_mode = 'exception'
+                  AND LOWER(TRIM(COALESCE(establishment_type, ''))) = ?
+                  AND product_id = ?
+                  AND min_km <= ?
+                  AND (
+                      max_km IS NULL
+                      OR max_km >= ?
+                  )
+                ORDER BY min_km DESC, display_order, id
+                LIMIT 1
+            """, (
+                type_normalise,
+                produit_id,
+                distance,
+                distance,
+            )).fetchone()
 
-    for tranche in grille_tarifaire:
-        minimum = float(tranche.get("min_km") or 0)
-        maximum = tranche.get("max_km")
+        # 2. Tarif standard spécifique au produit
+        if row is None:
+            row = conn.execute("""
+                SELECT price_ht
+                FROM pricing_massive_delivery
+                WHERE delivery_mode = 'standard'
+                  AND product_id = ?
+                  AND min_km <= ?
+                  AND (
+                      max_km IS NULL
+                      OR max_km >= ?
+                  )
+                ORDER BY min_km DESC, display_order, id
+                LIMIT 1
+            """, (
+                produit_id,
+                distance,
+                distance,
+            )).fetchone()
 
-        if distance < minimum:
-            continue
+        # 3. Tarif standard par famille
+        if row is None:
+            row = conn.execute("""
+                SELECT price_ht
+                FROM pricing_massive_delivery
+                WHERE delivery_mode = 'standard'
+                  AND support_family = ?
+                  AND product_id IS NULL
+                  AND min_km <= ?
+                  AND (
+                      max_km IS NULL
+                      OR max_km >= ?
+                  )
+                ORDER BY min_km DESC, display_order, id
+                LIMIT 1
+            """, (
+                famille_livraison,
+                distance,
+                distance,
+            )).fetchone()
 
-        if maximum is None or distance <= float(maximum):
-            return float(tranche["prix_ht"])
+        if row is None:
+            raise ValueError(
+                "Grille de livraison massive introuvable pour "
+                f"le produit : {produit_id}, distance : {distance} km"
+            )
 
-    # Sécurité : si aucune tranche ne correspond, on prend la dernière.
-    return float(grille_tarifaire[-1]["prix_ht"])
+        return float(row["price_ht"])
+
+    finally:
+        conn.close()
 
 
 def calculer_frais_livraison_massive(
