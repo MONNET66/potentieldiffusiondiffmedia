@@ -3869,6 +3869,108 @@ function setupModeSelector() {
 
     refreshModeSelector();
 }
+
+function refreshDepartementSelector() {
+    const select = document.getElementById("departementInput");
+    const button = document.getElementById("departementButton");
+    const panel = document.getElementById("departementPanel");
+
+    if (!select || !button || !panel) {
+        return;
+    }
+
+    panel.innerHTML = "";
+
+    Array.from(select.options).forEach(function(option) {
+        const optionButton = document.createElement("button");
+        optionButton.type = "button";
+        optionButton.className = "type-option support-option";
+
+        if (option.selected) {
+            optionButton.classList.add("selected");
+        }
+
+        const check = document.createElement("span");
+        check.className = "support-check";
+        check.textContent = option.selected ? "✓" : "";
+
+        const label = document.createElement("span");
+        label.className = "support-label";
+        label.textContent = option.textContent.trim();
+
+        optionButton.appendChild(check);
+        optionButton.appendChild(label);
+
+        optionButton.addEventListener("click", function(event) {
+            event.stopPropagation();
+
+            select.value = option.value;
+
+            select.dispatchEvent(
+                new Event("change", {
+                    bubbles: true
+                })
+            );
+
+            panel.classList.remove("open");
+            refreshDepartementSelector();
+        });
+
+        panel.appendChild(optionButton);
+    });
+
+    const selectedOption = select.options[select.selectedIndex];
+
+    button.textContent = selectedOption
+        ? selectedOption.textContent.trim()
+        : "Choisir un département";
+}
+
+
+function setupDepartementSelector() {
+    const dropdown = document.getElementById("departementDropdown");
+    const panel = document.getElementById("departementPanel");
+    const button = document.getElementById("departementButton");
+    const select = document.getElementById("departementInput");
+
+    if (!dropdown || !panel || !button || !select) {
+        return;
+    }
+
+    button.addEventListener("click", function(event) {
+        event.stopPropagation();
+
+        const typesPanel = document.getElementById("typesPanel");
+        const supportPanel = document.getElementById("supportPanel");
+        const modePanel = document.getElementById("modePanel");
+
+        if (typesPanel) {
+            typesPanel.classList.remove("open");
+        }
+
+        if (supportPanel) {
+            supportPanel.classList.remove("open");
+        }
+
+        if (modePanel) {
+            modePanel.classList.remove("open");
+        }
+
+        panel.classList.toggle("open");
+    });
+
+    document.addEventListener("click", function(event) {
+        if (!dropdown.contains(event.target)) {
+            panel.classList.remove("open");
+        }
+    });
+
+    select.addEventListener("change", function() {
+        refreshDepartementSelector();
+    });
+
+    refreshDepartementSelector();
+}
 	
 function setupTypeSelector() {
     const panel = document.getElementById("typesPanel");
