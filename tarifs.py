@@ -8,6 +8,24 @@ def get_pricing_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def obtenir_tarif_impression(product_id, quantite):
+    conn = get_pricing_connection()
+
+    tarif = conn.execute("""
+        SELECT price_ht
+        FROM pricing_print_prices
+        WHERE product_id = ?
+          AND quantity = ?
+        LIMIT 1
+    """, (product_id, quantite)).fetchone()
+
+    conn.close()
+
+    if tarif is None:
+        return None
+
+    return float(tarif["price_ht"])
+
 PRODUITS_DEVIS = {
     "sac_pain": [
         {
