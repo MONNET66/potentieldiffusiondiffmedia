@@ -599,6 +599,107 @@
             flex: 1;
         }
 
+		/* Menu personnalisé Support */
+		#supportSearchCell .types-dropdown,
+		#supportSearchCell .types-button,
+		#supportSearchCell .types-panel {
+    		width: 100%;
+		}
+
+		#supportSearchCell .types-button {
+    		min-width: 0;
+    		min-height: 43px;
+    		display: block;
+    		padding: 11px 38px 11px 12px;
+    		overflow: hidden;
+    		border: 0;
+    		background: transparent;
+    		color: #111827;
+    		font-family: inherit;
+    		font-size: 12px;
+    		font-weight: 700;
+    		text-align: left;
+    		text-overflow: ellipsis;
+    		white-space: nowrap;
+    		cursor: pointer;
+		}
+
+		#supportSearchCell .types-panel {
+    		right: 0;
+    		left: 0;
+    		width: 100%;
+    		max-height: 320px;
+    		padding: 6px;
+    		overflow-y: auto;
+    		overflow-x: hidden;
+    		border: 1px solid #e5e7eb;
+    		border-radius: 12px;
+    		background: #ffffff;
+    		box-shadow: 0 12px 28px rgba(15, 23, 42, .12);
+		}
+
+		#supportSearchCell .support-option {
+    		width: 100%;
+    		min-height: 36px;
+    		border: 0;
+    		background: transparent;
+    		color: #111827;
+    		font-family: inherit;
+    		font-size: 14px;
+    		text-align: left;
+    		cursor: pointer;
+		}
+
+		#supportSearchCell .support-option:hover {
+    		background: #fff7ed;
+		}
+
+		#supportSearchCell .support-check {
+    		display: flex;
+    		flex: 0 0 16px;
+    		align-items: center;
+    		justify-content: center;
+    		width: 16px;
+    		height: 16px;
+    		border: 1px solid #cbd5e1;
+    		border-radius: 4px;
+    		color: #ffffff;
+    		font-size: 11px;
+    		font-weight: 900;
+		}
+
+		#supportSearchCell .support-option.selected .support-check {
+    		border-color: #ff7900;
+    		background: #ff7900;
+		}
+
+		#supportSearchCell .support-label {
+    		min-width: 0;
+    		overflow: hidden;
+    		text-overflow: ellipsis;
+    		white-space: nowrap;
+		}
+
+		#supportSearchCell .types-panel::-webkit-scrollbar {
+    		width: 8px;
+		}
+
+		#supportSearchCell .types-panel::-webkit-scrollbar-thumb {
+    		border: 2px solid #ffffff;
+    		border-radius: 999px;
+    		background: #94a3b8;
+		}
+
+		.native-select-hidden {
+    		position: absolute !important;
+    		width: 1px !important;
+    		height: 1px !important;
+    		padding: 0 !important;
+    		overflow: hidden !important;
+    		opacity: 0 !important;
+    		pointer-events: none !important;
+		}
+		
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -2722,18 +2823,42 @@
             </div>
             {% endif %}
 
-            <div class="search-field">
-                <label for="support">Support</label>
-                <div class="search-cell">
-                    <select name="support" id="support">
-                        {% for support_key in available_supports %}
-                            <option value="{{ support_key }}" {% if selected_support == support_key %}selected{% endif %}>
-                                {{ support_labels[support_key] }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
+            <div class="search-field" id="supportSearchCell">
+    			<label for="supportButton">Support</label>
+
+    			<div class="search-cell">
+        			<div class="types-dropdown" id="supportDropdown">
+
+            			<button
+                			type="button"
+                			class="types-button"
+                			id="supportButton"
+            			>
+                			Support
+            			</button>
+
+            			<div class="types-panel" id="supportPanel"></div>
+
+            			<select
+                			name="support"
+                			id="support"
+                			class="native-select-hidden"
+                			tabindex="-1"
+                			aria-hidden="true"
+            			>
+                			{% for support_key in available_supports %}
+                    			<option
+                        			value="{{ support_key }}"
+                        			{% if selected_support == support_key %}selected{% endif %}
+                   			 >
+                        			{{ support_labels[support_key] }}
+                    			</option>
+                			{% endfor %}
+            			</select>
+
+        			</div>
+    			</div>
+			</div>
 
             <div class="search-submit-zone">
                 <button class="search-button" type="submit">
@@ -3294,6 +3419,8 @@ function updateSupports() {
 
             if (!matched && supportSelect.options.length > 0) {
                 supportSelect.value = "all";
+				
+				refreshSupportSelector();
             }
         })
         .catch(function(error) {
@@ -3303,6 +3430,98 @@ function updateSupports() {
     updateTypesButtonLabel();
 }
 
+function refreshSupportSelector() {
+    const select = document.getElementById("support");
+    const button = document.getElementById("supportButton");
+    const panel = document.getElementById("supportPanel");
+
+    if (!select || !button || !panel) {
+        return;
+    }
+
+    panel.innerHTML = "";
+
+    Array.from(select.options).forEach(function(option) {
+        const optionButton = document.createElement("button");
+        optionButton.type = "button";
+        optionButton.className = "type-option support-option";
+
+        if (option.selected) {
+            optionButton.classList.add("selected");
+        }
+
+        const check = document.createElement("span");
+        check.className = "support-check";
+        check.textContent = option.selected ? "✓" : "";
+
+        const label = document.createElement("span");
+        label.className = "support-label";
+        label.textContent = option.textContent;
+
+        optionButton.appendChild(check);
+        optionButton.appendChild(label);
+
+        optionButton.addEventListener("click", function(event) {
+            event.stopPropagation();
+
+            select.value = option.value;
+
+            select.dispatchEvent(
+                new Event("change", {
+                    bubbles: true
+                })
+            );
+
+            panel.classList.remove("open");
+            refreshSupportSelector();
+        });
+
+        panel.appendChild(optionButton);
+    });
+
+    const selectedOption = select.options[select.selectedIndex];
+
+    button.textContent = selectedOption
+        ? selectedOption.textContent
+        : "Support";
+}
+
+
+function setupSupportSelector() {
+    const dropdown = document.getElementById("supportDropdown");
+    const panel = document.getElementById("supportPanel");
+    const button = document.getElementById("supportButton");
+    const select = document.getElementById("support");
+
+    if (!dropdown || !panel || !button || !select) {
+        return;
+    }
+
+    button.addEventListener("click", function(event) {
+        event.stopPropagation();
+
+        const typesPanel = document.getElementById("typesPanel");
+
+        if (typesPanel) {
+            typesPanel.classList.remove("open");
+        }
+
+        panel.classList.toggle("open");
+    });
+
+    document.addEventListener("click", function(event) {
+        if (!dropdown.contains(event.target)) {
+            panel.classList.remove("open");
+        }
+    });
+
+    select.addEventListener("change", function() {
+        refreshSupportSelector();
+    });
+
+    refreshSupportSelector();
+}
+	
 function setupTypeSelector() {
     const panel = document.getElementById("typesPanel");
     const button = document.getElementById("typesButton");
