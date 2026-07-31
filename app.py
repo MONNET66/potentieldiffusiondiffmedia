@@ -6242,6 +6242,20 @@ def mon_equipe():
             </tr>
         """
 
+        manager_options = ""
+
+        for manager in managers:
+            manager_label = (
+                manager["display_name"]
+                or manager["username"]
+            )
+
+            manager_options += f"""
+                <option value="{manager['id']}">
+                    {manager_label} ({manager['username']})
+                </option>
+            """
+
     return f"""
         <!DOCTYPE html>
         <html lang="fr">
