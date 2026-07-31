@@ -6272,6 +6272,28 @@ def mon_equipe():
         manager_name = member["manager_username"] or session.get("username", "")
         username = member["username"] or ""
         display_name = member["display_name"] or ""
+        delete_button = ""
+
+        if session.get("role") == "admin":
+            delete_button = f"""
+                <form method="POST"
+                      class="delete-account-form"
+                      onsubmit="return confirm('Supprimer définitivement le compte {username} ?');">
+
+                    <input type="hidden"
+                           name="action"
+                           value="delete_account">
+
+                    <input type="hidden"
+                           name="account_id"
+                           value="{member['id']}">
+
+                    <button type="submit"
+                            class="delete-btn">
+                        🗑️ Supprimer
+                    </button>
+                </form>
+            """
 
         rows += f"""
             <tr>
@@ -6313,11 +6335,15 @@ def mon_equipe():
                 </td>
 
                 <td>
-                    <button type="submit"
-                            form="form-{member['id']}"
-                            class="save-btn">
-                        💾 Enregistrer
-                    </button>
+                    <div class="account-actions">
+                        <button type="submit"
+                                form="form-{member['id']}"
+                                class="save-btn">
+                            💾 Enregistrer
+                        </button>
+
+                        {delete_button}
+                    </div>
                 </td>
             </tr>
         """
