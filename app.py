@@ -5944,6 +5944,7 @@ def mon_equipe():
     cur = conn.cursor()
 
     if request.method == "POST":
+        action = request.form.get("action", "edit_member")
         member_id = request.form.get("member_id")
         username = (request.form.get("username") or "").strip()
         display_name = (request.form.get("display_name") or "").strip()
