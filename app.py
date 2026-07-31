@@ -5965,6 +5965,14 @@ def mon_equipe():
                 1 if request.form.get("is_restricted") == "1" else 0
             )
 
+            if account_role not in ("manager", "user"):
+                conn.close()
+                return """
+                    Type de compte invalide.
+                    <br><br>
+                    <a href="/mon_equipe">← Retour à mon équipe</a>
+                """, 400
+
             conn.close()
             return """
                 Les champs du formulaire ont bien été reçus.
