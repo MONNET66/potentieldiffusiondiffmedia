@@ -208,7 +208,7 @@ RESTRICTED_HIDDEN_SUPPORT_LABELS = {
 
 
 def is_restricted_user():
-    return session.get("role") in ["manager", "user"]
+    return bool(session.get("is_restricted", 0))
 
 
 def filter_types_for_current_user(types):
