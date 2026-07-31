@@ -6256,6 +6256,128 @@ def mon_equipe():
                 </option>
             """
 
+            create_account_form = ""
+
+            if session.get("role") == "admin":
+                create_account_form = f"""
+                    <section class="team-card">
+                        <div class="card-heading">
+                            <div class="card-heading-text">
+                                <h2 class="card-title">
+                                    Créer un compte
+                                </h2>
+
+                                <p class="card-description">
+                                    Ajoutez un manager ou un commercial
+                                    et définissez ses autorisations.
+                                </p>
+                            </div>
+                        </div>
+
+                        <form method="POST" class="create-account-form">
+                            <input type="hidden"
+                                   name="action"
+                                   value="create_account">
+
+                            <div>
+                                <label for="account_role">
+                                    Type de compte
+                                </label>
+
+                                <select id="account_role"
+                                        name="account_role"
+                                        required>
+                                    <option value="user">
+                                        Commercial
+                                    </option>
+
+                                    <option value="manager">
+                                        Manager
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="new_username">
+                                    Identifiant
+                                </label>
+
+                                <input id="new_username"
+                                       type="text"
+                                       name="new_username"
+                                       maxlength="50"
+                                       autocomplete="off"
+                                       required>
+                            </div>
+
+                            <div>
+                                <label for="new_display_name">
+                                    Nom affiché
+                                </label>
+
+                                <input id="new_display_name"
+                                       type="text"
+                                       name="new_display_name"
+                                       autocomplete="off">
+                            </div>
+
+                            <div>
+                                <label for="new_password">
+                                    Mot de passe
+                                </label>
+
+                                <input id="new_password"
+                                       type="password"
+                                       name="new_password"
+                                       minlength="8"
+                                       required>
+                            </div>
+
+                            <div>
+                                <label for="manager_id">
+                                    Manager de rattachement
+                                </label>
+
+                                <select id="manager_id"
+                                        name="manager_id">
+                                    <option value="">
+                                        Sélectionner un manager
+                                    </option>
+
+                                    {manager_options}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label>
+                                    <input type="checkbox"
+                                           name="is_active"
+                                           value="1"
+                                           checked>
+                                    Compte actif
+                                </label>
+                            </div>
+
+                            <div>
+                                <label>
+                                    <input type="checkbox"
+                                           name="is_restricted"
+                                           value="1"
+                                           checked>
+                                    Compte restreint
+                                </label>
+                            </div>
+
+                            <div>
+                                <button type="submit"
+                                        class="save-btn">
+                                    ＋ Créer le compte
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+                """
+
     return f"""
         <!DOCTYPE html>
         <html lang="fr">
