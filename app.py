@@ -6050,15 +6050,37 @@ def mon_equipe():
 
                 manager_id = int(manager_id)
 
-            conn.close()
-            return """
-                Les champs du formulaire ont bien été reçus.
-                <br><br>
-                <a href="/mon_equipe">← Retour à mon équipe</a>
-            """, 400
-        member_id = request.form.get("member_id")
-        username = (request.form.get("username") or "").strip()
-        display_name = (request.form.get("display_name") or "").strip()
+                cur.execute(
+                    """
+                    INSERT INTO users (
+                        username,
+                        password_hash,
+                        is_active,
+                        role,
+                        manager_id,
+                        display_name,
+                        is_restricted
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        new_username,
+                        generate_password_hash(new_password),
+                        is_active,
+                        account_role,
+                        manager_id,
+                        new_display_name or None,
+                        is_restricted
+                    )
+                )
+
+                conn.commit()
+                conn.close()
+
+            return redirect(url_for("mon_equipe"))
+            member_id = request.form.get("member_id")
+            username = (request.form.get("username") or "").strip()
+            display_name = (request.form.get("display_name") or "").strip()
 
         if not member_id or not username:
             conn.close()
