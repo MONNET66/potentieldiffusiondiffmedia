@@ -5993,6 +5993,15 @@ def mon_equipe():
                     <a href="/mon_equipe">← Retour à mon équipe</a>
                 """, 400
 
+            if len(new_password) < 8:
+                conn.close()
+                return """
+                    Le mot de passe doit contenir au moins 8 caractères.
+                    <br><br>
+                    <a href="/mon_equipe">← Retour à mon équipe</a>
+                """, 400
+                
+
             conn.close()
             return """
                 Les champs du formulaire ont bien été reçus.
