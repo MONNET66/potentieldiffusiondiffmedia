@@ -5945,6 +5945,87 @@ def mon_equipe():
 
     if request.method == "POST":
         action = request.form.get("action", "edit_member")
+        if action == "delete_account":
+            if session.get("role") != "admin":
+                conn.close()
+                return "Accès refusé", 403
+
+            account_id = request.form.get("account_id")
+
+            if not account_id:
+                conn.close()
+                return """
+                    Compte introuvable.
+                    <br><br>
+                    <a href="/mon_equipe">← Retour à mon équipe</a>
+                """, 400
+
+            account = cur.execute(
+                """
+                SELECT id, username, role
+                FROM users
+                WHERE id = ?
+                """,
+                (account_id,)
+            ).fetchone()
+
+            if not account:
+                conn.close()
+                return """
+                    Ce compte n'existe pas.
+                    <br><br>
+                    <a href="/mon_equipe">← Retour à mon équipe</a>
+                """, 404
+
+            if account["username"].lower() == "admin":
+                conn.close()
+                return """
+                    Le compte administrateur ne peut pas être supprimé.
+                    <br><br>
+                    <a href="/mon_equipe">← Retour à mon équipe</a>
+                """, 403
+
+            if account["role"] == "manager":
+                commercial_count = cur.execute(
+                    """
+                    SELECT COUNT(*)
+                    FROM users
+                    WHERE manager_id = ?
+                      AND role = 'user'
+                    """,
+                    (account_id,)
+                ).fetchone()[0]
+
+                if commercial_count > 0:
+                    conn.close()
+                    return f"""
+                        Impossible de supprimer ce manager :
+                        {commercial_count} commercial(aux) lui sont encore rattachés.
+                        <br><br>
+                        Supprimez ou réaffectez d'abord ses commerciaux.
+                        <br><br>
+                        <a href="/mon_equipe">← Retour à mon équipe</a>
+                    """, 400
+
+            cur.execute(
+                "DELETE FROM user_hidden_commerces WHERE user_id = ?",
+                (account_id,)
+            )
+
+            cur.execute(
+                "DELETE FROM activity_logs WHERE user_id = ?",
+                (account_id,)
+            )
+
+            cur.execute(
+                "DELETE FROM users WHERE id = ?",
+                (account_id,)
+            )
+
+            conn.commit()
+            conn.close()
+            return redirect(url_for("mon_equipe"))
+
         if action == "create_account":
             if session.get("role") != "admin":
                 conn.close()
