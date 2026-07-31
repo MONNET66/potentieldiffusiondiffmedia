@@ -6984,56 +6984,56 @@ def mon_equipe():
                     }}
                 }}
 
-                    .create-account-form {
+                    .create-account-form {{
                         display: grid;
                         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
                         gap: 18px 22px;
-                        padding-top: 22px;
-                    }
+                        padding: 22px;
+                }}
 
-                    .create-account-form label {
+                    .create-account-form label {{
                         display: block;
                         margin-bottom: 8px;
                         font-weight: 600;
                         color: #334155;
-                    }
+                    }}
 
                     .create-account-form input,
-                    .create-account-form select {
+                    .create-account-form select {{
                         width: 100%;
                         padding: 12px 14px;
                         border: 1px solid #d7dde8;
                         border-radius: 12px;
-                        background: #fff;
+                        background: #ffffff;
                         font-size: 15px;
-                        transition: .2s;
-                    }
+                        transition: 0.2s;
+                    }}
 
                     .create-account-form input:focus,
-                    .create-account-form select:focus {
+                    .create-account-form select:focus {{
                         outline: none;
                         border-color: #ff6a00;
-                        box-shadow: 0 0 0 3px rgba(255,106,0,.15);
-                    }
+                        box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
+                    }}
 
-                    .create-account-form > div:last-child {
+                    .create-account-form > div:last-child {{
                         grid-column: 1 / -1;
-                    }
+                    }}
 
-                    .create-account-form button {
+                    .create-account-form button {{
                         min-width: 220px;
-                    }
+                    }}
 
-                    .create-account-form input[type="checkbox"] {
+                    .create-account-form input[type="checkbox"] {{
                         width: auto;
                         margin-right: 8px;
-                    }
+                    }}
 
-                    @media (max-width: 900px) {
-                        .create-account-form {
+                    @media (max-width: 900px) {{
+                        .create-account-form {{
                             grid-template-columns: 1fr;
-                        }
-                    }
+                        }}
+                    }}
             </style>
         </head>
 
