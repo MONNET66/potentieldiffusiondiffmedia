@@ -6979,6 +6979,37 @@ def mon_equipe():
                     transform: translateY(0);
                 }}
 
+                .account-actions {{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                }}
+
+                .delete-account-form {{
+                    margin: 0;
+                }}
+
+                .delete-btn {{
+                    border: 1px solid #dc2626;
+                    background: #ffffff;
+                    color: #dc2626;
+                    padding: 13px 18px;
+                    border-radius: 12px;
+                    font-weight: 700;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    white-space: nowrap;
+                }}
+
+                .delete-btn:hover {{
+                    background: #dc2626;
+                    color: #ffffff;
+                    transform: translateY(-1px);
+                    box-shadow: 0 8px 18px rgba(220, 38, 38, 0.20);
+                }}
+
                 .info-box {{
                     margin-top: 22px;
                     padding: 20px 22px;
