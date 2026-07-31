@@ -6065,6 +6065,10 @@ def mon_equipe():
                           id="form-{member['id']}">
 
                         <input type="hidden"
+                               name="action"
+                               value="edit_member">              
+
+                        <input type="hidden"
                                name="member_id"
                                value="{member['id']}">
 
