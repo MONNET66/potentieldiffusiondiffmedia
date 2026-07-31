@@ -6160,6 +6160,8 @@ def mon_equipe():
         conn.close()
         return redirect(url_for("mon_equipe"))
 
+    managers = []
+
     if session.get("role") == "admin":
         members = cur.execute("""
             SELECT u.id, u.username, u.display_name, u.manager_id, m.username AS manager_username
@@ -6167,6 +6169,13 @@ def mon_equipe():
             LEFT JOIN users m ON m.id = u.manager_id
             WHERE u.role = 'user'
             ORDER BY m.username, u.username
+        """).fetchall()
+
+        managers = cur.execute("""
+            SELECT id, username, display_name
+            FROM users
+            WHERE role = 'manager'
+            ORDER BY username
         """).fetchall()
     else:
         members = cur.execute("""
