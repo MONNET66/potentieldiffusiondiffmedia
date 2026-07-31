@@ -605,14 +605,19 @@ def build_results_from_rows(rows):
     seen_keys = set()
     for row in rows:
         nom = (row["nom"] or "").strip()
-        if not nom or is_generic_name(nom):
+        commerce_type = row["type"]
+
+        if not nom:
             continue
+
+        if commerce_type != "pharmacy" and is_generic_name(nom):
+            continue
+
         try:
             lat = float(row["latitude"])
             lon = float(row["longitude"])
         except (TypeError, ValueError):
             continue
-        commerce_type = row["type"]
 
         adresse_key = normalize_name(row["adresse"] or "")
 
