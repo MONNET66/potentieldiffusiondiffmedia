@@ -5950,9 +5950,24 @@ def mon_equipe():
                 conn.close()
                 return "Accès refusé", 403
 
+            account_role = (request.form.get("account_role") or "").strip()
+            new_username = (request.form.get("new_username") or "").strip()
+            new_password = request.form.get("new_password") or ""
+            new_display_name = (
+                request.form.get("new_display_name") or ""
+            ).strip()
+            manager_id = (request.form.get("manager_id") or "").strip()
+
+            is_active = (
+                1 if request.form.get("is_active") == "1" else 0
+            )
+            is_restricted = (
+                1 if request.form.get("is_restricted") == "1" else 0
+            )
+
             conn.close()
             return """
-                Le formulaire de création de compte est en cours d'installation.
+                Les champs du formulaire ont bien été reçus.
                 <br><br>
                 <a href="/mon_equipe">← Retour à mon équipe</a>
             """, 400
