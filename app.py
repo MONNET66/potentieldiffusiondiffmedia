@@ -6000,7 +6000,23 @@ def mon_equipe():
                     <br><br>
                     <a href="/mon_equipe">← Retour à mon équipe</a>
                 """, 400
-                
+
+            existing_user = cur.execute(
+                """
+                SELECT id
+                FROM users
+                WHERE LOWER(username) = LOWER(?)
+                """,
+                (new_username,)
+            ).fetchone()
+
+            if existing_user:
+                conn.close()
+                return """
+                    Cet identifiant existe déjà.
+                    <br><br>
+                    <a href="/mon_equipe">← Retour à mon équipe</a>
+                """, 400           
 
             conn.close()
             return """
