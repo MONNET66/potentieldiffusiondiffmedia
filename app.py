@@ -5973,6 +5973,26 @@ def mon_equipe():
                     <a href="/mon_equipe">← Retour à mon équipe</a>
                 """, 400
 
+            if not new_username:
+                conn.close()
+                return """
+                    Identifiant obligatoire.
+                    <br><br>
+                    <a href="/mon_equipe">← Retour à mon équipe</a>
+                """, 400
+
+            if len(new_username) > 50 or not all(
+                caractere.isalnum() or caractere in "._-"
+                for caractere in new_username
+            ):
+                conn.close()
+                return """
+                    L'identifiant doit contenir uniquement des lettres,
+                    des chiffres, des points, des tirets ou des underscores.
+                    <br><br>
+                    <a href="/mon_equipe">← Retour à mon équipe</a>
+                """, 400
+
             conn.close()
             return """
                 Les champs du formulaire ont bien été reçus.
