@@ -1501,7 +1501,7 @@ def login():
         cur = conn.cursor()
 
         user = cur.execute("""
-            SELECT id, username, password_hash, is_active, role
+            SELECT id, username, password_hash, is_active, role, is_restricted
             FROM users
             WHERE username = ?
         """, (username,)).fetchone()
@@ -1533,6 +1533,7 @@ def login():
             session["user_id"] = user["id"]
             session["username"] = user["username"]
             session["role"] = user["role"]
+            session["is_restricted"] = int(user["is_restricted"])
 
             return redirect(url_for("index"))
 
