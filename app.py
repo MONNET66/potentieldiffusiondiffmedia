@@ -6018,6 +6018,38 @@ def mon_equipe():
                     <a href="/mon_equipe">← Retour à mon équipe</a>
                 """, 400           
 
+            if account_role == "manager":
+                manager_id = None
+
+            else:
+                if not manager_id:
+                    conn.close()
+                    return """
+                        Un commercial doit être rattaché à un manager.
+                        <br><br>
+                        <a href="/mon_equipe">← Retour à mon équipe</a>
+                    """, 400
+
+                manager = cur.execute(
+                    """
+                    SELECT id
+                    FROM users
+                    WHERE id = ?
+                      AND role = 'manager'
+                    """,
+                    (manager_id,)
+                ).fetchone()
+
+                if not manager:
+                    conn.close()
+                    return """
+                        Le manager sélectionné est invalide.
+                        <br><br>
+                        <a href="/mon_equipe">← Retour à mon équipe</a>
+                    """, 400
+
+                manager_id = int(manager_id)
+
             conn.close()
             return """
                 Les champs du formulaire ont bien été reçus.
