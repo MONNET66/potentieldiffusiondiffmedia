@@ -7043,6 +7043,8 @@ def mon_equipe():
                     </div>
                 </section>
 
+                {create_account_form}
+                
                 <section class="team-card">
                     <div class="card-heading">
                         <div class="card-heading-text">
