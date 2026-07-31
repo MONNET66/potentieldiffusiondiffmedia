@@ -6986,7 +6986,7 @@ def mon_equipe():
 
                     .create-account-form {{
                         display: grid;
-                        grid-template-columns: repeat(4, minmax(0, 1fr));
+                        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
                         gap: 18px 22px;
                         padding: 22px;
                 }}
@@ -7009,14 +7009,6 @@ def mon_equipe():
                         transition: 0.2s;
                     }}
 
-                    .create-account-form > div:nth-child(5) {{
-                        grid-column: span 2;
-                    }}
-
-                    .create-account-form > div:nth-child(6),
-                    .create-account-form > div:nth-child(7) {{
-                        align-self: end;
-                    }}
 
                     .create-account-form input:focus,
                     .create-account-form select:focus {{
