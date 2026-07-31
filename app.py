@@ -5945,6 +5945,17 @@ def mon_equipe():
 
     if request.method == "POST":
         action = request.form.get("action", "edit_member")
+        if action == "create_account":
+            if session.get("role") != "admin":
+                conn.close()
+                return "Accès refusé", 403
+
+            conn.close()
+            return """
+                Le formulaire de création de compte est en cours d'installation.
+                <br><br>
+                <a href="/mon_equipe">← Retour à mon équipe</a>
+            """, 400
         member_id = request.form.get("member_id")
         username = (request.form.get("username") or "").strip()
         display_name = (request.form.get("display_name") or "").strip()
