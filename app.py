@@ -6983,6 +6983,57 @@ def mon_equipe():
                         padding: 17px;
                     }}
                 }}
+
+                    .create-account-form {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+                        gap: 18px 22px;
+                        padding-top: 22px;
+                    }
+
+                    .create-account-form label {
+                        display: block;
+                        margin-bottom: 8px;
+                        font-weight: 600;
+                        color: #334155;
+                    }
+
+                    .create-account-form input,
+                    .create-account-form select {
+                        width: 100%;
+                        padding: 12px 14px;
+                        border: 1px solid #d7dde8;
+                        border-radius: 12px;
+                        background: #fff;
+                        font-size: 15px;
+                        transition: .2s;
+                    }
+
+                    .create-account-form input:focus,
+                    .create-account-form select:focus {
+                        outline: none;
+                        border-color: #ff6a00;
+                        box-shadow: 0 0 0 3px rgba(255,106,0,.15);
+                    }
+
+                    .create-account-form > div:last-child {
+                        grid-column: 1 / -1;
+                    }
+
+                    .create-account-form button {
+                        min-width: 220px;
+                    }
+
+                    .create-account-form input[type="checkbox"] {
+                        width: auto;
+                        margin-right: 8px;
+                    }
+
+                    @media (max-width: 900px) {
+                        .create-account-form {
+                            grid-template-columns: 1fr;
+                        }
+                    }
             </style>
         </head>
 
