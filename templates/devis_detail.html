@@ -853,6 +853,17 @@
             </div>
 
             <div class="field">
+                <span class="label">Livraison des supports</span>
+                <span class="value">
+                    {% if devis.livraison_supports %}
+                        Oui
+                    {% else %}
+                        Non
+                    {% endif %}
+                </span>
+            </div>
+            
+            <div class="field">
                 <span class="label">Création graphique</span>
                 <span class="value">
                     {% if devis.creation_graphique %}
@@ -879,10 +890,12 @@
                 <strong>{{ "%.2f"|format(devis.montant_impression_ht) }} €</strong>
             </div>
 
+            {% if devis.livraison_supports %}
             <div class="amount-line">
                 <span>Livraison HT</span>
                 <strong>{{ "%.2f"|format(devis.montant_livraison_ht) }} €</strong>
             </div>
+            {% endif %}
 
             <div class="amount-line">
                 <span>Création graphique HT</span>
