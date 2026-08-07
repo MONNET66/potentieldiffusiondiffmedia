@@ -1290,11 +1290,18 @@
                     <div class="service-line">
                         <div>
                             <div class="service-name">
-                                {% if grille_livraison == "ciblee" %}
-                                    ☑ Recrutement et livraison
-                                {% else %}
-                                    ☑ Livraison
-                                {% endif %}
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        id="livraison-supports"
+                                        checked>
+
+                                    {% if grille_livraison == "ciblee" %}
+                                        Recrutement et livraison
+                                    {% else %}
+                                        Livraison
+                                    {% endif %}
+                                </label>
                             </div>
                             <div class="service-description">
                                 <span id="nombre-points-livraison">{{ quantite_devisable // quantite_par_commerce }}</span>
@@ -1439,6 +1446,7 @@ const pointsElement = document.getElementById("nombre-points-livraison");
 const totalLivraisonElement = document.getElementById("total-livraison");
 const totalCreationElement = document.getElementById("total-creation");
 const creationGraphiqueCheckbox = document.getElementById("creation-graphique");
+const livraisonCheckbox = document.getElementById("livraison-supports");
 const totalImpressionElement = document.getElementById("total-impression");
 const sousTotalHtElement = document.getElementById("sous-total-ht");
 const montantRemiseElement = document.getElementById("montant-remise");
@@ -1642,7 +1650,10 @@ function updateTarifsFixes() {
     const tarifLivraisonUnitaire = isMassive
         ? Number({{ tarif_livraison_massive_apercu|tojson }})
         : Number({{ tarif_livraison_ciblee_apercu|tojson }});
-    const totalLivraison = nombrePoints * tarifLivraisonUnitaire;
+    const totalLivraison =
+        livraisonCheckbox && livraisonCheckbox.checked
+            ? nombrePoints * tarifLivraisonUnitaire
+            : 0;
     if (totalLivraisonElement) {
         totalLivraisonElement.textContent = formatEuros(totalLivraison);
     }
@@ -1671,6 +1682,9 @@ if (quantiteInput) {
 }
 if (creationGraphiqueCheckbox) {
     creationGraphiqueCheckbox.addEventListener("change", updateTarifsFixes);
+}
+if (livraisonCheckbox) {
+    livraisonCheckbox.addEventListener("change", updateTarifsFixes);
 }
 if (produitSelect) {
     produitSelect.addEventListener("change", function () {
