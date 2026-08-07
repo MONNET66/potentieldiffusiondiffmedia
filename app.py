@@ -3809,6 +3809,13 @@ def save_quote_from_campaign(token):
             2,
         )
 
+    livraison_supports = bool(
+        data.get("livraison_supports")
+    )
+
+    if not livraison_supports:
+        montant_livraison_ht = 0.00
+
     creation_graphique = bool(
         data.get("creation_graphique")
     )
@@ -3852,6 +3859,7 @@ def save_quote_from_campaign(token):
 
             montant_impression_ht,
             montant_livraison_ht,
+            livraison_supports,
             creation_graphique,
             montant_creation_ht,
 
@@ -3869,7 +3877,7 @@ def save_quote_from_campaign(token):
             ?, ?, ?, ?, ?,
             ?, ?, ?, ?, ?, ?, ?,
             ?, ?, ?, ?,
-            ?, ?, ?, ?,
+            ?, ?, ?, ?,?,
             ?, ?, ?, ?, ?, ?,
             ?, ?
         )
@@ -3895,6 +3903,7 @@ def save_quote_from_campaign(token):
 
         montant_impression_ht,
         montant_livraison_ht,
+        1 if livraison_supports else 0,
         1 if creation_graphique else 0,
         montant_creation_ht,
 
