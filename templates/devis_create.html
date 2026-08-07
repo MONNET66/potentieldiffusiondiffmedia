@@ -1733,6 +1733,9 @@ if (enregistrerDevisButton) {
                     client_telephone:
                         document.getElementById("client-telephone").value,
                     quantite: quantite,
+                    livraison_supports:
+                        livraisonCheckbox
+                        && livraisonCheckbox.checked,
                     creation_graphique:
                         creationGraphiqueCheckbox
                         && creationGraphiqueCheckbox.checked
