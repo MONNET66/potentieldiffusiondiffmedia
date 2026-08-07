@@ -3095,7 +3095,7 @@ def generer_pdf_devis(devis):
     except (TypeError, ValueError):
         montant_livraison = 0
 
-    if montant_livraison:
+    if devis.get("livraison_supports") and montant_livraison:
         points_livraison_pdf = int(
             devis.get("points_livraison") or 0
         )
