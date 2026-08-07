@@ -1374,6 +1374,7 @@ cur.execute("""
 
         montant_impression_ht REAL NOT NULL DEFAULT 0,
         montant_livraison_ht REAL NOT NULL DEFAULT 0,
+        livraison_supports INTEGER NOT NULL DEFAULT 1,
         creation_graphique INTEGER NOT NULL DEFAULT 0,
         montant_creation_ht REAL NOT NULL DEFAULT 0,
 
@@ -1390,6 +1391,17 @@ cur.execute("""
         updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
 """)
+
+existing_devis_columns = {
+    row[1]
+    for row in cur.execute("PRAGMA table_info(devis)").fetchall()
+}
+
+if "livraison_supports" not in existing_devis_columns:
+    cur.execute("""
+        ALTER TABLE devis
+        ADD COLUMN livraison_supports INTEGER NOT NULL DEFAULT 1
+    """)
 
 conn.commit()
 conn.close()
